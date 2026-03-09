@@ -63,14 +63,18 @@ android {
         buildConfig = true
     }
 
-    // 用于添加模块资源到宿主。
-    // 默认情况下，所有安卓应用的资源 ID 都是以 0x7f 开头
-    // 为防止冲突，自定义资源 ID 前缀（--package-id），避开 0x7f 防止冲突
-    androidResources.additionalParameters += listOf(
-        "--allow-reserved-package-id",
-        "--package-id",
-        "0x55"
-    )
+    androidResources {
+        generateLocaleConfig = true
+        localeFilters += listOf("en", "zh")
+        // 用于添加模块资源到宿主。
+        // 默认情况下，所有安卓应用的资源 ID 都是以 0x7f 开头
+        // 为防止冲突，自定义资源 ID 前缀（--package-id），避开 0x7f 防止冲突
+        additionalParameters += listOf(
+            "--allow-reserved-package-id",
+            "--package-id",
+            "0x55"
+        )
+    }
 }
 
 dependencies {
