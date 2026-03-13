@@ -78,6 +78,8 @@
     <string name="supportAutoPowerOnOff_title">支持自动开/关机</string>
     <string name="supportAutoPowerOnOff_summary">设置->重置->自动开/关机</string>
     <string name="noAIWatermark_title">禁用图片编辑器 AI 水印</string>
+    <string name="bypassHealthMonitorCountryCheck_title">绕过 Samsung Health Monitor 国家检查</string>
+    <string name="bypassHealthMonitorCountryCheck_summary">在不支持的国家/地区使用 Health Monitor</string>
 
     <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
     <string name="close">关闭</string>

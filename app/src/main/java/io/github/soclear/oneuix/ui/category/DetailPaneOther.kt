@@ -108,6 +108,13 @@ fun DetailPaneOther(
             checked = uiState.noAIWatermark,
             onCheckedChange = { onEvent(OtherEvent.NoAIWatermark(it)) }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.person_pin_circle),
+            title = stringResource(id = R.string.bypassHealthMonitorCountryCheck_title),
+            summary = stringResource(id = R.string.bypassHealthMonitorCountryCheck_summary),
+            checked = uiState.bypassHealthMonitorCountryCheck,
+            onCheckedChange = { onEvent(OtherEvent.BypassHealthMonitorCountryCheck(it)) }
+        )
     }
 }
 
@@ -158,6 +165,9 @@ sealed interface OtherEvent {
 
     @JvmInline
     value class NoAIWatermark(val value: Boolean) : OtherEvent
+
+    @JvmInline
+    value class BypassHealthMonitorCountryCheck(val value: Boolean) : OtherEvent
 }
 
 fun SettingViewModel.onOtherEvent(event: OtherEvent) {
@@ -232,6 +242,12 @@ fun SettingViewModel.onOtherEvent(event: OtherEvent) {
             is OtherEvent.NoAIWatermark -> preference.copy(
                 other = preference.other.copy(
                     noAIWatermark = event.value
+                )
+            )
+
+            is OtherEvent.BypassHealthMonitorCountryCheck -> preference.copy(
+                other = preference.other.copy(
+                    bypassHealthMonitorCountryCheck = event.value
                 )
             )
         }
