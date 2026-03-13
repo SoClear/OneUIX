@@ -6,58 +6,70 @@ import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers.findClass
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.data.Package
+import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.hook.util.getHookConfig
+import io.github.soclear.oneuix.hook.util.longVersionCode
+import kotlinx.serialization.Serializable
 import org.luckypray.dexkit.DexKitBridge
+import org.luckypray.dexkit.wrap.DexMethod
 import java.lang.reflect.Modifier
 
-
 object HealthMonitor {
-    private const val TAG = "OneUIX HealthMonitor"
+    private const val SUPPORTED_TYPE_CLASS = "com.samsung.android.shealthmonitor.util.CommonConstants\$SupportedType"
 
     fun bypassCountryCheck(loadPackageParam: LoadPackageParam) {
         if (loadPackageParam.packageName != Package.HEALTH_MONITOR) {
             return
         }
         afterAttach {
-            hook(classLoader)
+            val hookConfig = getHookConfig { getHookConfigFromDexKit() }
+            if (hookConfig != null) {
+                try {
+                    hook(classLoader, hookConfig)
+                } catch (t: Throwable) {
+                    XposedBridge.log(t)
+                }
+            }
         }
     }
 
-    private fun Context.hook(classLoader: ClassLoader) {
-        val supportedTypeClass = findClass(
-            "com.samsung.android.shealthmonitor.util.CommonConstants\$SupportedType",
-            classLoader
-        )
+    @Serializable
+    data class HealthMonitorHookConfig(
+        override val versionCode: Long,
+        val isSupportedCountryMethod: String,
+    ) : HookConfig
 
-        // ALL_SUPPORT 是 ordinal=0 的枚举值
-        val allSupportType = supportedTypeClass.enumConstants?.firstOrNull()
-            ?: run {
-                XposedBridge.log("$TAG: Failed to get ALL_SUPPORT enum value")
-                return
-            }
-
-        // 使用 DexKit 查找目标方法
+    private fun Context.getHookConfigFromDexKit(): HealthMonitorHookConfig? {
         System.loadLibrary("dexkit")
         DexKitBridge.create(classLoader, true).use { bridge ->
-            val method = bridge.findMethod {
+            val supportedTypeClass = bridge.findClass {
+                matcher {
+                    superClass = "java.lang.Enum"
+                    usingStrings("ALL_SUPPORT", "MCC_NOT_SUPPORT", "CSC_NOT_SUPPORT")
+                }
+            }.singleOrNull() ?: return null
+
+            val isSupportedCountryMethod = bridge.findMethod {
                 matcher {
                     modifiers = Modifier.PUBLIC or Modifier.STATIC
                     returnType = supportedTypeClass.name
                     usingStrings("fake country not set")
                 }
-            }.singleOrNull()
+            }.singleOrNull() ?: return null
 
-            if (method == null) {
-                XposedBridge.log("$TAG: Failed to find isSupportedCountry method")
-                return
-            }
-
-            XposedBridge.log("$TAG: Hooking ${method.className}.${method.name}")
-
-            XposedBridge.hookMethod(
-                method.getMethodInstance(classLoader),
-                XC_MethodReplacement.returnConstant(allSupportType)
+            return HealthMonitorHookConfig(
+                versionCode = longVersionCode,
+                isSupportedCountryMethod = isSupportedCountryMethod.toDexMethod().serialize()
             )
         }
+    }
+
+    private fun Context.hook(classLoader: ClassLoader, hookConfig: HealthMonitorHookConfig) {
+        val supportedTypeClass = findClass(SUPPORTED_TYPE_CLASS, classLoader)
+        val allSupportType = supportedTypeClass.enumConstants.firstOrNull() ?: return
+
+        val method = DexMethod(hookConfig.isSupportedCountryMethod).getMethodInstance(classLoader)
+        XposedBridge.hookMethod(method, XC_MethodReplacement.returnConstant(allSupportType))
     }
 }
