@@ -20,4 +20,5 @@ object Package {
     const val THEME_CENTER = "com.samsung.android.themecenter"
     const val WEATHER = "com.sec.android.daemonapp"
     const val VIDEO = "com.samsung.android.video"
+    const val HEALTH_MONITOR = "com.samsung.android.shealthmonitor"
 }

@@ -114,5 +114,6 @@ data class Preference(
         val setThemeTrialNeverExpired: Boolean = true,
         val customizeBrowserSearchEngine: Boolean = false,
         val noAIWatermark: Boolean = true,
+        val bypassHealthMonitorCountryCheck: Boolean = false,
     )
 }

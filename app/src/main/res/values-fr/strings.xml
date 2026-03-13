@@ -78,6 +78,8 @@
     <string name="supportAutoPowerOnOff_title">Prendre en charge l\'allumage/l\'extinction automatique</string>
     <string name="supportAutoPowerOnOff_summary">Paramètres -> Réinitialisation -> Allumage/extinction automatique</string>
     <string name="noAIWatermark_title">Désactiver le filigrane IA de l\'éditeur de photos</string>
+    <string name="bypassHealthMonitorCountryCheck_title">Contourner la vérification de pays Samsung Health Monitor</string>
+    <string name="bypassHealthMonitorCountryCheck_summary">Utiliser Health Monitor dans les pays non pris en charge</string>
 
     <string name="module_disabled_tip">Veuillez activer ce module dans LSPosed</string>
     <string name="close">Fermer</string>

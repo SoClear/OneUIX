@@ -310,6 +310,12 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources {
                     Video.showMorePlaybackSpeeds(lpparam)
                 }
             }
+
+            Package.HEALTH_MONITOR -> {
+                if (preference.other.bypassHealthMonitorCountryCheck) {
+                    HealthMonitor.bypassCountryCheck(lpparam)
+                }
+            }
         }
     }
 
