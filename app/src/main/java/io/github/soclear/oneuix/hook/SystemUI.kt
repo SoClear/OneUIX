@@ -894,4 +894,26 @@ object SystemUI {
             XposedBridge.log(t)
         }
     }
+
+    fun setCustomCarrierName(loadPackageParam: LoadPackageParam, carrierName: String) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI) return
+        try {
+            findAndHookMethod(
+                "com.android.keyguard.CarrierTextManager", loadPackageParam.classLoader, "postToCallback",
+                $$"com.android.keyguard.CarrierTextManager$CarrierTextCallbackInfo", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        try {
+                            val carrierTextCallbackInfo = param.args[0] ?: return
+                            setObjectField(carrierTextCallbackInfo, "carrierText", carrierName)
+                            setObjectField(carrierTextCallbackInfo, "carrierTextShort", carrierName)
+                        } catch (t: Throwable) {
+                            XposedBridge.log(t)
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
 }

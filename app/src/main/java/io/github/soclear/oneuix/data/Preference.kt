@@ -48,6 +48,8 @@ data class Preference(
             val doubleTapStatusBarToSleep: Boolean = false,
             val modifyStatusBarMaxNotificationIcons: Boolean = false,
             val statusBarMaxNotificationIcons: Int = 4,
+            val setCustomCarrierName: Boolean = false,
+            val customCarrierName: String = "",
         )
 
         @Serializable

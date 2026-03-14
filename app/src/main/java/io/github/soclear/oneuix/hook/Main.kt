@@ -231,6 +231,10 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources {
                     SystemUI.setStatusBarMaxNotificationIcons(lpparam, max)
                 }
 
+                if (preference.systemUI.statusBar.setCustomCarrierName) {
+                    SystemUI.setCustomCarrierName(lpparam, preference.systemUI.statusBar.customCarrierName)
+                }
+
                 run {
                     val monospaced = preference.systemUI.qs.setQsClockMonospaced
                     val modifyTextSize = preference.systemUI.qs.modifyQSClockTextSize

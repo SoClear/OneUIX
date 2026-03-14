@@ -355,6 +355,58 @@ fun DetailPaneSystemUI(
                 )
             }
         }
+        Column {
+            var expanded by rememberSaveable { mutableStateOf(false) }
+
+            SwitchItem(
+                title = stringResource(id = R.string.setCustomCarrierName_title),
+                modifier = Modifier.animateContentSize(),
+                summary = if (uiState.statusBar.setCustomCarrierName) {
+                    uiState.statusBar.customCarrierName
+                } else null,
+                icon = ImageVector.vectorResource(id = R.drawable.sim_card),
+                clickable = true,
+                onClick = { expanded = !expanded },
+                checked = uiState.statusBar.setCustomCarrierName,
+                onCheckedChange = {
+                    if (it && uiState.statusBar.customCarrierName.isEmpty()) {
+                        expanded = true
+                    } else if (!it) {
+                        expanded = false
+                    }
+                    onEvent(SystemUIEvent.StatusBar.SetCustomCarrierName(it))
+                }
+            )
+
+            AnimatedVisibility(expanded && uiState.statusBar.setCustomCarrierName) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
+                    var tempCustomCarrierName by remember {
+                        mutableStateOf(uiState.statusBar.customCarrierName)
+                    }
+
+                    OutlinedTextField(
+                        value = tempCustomCarrierName,
+                        onValueChange = { tempCustomCarrierName = it },
+                        modifier = Modifier.weight(1f),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            onEvent(
+                                SystemUIEvent.StatusBar.CustomCarrierName(
+                                    tempCustomCarrierName
+                                )
+                            )
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.confirm))
+                    }
+                }
+            }
+        }
 
         DividerText(R.string.qs)
         SwitchItem(
@@ -600,6 +652,12 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class StatusBarMaxNotificationIcons(val value: Int) : StatusBar
+
+        @JvmInline
+        value class SetCustomCarrierName(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class CustomCarrierName(val value: String) : StatusBar
     }
 
     sealed interface QS : SystemUIEvent {
@@ -848,6 +906,26 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             statusBarMaxNotificationIcons = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.SetCustomCarrierName -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            setCustomCarrierName = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.CustomCarrierName -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            customCarrierName = event.value
                         )
                     )
                 )

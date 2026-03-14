@@ -88,4 +88,5 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="supportCallAndTextOnOtherDevices_title">Support call &amp; text on other devices</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Settings -> Connected devices -> Call &amp; text on other devices</string>
+    <string name="setCustomCarrierName_title">Set custom carrier name</string>
 </resources>

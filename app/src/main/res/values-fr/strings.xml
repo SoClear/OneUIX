@@ -88,4 +88,5 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Utiliser Health Monitor dans les pays non pris en charge</string>
     <string name="supportCallAndTextOnOtherDevices_title">Prend en charge les Appels/SMS sur les autres appareils</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Paramètres > Appareils connectés > Appels/SMS sur les autres appareils</string>
+    <string name="setCustomCarrierName_title">Définir le nom de l\'opérateur personnalisé</string>
 </resources>
