@@ -1,11 +1,15 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Extension pour Samsung One UI</string>
-
+    <string name="module_disabled_tip">Veuillez activer ce module dans LSPosed</string>
+    <string name="close">Fermer</string>
+    <string name="confirm">Confirmer</string>
+    <string name="other">Autre</string>
+    <string name="status_bar">Barre d\'état</string>
+    <string name="qs">Paramètres rapides</string>
+    <string name="aod">AOD (Always On Display)</string>
     <string name="statusBarLeftPaddingDp_title">Modifier la marge gauche de la barre d\'état</string>
     <string name="statusBarRightPaddingDp_title">Modifier la marge droite de la barre d\'état</string>
-    <string name="setCompactChineseDateTime_title">Date et heure compactes (Chinois)</string>
-    <string name="setCompactChineseDateTime_summary">Heure:Minute JourDate, ex : 12:34 Ven6</string>
     <string name="hideBatteryPercentageSign_title">Masquer le symbole de pourcentage de la batterie</string>
     <string name="hideBatteryPercentageSign_summary">Supprimer uniquement le symbole %, conserver les chiffres</string>
     <string name="supportRealTimeNetworkSpeed_title">Afficher la vitesse du réseau en temps réel</string>
@@ -80,14 +84,6 @@
     <string name="noAIWatermark_title">Désactiver le filigrane IA de l\'éditeur de photos</string>
     <string name="bypassHealthMonitorCountryCheck_title">Contourner la vérification de pays Samsung Health Monitor</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Utiliser Health Monitor dans les pays non pris en charge</string>
-
-    <string name="supportCallAndTextOnOtherDevices_summary">Paramètres > Appareils connectés > Appels/SMS sur les autres appareils</string>
-    <string name="module_disabled_tip">Veuillez activer ce module dans LSPosed</string>
-    <string name="close">Fermer</string>
-    <string name="confirm">Confirmer</string>
-    <string name="other">Autre</string>
-    <string name="status_bar">Barre d\'état</string>
-    <string name="qs">Paramètres rapides</string>
-    <string name="aod">AOD (Always On Display)</string>
     <string name="supportCallAndTextOnOtherDevices_title">Prend en charge les Appels/SMS sur les autres appareils</string>
+    <string name="supportCallAndTextOnOtherDevices_summary">Paramètres > Appareils connectés > Appels/SMS sur les autres appareils</string>
 </resources>

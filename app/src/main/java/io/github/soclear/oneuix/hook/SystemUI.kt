@@ -49,14 +49,6 @@ object SystemUI {
         SmartViewAndModes,
     }
 
-    fun setCompactChineseDateTime(lpparam: LoadPackageParam) {
-        if (lpparam.packageName != Package.SYSTEMUI) return
-        val dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm Ed", Locale.SIMPLIFIED_CHINESE)
-        setStatusBarClockText(lpparam) {
-            dateTimeFormatter.format(LocalDateTime.now()).replace("周", "")
-        }
-    }
-
     fun setStatusBarPaddingDp(loadPackageParam: LoadPackageParam, left: Float?, right: Float?) {
         if (loadPackageParam.packageName != Package.SYSTEMUI) {
             return

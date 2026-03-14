@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.data
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 @Serializable
 data class Preference(
@@ -39,7 +40,6 @@ data class Preference(
             val setStatusBarClockFormat: Boolean = false,
             val statusBarClockFormat: String = "HH:mm",
             val updateStatusBarClockEverySecond: Boolean = false,
-            val setCompactChineseDateTime: Boolean = false,
             val hideSecureFolderStatusBarIcon: Boolean = false,
             val doubleTapStatusBarToSleep: Boolean = false,
             val modifyStatusBarMaxNotificationIcons: Boolean = false,
@@ -117,4 +117,8 @@ data class Preference(
         val noAIWatermark: Boolean = true,
         val bypassHealthMonitorCountryCheck: Boolean = false,
     )
+}
+
+val IgnoreUnknownKeysJson = Json {
+    ignoreUnknownKeys = true
 }

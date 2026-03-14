@@ -45,7 +45,6 @@
 - 状态栏显示上传下载网速
 - 设置状态栏日期时间格式
 - 状态栏时间每秒更新
-- 极简中文时间日期
 - 隐藏安全文件夹状态栏图标
 - 双击状态栏锁屏
 - 修改状态栏最大通知图标数量
@@ -153,7 +152,6 @@
 - Show separate upload/download speeds in status bar
 - Set status bar date and time format
 - Update status bar clock every second
-- Compact Chinese time and date
 - Hide Secure Folder status bar icon
 - Double tap status bar to sleep
 - Modify maximum number of notification icons in status bar

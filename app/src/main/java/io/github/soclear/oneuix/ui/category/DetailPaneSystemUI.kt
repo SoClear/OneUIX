@@ -230,15 +230,6 @@ fun DetailPaneSystemUI(
             }
         )
         SwitchItem(
-            icon = ImageVector.vectorResource(id = R.drawable.today),
-            title = stringResource(id = R.string.setCompactChineseDateTime_title),
-            summary = stringResource(id = R.string.setCompactChineseDateTime_summary),
-            checked = uiState.statusBar.setCompactChineseDateTime,
-            onCheckedChange = {
-                onEvent(SystemUIEvent.StatusBar.setCompactChineseDateTime(it))
-            }
-        )
-        SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.folder_managed),
             title = stringResource(id = R.string.hideSecureFolderStatusBarIcon_title),
             checked = uiState.statusBar.hideSecureFolderStatusBarIcon,
@@ -513,9 +504,6 @@ sealed interface SystemUIEvent {
         value class UpdateStatusBarClockEverySecond(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class setCompactChineseDateTime(val value: Boolean) : StatusBar
-
-        @JvmInline
         value class HideSecureFolderStatusBarIcon(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -694,16 +682,6 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             updateStatusBarClockEverySecond = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.StatusBar.setCompactChineseDateTime -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        statusBar = preference.systemUI.statusBar.copy(
-                            setCompactChineseDateTime = event.value
                         )
                     )
                 )

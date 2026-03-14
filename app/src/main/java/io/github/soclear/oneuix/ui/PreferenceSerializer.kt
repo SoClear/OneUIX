@@ -3,6 +3,7 @@ package io.github.soclear.oneuix.ui
 import android.content.Context
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
+import io.github.soclear.oneuix.data.IgnoreUnknownKeysJson
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import io.github.soclear.oneuix.data.Preference
@@ -14,7 +15,7 @@ import java.io.OutputStream
 object PreferenceSerializer : Serializer<Preference> {
     override suspend fun readFrom(input: InputStream): Preference {
         return try {
-            Json.decodeFromString(
+            IgnoreUnknownKeysJson.decodeFromString(
                 deserializer = Preference.serializer(),
                 string = input.readBytes().decodeToString()
             )

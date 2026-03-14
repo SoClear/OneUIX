@@ -1,11 +1,15 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Samsung One UI Extension</string>
-
+    <string name="module_disabled_tip">Please enable this module in LSPosed</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="other">Other</string>
+    <string name="status_bar">Status Bar</string>
+    <string name="qs">Quick Settings</string>
+    <string name="aod">Always On Display</string>
     <string name="statusBarLeftPaddingDp_title">Modify status bar left padding</string>
     <string name="statusBarRightPaddingDp_title">Modify status bar right padding</string>
-    <string name="setCompactChineseDateTime_title">Compact Chinese time and date</string>
-    <string name="setCompactChineseDateTime_summary">Hour:Minute Day Date, e.g., 12:34 五6</string>
     <string name="hideBatteryPercentageSign_title">Hide battery percentage sign in status bar</string>
     <string name="hideBatteryPercentageSign_summary">Remove the % sign only, keep the numbers</string>
     <string name="supportRealTimeNetworkSpeed_title">Support displaying real-time network speed</string>
@@ -82,12 +86,4 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="supportCallAndTextOnOtherDevices_title">Support call &amp; text on other devices</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Settings -> Connected devices -> Call &amp; text on other devices</string>
-
-    <string name="module_disabled_tip">Please enable this module in LSPosed</string>
-    <string name="close">Close</string>
-    <string name="confirm">Confirm</string>
-    <string name="other">Other</string>
-    <string name="status_bar">Status Bar</string>
-    <string name="qs">Quick Settings</string>
-    <string name="aod">Always On Display</string>
 </resources>

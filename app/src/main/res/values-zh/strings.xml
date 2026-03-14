@@ -1,11 +1,15 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">三星 One UI 扩展</string>
-
+    <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
+    <string name="close">关闭</string>
+    <string name="confirm">确认</string>
+    <string name="other">其他</string>
+    <string name="status_bar">状态栏</string>
+    <string name="qs">快捷设置</string>
+    <string name="aod">息屏提醒</string>
     <string name="statusBarLeftPaddingDp_title">修改状态栏左边距</string>
     <string name="statusBarRightPaddingDp_title">修改状态栏右边距</string>
-    <string name="setCompactChineseDateTime_title">极简中文时间日期</string>
-    <string name="setCompactChineseDateTime_summary">小时:分钟 星期日期，例如 12:34 五6</string>
     <string name="hideBatteryPercentageSign_title">隐藏状态栏电池的百分号</string>
     <string name="hideBatteryPercentageSign_summary">仅去掉百分号，保留数字</string>
     <string name="supportRealTimeNetworkSpeed_title">支持显示实时网速</string>
@@ -80,14 +84,6 @@
     <string name="noAIWatermark_title">禁用图片编辑器 AI 水印</string>
     <string name="bypassHealthMonitorCountryCheck_title">绕过 Samsung Health Monitor 国家检查</string>
     <string name="bypassHealthMonitorCountryCheck_summary">在不支持的国家/地区使用 Health Monitor</string>
-
-    <string name="supportCallAndTextOnOtherDevices_summary">设置 -> 已连接的设备 -> 跨设备接打电话和收发短信</string>
-    <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
-    <string name="close">关闭</string>
-    <string name="confirm">确认</string>
-    <string name="other">其他</string>
-    <string name="status_bar">状态栏</string>
-    <string name="qs">快捷设置</string>
-    <string name="aod">息屏提醒</string>
     <string name="supportCallAndTextOnOtherDevices_title">支持跨设备接打电话和收发短信</string>
+    <string name="supportCallAndTextOnOtherDevices_summary">设置 -> 已连接的设备 -> 跨设备接打电话和收发短信</string>
 </resources>

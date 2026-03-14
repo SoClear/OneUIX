@@ -2,8 +2,8 @@ package io.github.soclear.oneuix.hook.util
 
 import android.annotation.SuppressLint
 import de.robv.android.xposed.XSharedPreferences
-import kotlinx.serialization.json.Json
 import io.github.soclear.oneuix.BuildConfig
+import io.github.soclear.oneuix.data.IgnoreUnknownKeysJson
 import io.github.soclear.oneuix.data.Preference
 import java.io.File
 
@@ -11,7 +11,7 @@ object PreferenceProvider {
     private const val PREFERENCE_FILE_NAME = "preference.json"
 
     val preference: Preference? = try {
-        Json.decodeFromString<Preference>(getPreferenceFile().readText())
+        IgnoreUnknownKeysJson.decodeFromString<Preference>(getPreferenceFile().readText())
     } catch (_: Throwable) {
         null
     }

@@ -208,10 +208,6 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources {
                     SystemUI.updateStatusBarClockEverySecond(lpparam)
                 }
 
-                if (preference.systemUI.statusBar.setCompactChineseDateTime) {
-                    SystemUI.setCompactChineseDateTime(lpparam)
-                }
-
                 if (preference.systemUI.statusBar.hideSecureFolderStatusBarIcon) {
                     SystemUI.hideSecureFolderStatusBarIcon(lpparam)
                 }
