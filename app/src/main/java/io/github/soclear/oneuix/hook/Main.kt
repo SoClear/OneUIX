@@ -217,6 +217,10 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources {
                     SystemUI.setBatteryIconScale(lpparam, widthScale, heightScale)
                 }
 
+                if (preference.systemUI.statusBar.hideBatteryIcon) {
+                    SystemUI.hideBatteryIcon(lpparam)
+                }
+
                 if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
                     Network.supportRealTimeNetworkSpeed(lpparam)
                 }

@@ -223,6 +223,15 @@ fun DetailPaneSystemUI(
             )
         }
         SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.battery),
+            title = stringResource(id = R.string.hideBatteryIcon_title),
+            summary = stringResource(id = R.string.hideBatteryIcon_summary),
+            checked = uiState.statusBar.hideBatteryIcon,
+            onCheckedChange = {
+                onEvent(SystemUIEvent.StatusBar.HideBatteryIcon(it))
+            }
+        )
+        SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.net_speed),
             title = stringResource(id = R.string.supportRealTimeNetworkSpeed_title),
             summary = stringResource(id = R.string.supportRealTimeNetworkSpeed_summary),
@@ -653,6 +662,9 @@ sealed interface SystemUIEvent {
         value class HideBatteryPercentageSign(val value: Boolean) : StatusBar
 
         @JvmInline
+        value class HideBatteryIcon(val value: Boolean) : StatusBar
+
+        @JvmInline
         value class SupportRealTimeNetworkSpeed(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -857,6 +869,16 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             hideBatteryPercentageSign = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.HideBatteryIcon -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            hideBatteryIcon = event.value
                         )
                     )
                 )

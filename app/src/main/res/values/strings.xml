@@ -14,6 +14,8 @@
     <string name="setBatteryIconHeightScale_title">Set battery icon height scale factor</string>
     <string name="hideBatteryPercentageSign_title">Hide battery percentage sign in status bar</string>
     <string name="hideBatteryPercentageSign_summary" formatted="false">Remove the % sign only, keep the numbers</string>
+    <string name="hideBatteryIcon_title">Hide battery icon</string>
+    <string name="hideBatteryIcon_summary">Hides only the battery icon without changing the system battery percentage setting</string>
     <string name="supportRealTimeNetworkSpeed_title">Support displaying real-time network speed</string>
     <string name="supportRealTimeNetworkSpeed_summary">Settings -> Notifications -> Advanced settings -> Show real-time network speed</string>
     <string name="showSeparateUpDownNetworkSpeeds_title">Show separate upload/download speeds in status bar</string>

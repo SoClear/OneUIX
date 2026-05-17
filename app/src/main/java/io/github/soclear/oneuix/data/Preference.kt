@@ -39,6 +39,7 @@ data class Preference(
             val setBatteryIconHeightScale: Boolean = false,
             val batteryIconHeightScale: Float = 1f,
             val hideBatteryPercentageSign: Boolean = false,
+            val hideBatteryIcon: Boolean = false,
             val supportRealTimeNetworkSpeed: Boolean = true,
             val showSeparateUpDownNetworkSpeeds: Boolean = false,
             val setStatusBarClockFormat: Boolean = false,
