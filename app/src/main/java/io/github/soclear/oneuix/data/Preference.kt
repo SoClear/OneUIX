@@ -45,6 +45,8 @@ data class Preference(
             val statusBarClockFormat: String = "HH:mm",
             val updateStatusBarClockEverySecond: Boolean = false,
             val hideSecureFolderStatusBarIcon: Boolean = false,
+            val physicalEsimAdapterWorkaround: Boolean = false,
+            val physicalEsimAdapterSimSlot: Int = 1,
             val doubleTapStatusBarToSleep: Boolean = false,
             val modifyStatusBarMaxNotificationIcons: Boolean = false,
             val statusBarMaxNotificationIcons: Int = 4,

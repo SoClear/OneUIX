@@ -37,10 +37,13 @@ import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.data.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+
+private const val ESIM_ADAPTER_SIM_BOTH = 2
 
 @Composable
 fun DetailPaneSystemUI(
@@ -321,6 +324,33 @@ fun DetailPaneSystemUI(
                 onEvent(SystemUIEvent.StatusBar.HideSecureFolderStatusBarIcon(it))
             }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.sim_card),
+            title = stringResource(id = R.string.physicalEsimAdapterWorkaround_title),
+            summary = stringResource(id = R.string.physicalEsimAdapterWorkaround_summary),
+            checked = uiState.statusBar.physicalEsimAdapterWorkaround,
+            onCheckedChange = {
+                onEvent(SystemUIEvent.StatusBar.PhysicalEsimAdapterWorkaround(it))
+            }
+        )
+        AnimatedVisibility(uiState.statusBar.physicalEsimAdapterWorkaround) {
+            SelectItem(
+                icon = ImageVector.vectorResource(id = R.drawable.sim_card),
+                title = stringResource(id = R.string.physicalEsimAdapterSimSlot_title),
+                entries = listOf(
+                    stringResource(id = R.string.sim_slot_1),
+                    stringResource(id = R.string.sim_slot_2),
+                    stringResource(id = R.string.sim_slot_both)
+                ),
+                selectedIndex = uiState.statusBar.physicalEsimAdapterSimSlot.coerceIn(
+                    0,
+                    ESIM_ADAPTER_SIM_BOTH
+                ),
+                onSelectedIndexChange = {
+                    onEvent(SystemUIEvent.StatusBar.PhysicalEsimAdapterSimSlot(it))
+                }
+            )
+        }
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.mobile_screensaver),
             title = stringResource(id = R.string.doubleTapStatusBarToSleep_title),
@@ -671,6 +701,12 @@ sealed interface SystemUIEvent {
         value class HideSecureFolderStatusBarIcon(val value: Boolean) : StatusBar
 
         @JvmInline
+        value class PhysicalEsimAdapterWorkaround(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class PhysicalEsimAdapterSimSlot(val value: Int) : StatusBar
+
+        @JvmInline
         value class DoubleTapStatusBarToSleep(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -918,6 +954,29 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             hideSecureFolderStatusBarIcon = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.PhysicalEsimAdapterWorkaround -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            physicalEsimAdapterWorkaround = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.PhysicalEsimAdapterSimSlot -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            physicalEsimAdapterSimSlot = event.value.coerceIn(
+                                0,
+                                ESIM_ADAPTER_SIM_BOTH
+                            )
                         )
                     )
                 )

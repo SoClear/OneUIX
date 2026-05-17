@@ -25,6 +25,12 @@
     <string name="updateStatusBarClockEverySecond_title">Mettre à jour l\'heure de la barre d\'état chaque seconde</string>
     <string name="updateStatusBarClockEverySecond_summary">Définit également les chiffres avec une police à espacement fixe (monospace)</string>
     <string name="hideSecureFolderStatusBarIcon_title">Masquer l\'icône du dossier sécurisé dans la barre d\'état</string>
+    <string name="physicalEsimAdapterWorkaround_title">Contournement pour adaptateur eSIM physique</string>
+    <string name="physicalEsimAdapterWorkaround_summary">Masque l\'icône de la carte SIM sélectionnée en l\'absence de service ou lorsque seuls les appels d\'urgence sont disponibles</string>
+    <string name="physicalEsimAdapterSimSlot_title">Carte SIM</string>
+    <string name="sim_slot_1">SIM 1</string>
+    <string name="sim_slot_2">SIM 2</string>
+    <string name="sim_slot_both">SIM 1 et SIM 2</string>
     <string name="hideQsBarNearbyDevicesAndDeviceControl_title">Masquer la barre Appareils à proximité et Contrôle des appareils</string>
     <string name="hideQsBarMediaPlayer_title">Masquer la barre du lecteur multimédia dans les paramètres rapides</string>
     <string name="hideQsBarSecurityFooter_title">Masquer la barre d\'avertissement de sécurité dans les paramètres rapides</string>

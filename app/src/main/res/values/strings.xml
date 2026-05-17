@@ -25,6 +25,12 @@
     <string name="updateStatusBarClockEverySecond_title">Update status bar clock every second</string>
     <string name="updateStatusBarClockEverySecond_summary">Also sets numbers to monospaced font</string>
     <string name="hideSecureFolderStatusBarIcon_title">Hide Secure Folder status bar icon</string>
+    <string name="physicalEsimAdapterWorkaround_title">Workaround for physical eSIM adapter</string>
+    <string name="physicalEsimAdapterWorkaround_summary">Hides the icon for the selected SIM card if there is no service or only emergency calls are available</string>
+    <string name="physicalEsimAdapterSimSlot_title">SIM card</string>
+    <string name="sim_slot_1">SIM 1</string>
+    <string name="sim_slot_2">SIM 2</string>
+    <string name="sim_slot_both">SIM 1 and SIM 2</string>
     <string name="hideQsBarNearbyDevicesAndDeviceControl_title">Hide Nearby Devices and Device Control bar in QS panel</string>
     <string name="hideQsBarMediaPlayer_title">Hide Media Player bar in QS panel</string>
     <string name="hideQsBarSecurityFooter_title">Hide Security footer bar in QS panel</string>

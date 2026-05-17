@@ -25,6 +25,12 @@
     <string name="updateStatusBarClockEverySecond_title">状态栏时间每秒更新</string>
     <string name="updateStatusBarClockEverySecond_summary">同时设置数字为等宽字体</string>
     <string name="hideSecureFolderStatusBarIcon_title">隐藏安全文件夹状态栏图标</string>
+    <string name="physicalEsimAdapterWorkaround_title">实体 eSIM 适配器兼容处理</string>
+    <string name="physicalEsimAdapterWorkaround_summary">当所选 SIM 卡无服务或仅可拨打紧急电话时隐藏其图标</string>
+    <string name="physicalEsimAdapterSimSlot_title">SIM 卡</string>
+    <string name="sim_slot_1">SIM 1</string>
+    <string name="sim_slot_2">SIM 2</string>
+    <string name="sim_slot_both">SIM 1 和 SIM 2</string>
     <string name="hideQsBarNearbyDevicesAndDeviceControl_title">隐藏快捷设置面板的附近设备和设备控制 Bar</string>
     <string name="hideQsBarMediaPlayer_title">隐藏快捷设置面板的媒体播放器 Bar</string>
     <string name="hideQsBarSecurityFooter_title">隐藏快捷设置面板的安全底部提示 Bar</string>

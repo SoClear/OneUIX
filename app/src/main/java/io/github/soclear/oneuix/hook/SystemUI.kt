@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
+import android.telephony.SubscriptionManager
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -23,6 +24,7 @@ import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XC_MethodReplacement.returnConstant
 import de.robv.android.xposed.XposedBridge
+import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
@@ -36,12 +38,44 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.data.Package
 import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
+import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Collections
+import java.util.Locale
+import java.util.WeakHashMap
 import kotlin.math.roundToInt
 
 
 object SystemUI {
+    private const val PHYSICAL_ESIM_ADAPTER_SIM_1 = 0
+    private const val PHYSICAL_ESIM_ADAPTER_SIM_2 = 1
+    private const val PHYSICAL_ESIM_ADAPTER_BOTH = 2
+    private val trackedMobileViewSlots: MutableMap<View, Int> =
+        Collections.synchronizedMap(WeakHashMap())
+    private val hiddenMobileViews: MutableSet<View> =
+        Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
+    private val unavailableCarrierSlots = mutableSetOf<Int>()
+    private val unavailableCarrierTexts: MutableSet<String> =
+        Collections.synchronizedSet(mutableSetOf())
+
+    private val unavailableCarrierTextResourceNames = listOf(
+        "emergency_calls_only",
+        "lockscreen_carrier_default",
+        "kg_emergency_calls_only",
+        "keyguard_emergency_calls_only",
+        "keyguard_carrier_default",
+        "status_bar_no_service",
+        "status_bar_network_name_no_service",
+        "mobile_network_no_service",
+        "no_service"
+    )
+
+    private val unavailableCarrierTextFallbacks = setOf(
+        "emergency calls only",
+        "no service"
+    )
+
     enum class QsBar {
         MediaPlayer,
         NearbyDevicesAndDeviceControl,
@@ -116,6 +150,7 @@ object SystemUI {
             XposedBridge.log(t)
         }
     }
+
 
     fun hideBatteryPercentageSign(resparam: InitPackageResourcesParam) {
         if (resparam.packageName != Package.SYSTEMUI ||
@@ -605,6 +640,424 @@ object SystemUI {
         } catch (t: Throwable) {
             XposedBridge.log(t)
         }
+    }
+
+    fun workaroundPhysicalEsimAdapter(loadPackageParam: LoadPackageParam, simSlotMode: Int) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI) return
+        val selectedSlots = selectedPhysicalEsimAdapterSlots(simSlotMode)
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.pipeline.mobile.ui.view.ModernStatusBarMobileView",
+                loadPackageParam.classLoader,
+                "constructAndBind",
+                Context::class.java,
+                "com.android.systemui.statusbar.pipeline.mobile.ui.MobileViewLogger",
+                String::class.java,
+                "com.android.systemui.statusbar.pipeline.mobile.ui.viewmodel.LocationBasedMobileViewModel",
+                "com.android.systemui.statusbar.policy.ConfigurationController",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        updateUnavailableCarrierTexts(param.args[0] as? Context)
+                        val viewModel = param.args[3] ?: return
+                        val slot = getMobileViewModelSlot(viewModel) ?: return
+                        if (slot in selectedSlots) {
+                            trackMobileView(param.result as? View, slot, selectedSlots)
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.pipeline.shared.ui.view.ModernStatusBarView",
+                loadPackageParam.classLoader,
+                "setVisibleState",
+                Int::class.javaPrimitiveType,
+                Boolean::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val slot = trackedMobileViewSlots[param.thisObject as? View] ?: return
+                        if (slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
+                            param.args[0] = 2
+                        }
+                    }
+
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val view = param.thisObject as? View ?: return
+                        val slot = trackedMobileViewSlots[view] ?: return
+                        applyMobileViewVisibility(view, slot, selectedSlots)
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.pipeline.shared.ui.view.ModernStatusBarView",
+                loadPackageParam.classLoader,
+                "isIconVisible",
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val slot = trackedMobileViewSlots[param.thisObject as? View] ?: return
+                        if (slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
+                            param.result = false
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.StatusBarMobileView",
+                loadPackageParam.classLoader,
+                "applyMobileState",
+                "com.android.systemui.statusbar.phone.StatusBarSignalPolicy\$MobileIconState",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val state = param.args[0] ?: return
+                        val slot = SubscriptionManager.getSlotIndex(getIntField(state, "subId"))
+                        if (slot in selectedSlots) {
+                            updateCarrierSlotAvailabilityFromMobileState(state, slot)
+                            trackMobileView(param.thisObject as? View, slot, selectedSlots)
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            hookAllConstructors(
+                findClass(
+                    "com.android.keyguard.CarrierTextManager",
+                    loadPackageParam.classLoader
+                ),
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        param.args
+                            .filterIsInstance<Context>()
+                            .firstOrNull()
+                            ?.let(::updateUnavailableCarrierTexts)
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.keyguard.CarrierTextManager", loadPackageParam.classLoader, "postToCallback",
+                $$"com.android.keyguard.CarrierTextManager$CarrierTextCallbackInfo", object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        sanitizeCarrierTextCallbackInfo(param.args[0] ?: return, selectedSlots)
+                        refreshTrackedMobileViews(selectedSlots)
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    private fun getMobileViewModelSlot(viewModel: Any): Int? {
+        runCatching {
+            val commonImpl = getObjectField(viewModel, "commonImpl")
+            val slot = getIntField(commonImpl, "slotId")
+            if (slot >= 0) return slot
+        }
+
+        runCatching {
+            val subId = callMethod(viewModel, "getSubscriptionId") as Int
+            val slot = SubscriptionManager.getSlotIndex(subId)
+            if (slot >= 0) return slot
+        }
+
+        return null
+    }
+
+    private fun selectedPhysicalEsimAdapterSlots(simSlotMode: Int): Set<Int> =
+        when (simSlotMode) {
+            PHYSICAL_ESIM_ADAPTER_SIM_1 -> setOf(PHYSICAL_ESIM_ADAPTER_SIM_1)
+            PHYSICAL_ESIM_ADAPTER_BOTH -> setOf(
+                PHYSICAL_ESIM_ADAPTER_SIM_1,
+                PHYSICAL_ESIM_ADAPTER_SIM_2
+            )
+            else -> setOf(PHYSICAL_ESIM_ADAPTER_SIM_2)
+        }
+
+    private fun trackMobileView(view: View?, slot: Int, selectedSlots: Set<Int>) {
+        view ?: return
+        trackedMobileViewSlots[view] = slot
+        applyMobileViewVisibility(view, slot, selectedSlots)
+    }
+
+    private fun applyMobileViewVisibility(view: View, slot: Int, selectedSlots: Set<Int>) {
+        if (slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
+            hiddenMobileViews.add(view)
+            view.visibility = View.GONE
+        } else if (slot in selectedSlots && hiddenMobileViews.remove(view)) {
+            view.visibility = View.VISIBLE
+        }
+    }
+
+    private fun refreshTrackedMobileViews(selectedSlots: Set<Int>) {
+        trackedMobileViewSlots.entries.toList().forEach { (view, slot) ->
+            applyMobileViewVisibility(view, slot, selectedSlots)
+        }
+    }
+
+    private fun isUnavailableCarrierSlot(slot: Int): Boolean =
+        synchronized(unavailableCarrierSlots) { slot in unavailableCarrierSlots }
+
+    private fun updateCarrierSlotAvailabilityFromMobileState(state: Any, slot: Int) {
+        val stateText = readFieldValue(
+            state,
+            listOf(
+                "contentDescription",
+                "typeContentDescription",
+                "networkName",
+                "carrierName"
+            )
+        )?.toString().orEmpty()
+
+        if (stateText.isEmpty()) return
+
+        synchronized(unavailableCarrierSlots) {
+            if (isUnavailableCarrierText(stateText)) {
+                unavailableCarrierSlots.add(slot)
+            } else {
+                unavailableCarrierSlots.remove(slot)
+            }
+        }
+    }
+
+    private fun sanitizeCarrierTextCallbackInfo(info: Any, selectedSlots: Set<Int>) {
+        val carrierList = readCarrierListField(info)
+        if (carrierList != null) {
+            sanitizeCarrierList(info, carrierList, selectedSlots)
+            return
+        }
+
+        val carrierText = readFieldValue(info, listOf("carrierText", "carrierTextShort"))
+            ?.toString()
+            .orEmpty()
+        if (carrierText.isEmpty()) return
+
+        synchronized(unavailableCarrierSlots) {
+            if (isUnavailableCarrierText(carrierText)) {
+                unavailableCarrierSlots.addAll(selectedSlots)
+                setFieldValue(info, "carrierText", "")
+                setFieldValue(info, "carrierTextShort", "")
+            } else {
+                unavailableCarrierSlots.removeAll(selectedSlots)
+            }
+        }
+    }
+
+    private fun sanitizeCarrierList(
+        info: Any,
+        carrierList: CarrierListField,
+        selectedSlots: Set<Int>
+    ) {
+        val subscriptionIds = readIntArrayField(info, listOf("subscriptionIds", "subs", "subIds"))
+        val originalCarriers = carrierList.values
+        val sanitizedCarriers = originalCarriers.toMutableList()
+        val observedSelectedSlots = mutableSetOf<Int>()
+        val unavailableSelectedSlots = mutableSetOf<Int>()
+
+        originalCarriers.forEachIndexed { index, carrier ->
+            val slot = getCarrierSlot(index, subscriptionIds) ?: return@forEachIndexed
+            if (slot !in selectedSlots) return@forEachIndexed
+
+            observedSelectedSlots.add(slot)
+            val carrierText = carrier?.toString().orEmpty()
+            if (isUnavailableCarrierText(carrierText)) {
+                unavailableSelectedSlots.add(slot)
+                sanitizedCarriers[index] = ""
+            }
+        }
+
+        synchronized(unavailableCarrierSlots) {
+            observedSelectedSlots.forEach { slot ->
+                if (slot in unavailableSelectedSlots) {
+                    unavailableCarrierSlots.add(slot)
+                } else {
+                    unavailableCarrierSlots.remove(slot)
+                }
+            }
+        }
+
+        if (unavailableSelectedSlots.isEmpty()) return
+
+        writeCarrierListField(carrierList, sanitizedCarriers)
+        val carrierText = buildCarrierText(originalCarriers, sanitizedCarriers)
+        setFieldValue(info, "carrierText", carrierText)
+        setFieldValue(info, "carrierTextShort", carrierText)
+    }
+
+    private fun getCarrierSlot(index: Int, subscriptionIds: IntArray?): Int? {
+        val subId = subscriptionIds?.getOrNull(index)
+        if (subId != null) {
+            val slot = SubscriptionManager.getSlotIndex(subId)
+            if (slot >= 0) return slot
+        }
+        return index.takeIf { it == PHYSICAL_ESIM_ADAPTER_SIM_1 || it == PHYSICAL_ESIM_ADAPTER_SIM_2 }
+    }
+
+    private fun updateUnavailableCarrierTexts(context: Context?) {
+        context ?: return
+        val packages = listOf(context.packageName, "android")
+        val labels = unavailableCarrierTextResourceNames.flatMap { name ->
+            packages.mapNotNull { packageName ->
+                val id = context.resources.getIdentifier(name, "string", packageName)
+                if (id == 0) null else runCatching { context.getString(id) }.getOrNull()
+            }
+        }
+
+        if (labels.isEmpty()) return
+
+        unavailableCarrierTexts.addAll(labels.map(::normalizeCarrierText).filter(String::isNotBlank))
+    }
+
+    private fun isUnavailableCarrierText(text: String): Boolean {
+        val normalized = normalizeCarrierText(text)
+        if (normalized.isBlank()) return false
+
+        val resourceLabels = synchronized(unavailableCarrierTexts) {
+            unavailableCarrierTexts.toSet()
+        }
+        val unavailableLabels = resourceLabels.ifEmpty { unavailableCarrierTextFallbacks }
+
+        return unavailableLabels.any { label ->
+            label.isNotBlank() && (normalized == label || normalized.contains(label))
+        }
+    }
+
+    private fun normalizeCarrierText(text: String): String =
+        text
+            .replace(Regex("[\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]"), "")
+            .replace(Regex("\\s+"), " ")
+            .trim()
+            .lowercase(Locale.ROOT)
+
+    private fun buildCarrierText(
+        originalCarriers: List<CharSequence?>,
+        sanitizedCarriers: List<CharSequence?>
+    ): String {
+        val visibleCarriers = sanitizedCarriers
+            .mapNotNull { it?.toString()?.takeIf(String::isNotBlank) }
+        if (visibleCarriers.isEmpty()) return ""
+        if (visibleCarriers.size == 1) return visibleCarriers.first()
+
+        val originalText = originalCarriers
+            .mapNotNull { it?.toString()?.takeIf(String::isNotBlank) }
+            .joinToString()
+        val separator = detectCarrierSeparator(originalText, originalCarriers)
+        return visibleCarriers.joinToString(separator)
+    }
+
+    private fun detectCarrierSeparator(
+        carrierText: String,
+        carriers: List<CharSequence?>
+    ): String {
+        val carrierNames = carriers.mapNotNull { it?.toString()?.takeIf(String::isNotBlank) }
+        if (carrierNames.size < 2) return ", "
+
+        val first = carrierNames[0]
+        val second = carrierNames[1]
+        val firstIndex = carrierText.indexOf(first)
+        if (firstIndex < 0) return ", "
+
+        val separatorStart = firstIndex + first.length
+        val secondIndex = carrierText.indexOf(second, separatorStart)
+        if (secondIndex <= separatorStart) return ", "
+
+        return carrierText.substring(separatorStart, secondIndex)
+    }
+
+    private data class CarrierListField(
+        val field: Field,
+        val holder: Any,
+        val owner: Any,
+        val values: List<CharSequence?>
+    )
+
+    private fun readCarrierListField(info: Any): CarrierListField? {
+        val field = findField(
+            info,
+            listOf("listOfCarriers", "carrierTextList", "carrierTexts", "networkNames")
+        ) ?: return null
+        val value = runCatching { field.get(info) }.getOrNull() ?: return null
+        val values = when (value) {
+            is Array<*> -> value.map { it as? CharSequence }
+            is List<*> -> value.map { it as? CharSequence }
+            else -> return null
+        }
+        return CarrierListField(field, info, value, values)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun writeCarrierListField(
+        carrierList: CarrierListField,
+        values: List<CharSequence?>
+    ) {
+        runCatching {
+            when (val owner = carrierList.owner) {
+                is Array<*> -> values.forEachIndexed { index, value ->
+                    java.lang.reflect.Array.set(owner, index, value)
+                }
+
+                is MutableList<*> -> (owner as MutableList<CharSequence?>).also { list ->
+                    values.forEachIndexed { index, value -> list[index] = value }
+                }
+            }
+        }.onFailure {
+            runCatching { carrierList.field.set(carrierList.holder, values) }
+        }
+    }
+
+    private fun readIntArrayField(info: Any, names: List<String>): IntArray? {
+        val value = readFieldValue(info, names) ?: return null
+        return when (value) {
+            is IntArray -> value
+            is Array<*> -> value.mapNotNull { it as? Int }.toIntArray()
+            else -> null
+        }
+    }
+
+    private fun readFieldValue(instance: Any, names: List<String>): Any? =
+        findField(instance, names)?.let { field -> runCatching { field.get(instance) }.getOrNull() }
+
+    private fun setFieldValue(instance: Any, name: String, value: Any?) {
+        findField(instance, listOf(name))?.let { field ->
+            runCatching { field.set(instance, value) }
+        }
+    }
+
+    private fun findField(instance: Any, names: List<String>): Field? {
+        var clazz: Class<*>? = instance.javaClass
+        while (clazz != null) {
+            names.forEach { name ->
+                runCatching {
+                    val field = clazz.getDeclaredField(name)
+                    field.isAccessible = true
+                    return field
+                }
+            }
+            clazz = clazz.superclass
+        }
+        return null
     }
 
     fun setStatusBarMaxNotificationIcons(loadPackageParam: LoadPackageParam, max: Int) {

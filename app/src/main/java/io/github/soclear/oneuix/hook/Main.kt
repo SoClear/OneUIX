@@ -238,6 +238,13 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources {
                     SystemUI.hideSecureFolderStatusBarIcon(lpparam)
                 }
 
+                if (preference.systemUI.statusBar.physicalEsimAdapterWorkaround) {
+                    SystemUI.workaroundPhysicalEsimAdapter(
+                        lpparam,
+                        preference.systemUI.statusBar.physicalEsimAdapterSimSlot
+                    )
+                }
+
                 if (preference.systemUI.statusBar.doubleTapStatusBarToSleep) {
                     SystemUI.doubleTapStatusBarToSleep(lpparam)
                 }

@@ -25,6 +25,12 @@
     <string name="updateStatusBarClockEverySecond_title">Обновлять часы в строке состояния каждую секунду</string>
     <string name="updateStatusBarClockEverySecond_summary">Также включает моноширинный шрифт для цифр</string>
     <string name="hideSecureFolderStatusBarIcon_title">Скрыть иконку защищенной папки в строке состояния</string>
+    <string name="physicalEsimAdapterWorkaround_title">Обходной путь для физического eSIM-адаптера</string>
+    <string name="physicalEsimAdapterWorkaround_summary">Скрывает иконку выбранной SIM-карты, если нет обслуживания сети или доступны только экстренные вызовы</string>
+    <string name="physicalEsimAdapterSimSlot_title">SIM-карта</string>
+    <string name="sim_slot_1">SIM 1</string>
+    <string name="sim_slot_2">SIM 2</string>
+    <string name="sim_slot_both">SIM 1 и SIM 2</string>
     <string name="hideQsBarNearbyDevicesAndDeviceControl_title">Скрыть кнопки «Устройства поблизости» и «Упр. устройством»</string>
     <string name="hideQsBarMediaPlayer_title">Скрыть медиаплеер в панели быстрых настроек</string>
     <string name="hideQsBarSecurityFooter_title">Скрыть панель безопасности в быстрых настройках</string>
