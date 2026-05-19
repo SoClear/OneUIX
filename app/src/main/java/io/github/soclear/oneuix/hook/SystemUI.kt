@@ -48,7 +48,11 @@ import kotlin.math.roundToInt
 object SystemUI {
     private const val STATUS_BAR_CHARGING_ICON = "stat_sys_battery_charging"
     private const val FALLBACK_CHARGING_ICON = "ic_icon_charging"
+    private const val UNRESOLVED_CHARGING_ICON_ID = -1
 
+    private var batteryChargingIconId = UNRESOLVED_CHARGING_ICON_ID
+    private val fieldCache: MutableMap<FieldCacheKey, Field?> =
+        Collections.synchronizedMap(mutableMapOf())
     private val applyingBatteryIconViews: MutableSet<Any> =
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val appliedBatteryChargingIconIds: MutableMap<ImageView, Int> =
@@ -284,8 +288,16 @@ object SystemUI {
     }
 
     private fun setBatteryChargingIcon(iconView: ImageView) {
+        val drawableId = resolveBatteryChargingIconId(iconView)
+        if (drawableId == 0 || appliedBatteryChargingIconIds[iconView] == drawableId) return
+        iconView.setImageResource(drawableId)
+        appliedBatteryChargingIconIds[iconView] = drawableId
+    }
+
+    private fun resolveBatteryChargingIconId(iconView: ImageView): Int {
+        if (batteryChargingIconId != UNRESOLVED_CHARGING_ICON_ID) return batteryChargingIconId
         val resources = iconView.resources
-        val drawableId = resources.getIdentifier(
+        batteryChargingIconId = resources.getIdentifier(
             STATUS_BAR_CHARGING_ICON,
             "drawable",
             Package.SYSTEMUI
@@ -294,9 +306,7 @@ object SystemUI {
             "drawable",
             Package.SYSTEMUI
         )
-        if (drawableId == 0 || appliedBatteryChargingIconIds[iconView] == drawableId) return
-        iconView.setImageResource(drawableId)
-        appliedBatteryChargingIconIds[iconView] = drawableId
+        return batteryChargingIconId
     }
 
     private fun applyBatteryChargingIconTint(batteryMeterView: Any, iconView: ImageView) {
@@ -509,6 +519,11 @@ object SystemUI {
         val bottom: Int
     )
 
+    private data class FieldCacheKey(
+        val clazz: Class<*>,
+        val name: String
+    )
+
     private fun readFieldValue(instance: Any, names: List<String>): Any? =
         findField(instance, names)?.let { field -> runCatching { field.get(instance) }.getOrNull() }
 
@@ -516,15 +531,26 @@ object SystemUI {
         var clazz: Class<*>? = instance.javaClass
         while (clazz != null) {
             names.forEach { name ->
-                runCatching {
-                    val field = clazz.getDeclaredField(name)
-                    field.isAccessible = true
-                    return field
-                }
+                findDeclaredField(clazz, name)?.let { return it }
             }
             clazz = clazz.superclass
         }
         return null
+    }
+
+    private fun findDeclaredField(clazz: Class<*>, name: String): Field? {
+        val cacheKey = FieldCacheKey(clazz, name)
+        synchronized(fieldCache) {
+            if (fieldCache.containsKey(cacheKey)) return fieldCache[cacheKey]
+        }
+
+        val field = runCatching {
+            clazz.getDeclaredField(name).apply { isAccessible = true }
+        }.getOrNull()
+        synchronized(fieldCache) {
+            fieldCache[cacheKey] = field
+        }
+        return field
     }
 
     fun hideBatteryPercentageSign(resparam: InitPackageResourcesParam) {
