@@ -8,7 +8,9 @@ import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
+import android.telephony.ServiceState
 import android.telephony.SubscriptionManager
+import android.telephony.TelephonyManager
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -42,7 +44,6 @@ import java.lang.reflect.Field
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Collections
-import java.util.Locale
 import java.util.WeakHashMap
 import kotlin.math.roundToInt
 
@@ -56,8 +57,11 @@ object SystemUI {
     private val hiddenMobileViews: MutableSet<View> =
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val unavailableCarrierSlots = mutableSetOf<Int>()
+    private val telephonyManagersBySubId = mutableMapOf<Int, TelephonyManager>()
     private val unavailableCarrierTexts: MutableSet<String> =
         Collections.synchronizedSet(mutableSetOf())
+    private var physicalEsimAdapterContext: Context? = null
+    private var unavailableCarrierTextsLoaded = false
 
     private val unavailableCarrierTextResourceNames = listOf(
         "emergency_calls_only",
@@ -658,7 +662,9 @@ object SystemUI {
                 "com.android.systemui.statusbar.policy.ConfigurationController",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
-                        updateUnavailableCarrierTexts(param.args[0] as? Context)
+                        val context = param.args[0] as? Context
+                        updatePhysicalEsimAdapterContext(context)
+                        updateUnavailableCarrierTexts(context)
                         val viewModel = param.args[3] ?: return
                         val slot = getMobileViewModelSlot(viewModel) ?: return
                         if (slot in selectedSlots) {
@@ -726,8 +732,13 @@ object SystemUI {
                         val state = param.args[0] ?: return
                         val slot = SubscriptionManager.getSlotIndex(getIntField(state, "subId"))
                         if (slot in selectedSlots) {
-                            updateCarrierSlotAvailabilityFromMobileState(state, slot)
-                            trackMobileView(param.thisObject as? View, slot, selectedSlots)
+                            val view = param.thisObject as? View
+                            updateCarrierSlotAvailabilityFromMobileState(
+                                state = state,
+                                slot = slot,
+                                context = view?.context
+                            )
+                            trackMobileView(view, slot, selectedSlots)
                         }
                     }
                 }
@@ -747,7 +758,10 @@ object SystemUI {
                         param.args
                             .filterIsInstance<Context>()
                             .firstOrNull()
-                            ?.let(::updateUnavailableCarrierTexts)
+                            ?.let { context ->
+                                updatePhysicalEsimAdapterContext(context)
+                                updateUnavailableCarrierTexts(context)
+                            }
                     }
                 }
             )
@@ -760,7 +774,11 @@ object SystemUI {
                 "com.android.keyguard.CarrierTextManager", loadPackageParam.classLoader, "postToCallback",
                 $$"com.android.keyguard.CarrierTextManager$CarrierTextCallbackInfo", object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
-                        sanitizeCarrierTextCallbackInfo(param.args[0] ?: return, selectedSlots)
+                        sanitizeCarrierTextCallbackInfo(
+                            info = param.args[0] ?: return,
+                            selectedSlots = selectedSlots,
+                            context = physicalEsimAdapterContext
+                        )
                         refreshTrackedMobileViews(selectedSlots)
                     }
                 }
@@ -820,7 +838,43 @@ object SystemUI {
     private fun isUnavailableCarrierSlot(slot: Int): Boolean =
         synchronized(unavailableCarrierSlots) { slot in unavailableCarrierSlots }
 
-    private fun updateCarrierSlotAvailabilityFromMobileState(state: Any, slot: Int) {
+    private fun updateCarrierSlotAvailabilityFromMobileState(state: Any, slot: Int, context: Context?) {
+        val unavailable = getUnavailableServiceState(context, getIntField(state, "subId"))
+            ?: isUnavailableMobileStateText(state)
+
+        synchronized(unavailableCarrierSlots) {
+            if (unavailable) {
+                unavailableCarrierSlots.add(slot)
+            } else {
+                unavailableCarrierSlots.remove(slot)
+            }
+        }
+    }
+
+    private fun getUnavailableServiceState(context: Context?, subId: Int): Boolean? {
+        val telephonyManager = getTelephonyManager(context, subId) ?: return null
+        return runCatching {
+            when (telephonyManager.serviceState?.state) {
+                ServiceState.STATE_OUT_OF_SERVICE,
+                ServiceState.STATE_EMERGENCY_ONLY -> true
+                null -> null
+                else -> false
+            }
+        }.getOrNull()
+    }
+
+    private fun getTelephonyManager(context: Context?, subId: Int): TelephonyManager? {
+        if (context == null || !SubscriptionManager.isValidSubscriptionId(subId)) return null
+        synchronized(telephonyManagersBySubId) {
+            telephonyManagersBySubId[subId]?.let { return it }
+            return context
+                .getSystemService(TelephonyManager::class.java)
+                ?.createForSubscriptionId(subId)
+                ?.also { telephonyManagersBySubId[subId] = it }
+        }
+    }
+
+    private fun isUnavailableMobileStateText(state: Any): Boolean {
         val stateText = readFieldValue(
             state,
             listOf(
@@ -831,21 +885,13 @@ object SystemUI {
             )
         )?.toString().orEmpty()
 
-        if (stateText.isEmpty()) return
-
-        synchronized(unavailableCarrierSlots) {
-            if (isUnavailableCarrierText(stateText)) {
-                unavailableCarrierSlots.add(slot)
-            } else {
-                unavailableCarrierSlots.remove(slot)
-            }
-        }
+        return stateText.isNotEmpty() && isUnavailableCarrierText(stateText)
     }
 
-    private fun sanitizeCarrierTextCallbackInfo(info: Any, selectedSlots: Set<Int>) {
+    private fun sanitizeCarrierTextCallbackInfo(info: Any, selectedSlots: Set<Int>, context: Context?) {
         val carrierList = readCarrierListField(info)
         if (carrierList != null) {
-            sanitizeCarrierList(info, carrierList, selectedSlots)
+            sanitizeCarrierList(info, carrierList, selectedSlots, context)
             return
         }
 
@@ -854,13 +900,29 @@ object SystemUI {
             .orEmpty()
         if (carrierText.isEmpty()) return
 
+        val unavailableSlots = mutableSetOf<Int>()
+        val availableSlots = mutableSetOf<Int>()
+        readIntArrayField(info, listOf("subscriptionIds", "subs", "subIds"))
+            ?.forEach { subId ->
+                val slot = SubscriptionManager.getSlotIndex(subId)
+                if (slot !in selectedSlots) return@forEach
+                when (getUnavailableServiceState(context, subId)) {
+                    true -> unavailableSlots.add(slot)
+                    false -> availableSlots.add(slot)
+                    null -> Unit
+                }
+            }
+
         synchronized(unavailableCarrierSlots) {
-            if (isUnavailableCarrierText(carrierText)) {
+            unavailableCarrierSlots.removeAll(availableSlots)
+            if (unavailableSlots.isNotEmpty()) {
+                unavailableCarrierSlots.addAll(unavailableSlots)
+                setFieldValue(info, "carrierText", "")
+                setFieldValue(info, "carrierTextShort", "")
+            } else if (availableSlots.isEmpty() && isUnavailableCarrierText(carrierText)) {
                 unavailableCarrierSlots.addAll(selectedSlots)
                 setFieldValue(info, "carrierText", "")
                 setFieldValue(info, "carrierTextShort", "")
-            } else {
-                unavailableCarrierSlots.removeAll(selectedSlots)
             }
         }
     }
@@ -868,34 +930,43 @@ object SystemUI {
     private fun sanitizeCarrierList(
         info: Any,
         carrierList: CarrierListField,
-        selectedSlots: Set<Int>
+        selectedSlots: Set<Int>,
+        context: Context?
     ) {
         val subscriptionIds = readIntArrayField(info, listOf("subscriptionIds", "subs", "subIds"))
         val originalCarriers = carrierList.values
         val sanitizedCarriers = originalCarriers.toMutableList()
-        val observedSelectedSlots = mutableSetOf<Int>()
         val unavailableSelectedSlots = mutableSetOf<Int>()
+        val availableSelectedSlots = mutableSetOf<Int>()
 
         originalCarriers.forEachIndexed { index, carrier ->
             val slot = getCarrierSlot(index, subscriptionIds) ?: return@forEachIndexed
             if (slot !in selectedSlots) return@forEachIndexed
 
-            observedSelectedSlots.add(slot)
+            val serviceUnavailable = subscriptionIds
+                ?.getOrNull(index)
+                ?.let { getUnavailableServiceState(context, it) }
             val carrierText = carrier?.toString().orEmpty()
-            if (isUnavailableCarrierText(carrierText)) {
-                unavailableSelectedSlots.add(slot)
-                sanitizedCarriers[index] = ""
+            when {
+                serviceUnavailable == true -> {
+                    unavailableSelectedSlots.add(slot)
+                    sanitizedCarriers[index] = ""
+                }
+
+                serviceUnavailable == false -> {
+                    availableSelectedSlots.add(slot)
+                }
+
+                isUnavailableCarrierText(carrierText) -> {
+                    unavailableSelectedSlots.add(slot)
+                    sanitizedCarriers[index] = ""
+                }
             }
         }
 
         synchronized(unavailableCarrierSlots) {
-            observedSelectedSlots.forEach { slot ->
-                if (slot in unavailableSelectedSlots) {
-                    unavailableCarrierSlots.add(slot)
-                } else {
-                    unavailableCarrierSlots.remove(slot)
-                }
-            }
+            unavailableCarrierSlots.removeAll(availableSelectedSlots)
+            unavailableCarrierSlots.addAll(unavailableSelectedSlots)
         }
 
         if (unavailableSelectedSlots.isEmpty()) return
@@ -916,6 +987,7 @@ object SystemUI {
     }
 
     private fun updateUnavailableCarrierTexts(context: Context?) {
+        if (unavailableCarrierTextsLoaded) return
         context ?: return
         val packages = listOf(context.packageName, "android")
         val labels = unavailableCarrierTextResourceNames.flatMap { name ->
@@ -927,29 +999,57 @@ object SystemUI {
 
         if (labels.isEmpty()) return
 
-        unavailableCarrierTexts.addAll(labels.map(::normalizeCarrierText).filter(String::isNotBlank))
+        synchronized(unavailableCarrierTexts) {
+            unavailableCarrierTexts.addAll(labels.map(::normalizeCarrierText).filter(String::isNotBlank))
+            unavailableCarrierTextsLoaded = true
+        }
     }
 
     private fun isUnavailableCarrierText(text: String): Boolean {
         val normalized = normalizeCarrierText(text)
         if (normalized.isBlank()) return false
 
-        val resourceLabels = synchronized(unavailableCarrierTexts) {
-            unavailableCarrierTexts.toSet()
-        }
-        val unavailableLabels = resourceLabels.ifEmpty { unavailableCarrierTextFallbacks }
-
-        return unavailableLabels.any { label ->
-            label.isNotBlank() && (normalized == label || normalized.contains(label))
+        return synchronized(unavailableCarrierTexts) {
+            val unavailableLabels = unavailableCarrierTexts.ifEmpty { unavailableCarrierTextFallbacks }
+            unavailableLabels.any { label ->
+                label.isNotBlank() && (normalized == label || normalized.contains(label))
+            }
         }
     }
 
-    private fun normalizeCarrierText(text: String): String =
-        text
-            .replace(Regex("[\\u200e\\u200f\\u202a-\\u202e\\u2066-\\u2069]"), "")
-            .replace(Regex("\\s+"), " ")
-            .trim()
-            .lowercase(Locale.ROOT)
+    private fun normalizeCarrierText(text: String): String {
+        val normalized = StringBuilder(text.length)
+        var pendingSpace = false
+        text.forEach { char ->
+            when {
+                isCarrierTextControlChar(char) -> Unit
+                char.isWhitespace() -> {
+                    if (normalized.isNotEmpty()) pendingSpace = true
+                }
+                else -> {
+                    if (pendingSpace) {
+                        normalized.append(' ')
+                        pendingSpace = false
+                    }
+                    normalized.append(char.lowercaseChar())
+                }
+            }
+        }
+        return normalized.toString()
+    }
+
+    private fun isCarrierTextControlChar(char: Char): Boolean =
+        when (char.code) {
+            0x200e, 0x200f -> true
+            in 0x202a..0x202e -> true
+            in 0x2066..0x2069 -> true
+            else -> false
+        }
+
+    private fun updatePhysicalEsimAdapterContext(context: Context?) {
+        context ?: return
+        physicalEsimAdapterContext = context.applicationContext ?: context
+    }
 
     private fun buildCarrierText(
         originalCarriers: List<CharSequence?>,
