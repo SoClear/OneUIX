@@ -46,8 +46,13 @@ import kotlin.math.roundToInt
 
 
 object SystemUI {
+    private const val STATUS_BAR_CHARGING_ICON = "stat_sys_battery_charging"
+    private const val FALLBACK_CHARGING_ICON = "ic_icon_charging"
+
     private val applyingBatteryIconViews: MutableSet<Any> =
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
+    private val appliedBatteryChargingIconIds: MutableMap<ImageView, Int> =
+        Collections.synchronizedMap(WeakHashMap())
     private val originalBatteryIconLayouts: MutableMap<ImageView, BatteryIconLayout> =
         Collections.synchronizedMap(WeakHashMap())
     private val originalBatteryMeterPaddings: MutableMap<View, ViewPadding> =
@@ -175,9 +180,45 @@ object SystemUI {
             } catch (_: Throwable) {
             }
         }
+
+        try {
+            hookAllMethods(
+                findClass(
+                    "com.android.systemui.battery.BatteryMeterViewController\$3",
+                    loadPackageParam.classLoader
+                ),
+                "onBatteryLevelChanged",
+                callback
+            )
+        } catch (_: Throwable) {
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.battery.BatteryMeterView",
+                loadPackageParam.classLoader,
+                "updateColors",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val batteryMeterView = resolveBatteryMeterView(param.thisObject) ?: return
+                        if (!isBatteryCharging(batteryMeterView)) return
+                        val iconView = readFieldValue(
+                            batteryMeterView,
+                            listOf("mBatteryIconView", "batteryIconView")
+                        ) as? ImageView ?: return
+                        applyBatteryChargingIconTint(batteryMeterView, iconView)
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
     }
 
-    private fun applyBatteryIconVisibility(batteryMeterView: Any) {
+    private fun applyBatteryIconVisibility(instance: Any) {
+        val batteryMeterView = resolveBatteryMeterView(instance) ?: return
         if (!applyingBatteryIconViews.add(batteryMeterView)) return
         try {
             val view = batteryMeterView as? View ?: return
@@ -189,6 +230,18 @@ object SystemUI {
                 batteryMeterView,
                 listOf("mBatteryPercentView", "batteryPercentView")
             ) as? TextView
+
+            if (isBatteryCharging(batteryMeterView)) {
+                restoreBatteryIconLayout(iconView)
+                restoreBatteryMeterPadding(view)
+                restoreBatteryMeterLayout(view)
+                percentView?.let(::restoreBatteryPercentLayout)
+                setBatteryChargingIcon(iconView)
+                applyBatteryChargingIconTint(batteryMeterView, iconView)
+                iconView.visibility = View.VISIBLE
+                view.visibility = View.VISIBLE
+                return
+            }
 
             collapseBatteryIconLayout(iconView)
             iconView.visibility = View.GONE
@@ -203,6 +256,56 @@ object SystemUI {
         } finally {
             applyingBatteryIconViews.remove(batteryMeterView)
         }
+    }
+
+    private fun resolveBatteryMeterView(instance: Any): Any? {
+        if (instance is View) return instance
+        val controller = readFieldValue(instance, listOf("this\$0")) ?: return null
+        return readFieldValue(controller, listOf("mView"))
+    }
+
+    private fun isBatteryCharging(batteryMeterView: Any): Boolean {
+        val meterCharging = readFieldValue(
+            batteryMeterView,
+            listOf("mCharging", "charging")
+        ) as? Boolean == true
+        if (meterCharging) return true
+
+        val samsungDrawable = readFieldValue(
+            batteryMeterView,
+            listOf("mSamsungDrawable", "samsungDrawable")
+        ) ?: return false
+        val batteryState = readFieldValue(
+            samsungDrawable,
+            listOf("batteryState", "mBatteryState")
+        ) ?: return false
+        return readFieldValue(batteryState, listOf("charging")) as? Boolean == true ||
+            readFieldValue(batteryState, listOf("isDirectPowerMode")) as? Boolean == true
+    }
+
+    private fun setBatteryChargingIcon(iconView: ImageView) {
+        val resources = iconView.resources
+        val drawableId = resources.getIdentifier(
+            STATUS_BAR_CHARGING_ICON,
+            "drawable",
+            Package.SYSTEMUI
+        ).takeIf { it != 0 } ?: resources.getIdentifier(
+            FALLBACK_CHARGING_ICON,
+            "drawable",
+            Package.SYSTEMUI
+        )
+        if (drawableId == 0 || appliedBatteryChargingIconIds[iconView] == drawableId) return
+        iconView.setImageResource(drawableId)
+        appliedBatteryChargingIconIds[iconView] = drawableId
+    }
+
+    private fun applyBatteryChargingIconTint(batteryMeterView: Any, iconView: ImageView) {
+        val samsungDrawable = readFieldValue(
+            batteryMeterView,
+            listOf("mSamsungDrawable", "samsungDrawable")
+        ) ?: return
+        val iconTint = readFieldValue(samsungDrawable, listOf("iconTint")) as? Int ?: return
+        iconView.setColorFilter(iconTint)
     }
 
     private fun collapseBatteryIconLayout(iconView: ImageView) {
