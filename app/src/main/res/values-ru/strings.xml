@@ -15,7 +15,7 @@
     <string name="hideBatteryPercentageSign_title">Скрыть символ процента заряда батареи</string>
     <string name="hideBatteryPercentageSign_summary" formatted="false">Удалить только символ %, оставив цифры</string>
     <string name="hideBatteryIcon_title">Скрыть иконку батареи</string>
-    <string name="hideBatteryIcon_summary">Скрывает только иконку батареи, не меняя системную настройку процента заряда</string>
+    <string name="hideBatteryIcon_summary">Скрывает иконку батареи, показывая иконку зарядки при подключении питания. Не влияет на процент заряда батареи</string>
     <string name="supportRealTimeNetworkSpeed_title">Отображение скорости сети в реальном времени</string>
     <string name="supportRealTimeNetworkSpeed_summary">Настройки -> Уведомления -> Дополнительные параметры -> Скорость сети в реальном времени</string>
     <string name="showSeparateUpDownNetworkSpeeds_title">Раздельная скорость приема/передачи в строке состояния</string>

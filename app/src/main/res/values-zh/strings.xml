@@ -15,7 +15,7 @@
     <string name="hideBatteryPercentageSign_title">隐藏状态栏电池的百分号</string>
     <string name="hideBatteryPercentageSign_summary" formatted="false">仅去掉百分号，保留数字</string>
     <string name="hideBatteryIcon_title">隐藏电池图标</string>
-    <string name="hideBatteryIcon_summary">仅隐藏电池图标，不更改系统电量百分比设置</string>
+    <string name="hideBatteryIcon_summary">隐藏电池图标，插入电源时显示充电图标。不影响电池百分比</string>
     <string name="supportRealTimeNetworkSpeed_title">支持显示实时网速</string>
     <string name="supportRealTimeNetworkSpeed_summary">设置->通知->高级设置->显示实时网速</string>
     <string name="showSeparateUpDownNetworkSpeeds_title">状态栏显示上传下载网速</string>
