@@ -58,9 +58,12 @@ object SystemUI {
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val unavailableCarrierSlots = mutableSetOf<Int>()
     private val telephonyManagersBySubId = mutableMapOf<Int, TelephonyManager>()
+    private val fieldCache: MutableMap<FieldCacheKey, Field?> =
+        Collections.synchronizedMap(mutableMapOf())
     private val unavailableCarrierTexts: MutableSet<String> =
         Collections.synchronizedSet(mutableSetOf())
     private var physicalEsimAdapterContext: Context? = null
+    @Volatile
     private var unavailableCarrierTextsLoaded = false
 
     private val unavailableCarrierTextResourceNames = listOf(
@@ -772,7 +775,7 @@ object SystemUI {
         try {
             findAndHookMethod(
                 "com.android.keyguard.CarrierTextManager", loadPackageParam.classLoader, "postToCallback",
-                $$"com.android.keyguard.CarrierTextManager$CarrierTextCallbackInfo", object : XC_MethodHook() {
+                "com.android.keyguard.CarrierTextManager\$CarrierTextCallbackInfo", object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         sanitizeCarrierTextCallbackInfo(
                             info = param.args[0] ?: return,
@@ -821,6 +824,11 @@ object SystemUI {
     }
 
     private fun applyMobileViewVisibility(view: View, slot: Int, selectedSlots: Set<Int>) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            view.post { applyMobileViewVisibility(view, slot, selectedSlots) }
+            return
+        }
+
         if (slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
             hiddenMobileViews.add(view)
             view.visibility = View.GONE
@@ -1093,6 +1101,11 @@ object SystemUI {
         val values: List<CharSequence?>
     )
 
+    private data class FieldCacheKey(
+        val clazz: Class<*>,
+        val name: String
+    )
+
     private fun readCarrierListField(info: Any): CarrierListField? {
         val field = findField(
             info,
@@ -1149,15 +1162,26 @@ object SystemUI {
         var clazz: Class<*>? = instance.javaClass
         while (clazz != null) {
             names.forEach { name ->
-                runCatching {
-                    val field = clazz.getDeclaredField(name)
-                    field.isAccessible = true
-                    return field
-                }
+                findDeclaredField(clazz, name)?.let { return it }
             }
             clazz = clazz.superclass
         }
         return null
+    }
+
+    private fun findDeclaredField(clazz: Class<*>, name: String): Field? {
+        val cacheKey = FieldCacheKey(clazz, name)
+        synchronized(fieldCache) {
+            if (fieldCache.containsKey(cacheKey)) return fieldCache[cacheKey]
+        }
+
+        val field = runCatching {
+            clazz.getDeclaredField(name).apply { isAccessible = true }
+        }.getOrNull()
+        synchronized(fieldCache) {
+            fieldCache[cacheKey] = field
+        }
+        return field
     }
 
     fun setStatusBarMaxNotificationIcons(loadPackageParam: LoadPackageParam, max: Int) {
