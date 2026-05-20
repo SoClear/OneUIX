@@ -32,6 +32,7 @@ import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.XposedHelpers.findClass
+import de.robv.android.xposed.XposedHelpers.findFieldIfExists
 import de.robv.android.xposed.XposedHelpers.getIntField
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.XposedHelpers.setIntField
@@ -58,8 +59,6 @@ object SystemUI {
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val unavailableCarrierSlots = mutableSetOf<Int>()
     private val telephonyManagersBySubId = mutableMapOf<Int, TelephonyManager>()
-    private val fieldCache: MutableMap<FieldCacheKey, Field?> =
-        Collections.synchronizedMap(mutableMapOf())
     private val unavailableCarrierTexts: MutableSet<String> =
         Collections.synchronizedSet(mutableSetOf())
     private var physicalEsimAdapterContext: Context? = null
@@ -1101,11 +1100,6 @@ object SystemUI {
         val values: List<CharSequence?>
     )
 
-    private data class FieldCacheKey(
-        val clazz: Class<*>,
-        val name: String
-    )
-
     private fun readCarrierListField(info: Any): CarrierListField? {
         val field = findField(
             info,
@@ -1159,29 +1153,10 @@ object SystemUI {
     }
 
     private fun findField(instance: Any, names: List<String>): Field? {
-        var clazz: Class<*>? = instance.javaClass
-        while (clazz != null) {
-            names.forEach { name ->
-                findDeclaredField(clazz, name)?.let { return it }
-            }
-            clazz = clazz.superclass
+        names.forEach { name ->
+            findFieldIfExists(instance.javaClass, name)?.let { return it }
         }
         return null
-    }
-
-    private fun findDeclaredField(clazz: Class<*>, name: String): Field? {
-        val cacheKey = FieldCacheKey(clazz, name)
-        synchronized(fieldCache) {
-            if (fieldCache.containsKey(cacheKey)) return fieldCache[cacheKey]
-        }
-
-        val field = runCatching {
-            clazz.getDeclaredField(name).apply { isAccessible = true }
-        }.getOrNull()
-        synchronized(fieldCache) {
-            fieldCache[cacheKey] = field
-        }
-        return field
     }
 
     fun setStatusBarMaxNotificationIcons(loadPackageParam: LoadPackageParam, max: Int) {
