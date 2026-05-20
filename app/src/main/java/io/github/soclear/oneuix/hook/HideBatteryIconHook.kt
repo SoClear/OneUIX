@@ -10,6 +10,7 @@ import de.robv.android.xposed.XposedBridge.hookAllConstructors
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.XposedHelpers.findClass
+import de.robv.android.xposed.XposedHelpers.findFieldIfExists
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.data.Package
 import java.lang.reflect.Field
@@ -22,8 +23,6 @@ internal object HideBatteryIconHook {
     private const val UNRESOLVED_CHARGING_ICON_ID = -1
 
     private var batteryChargingIconId = UNRESOLVED_CHARGING_ICON_ID
-    private val fieldCache: MutableMap<FieldCacheKey, Field?> =
-        Collections.synchronizedMap(mutableMapOf())
     private val applyingBatteryIconViews: MutableSet<Any> =
         Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val appliedBatteryChargingIconIds: MutableMap<ImageView, Int> =
@@ -221,7 +220,7 @@ internal object HideBatteryIconHook {
         iconView.layoutParams = params
     }
 
-    internal fun restoreBatteryIconLayout(iconView: ImageView) {
+    private fun restoreBatteryIconLayout(iconView: ImageView) {
         val original = originalBatteryIconLayouts[iconView] ?: return
         val params = iconView.layoutParams ?: return
         params.width = original.width
@@ -386,10 +385,6 @@ internal object HideBatteryIconHook {
         )
     }
 
-    internal fun forgetBatteryIconLayout(iconView: ImageView) {
-        originalBatteryIconLayouts.remove(iconView)
-    }
-
     private fun TextView.isVisibleWithText(): Boolean =
         visibility == View.VISIBLE && text.isNotBlank()
 
@@ -413,37 +408,13 @@ internal object HideBatteryIconHook {
         val bottom: Int
     )
 
-    private data class FieldCacheKey(
-        val clazz: Class<*>,
-        val name: String
-    )
-
     private fun readFieldValue(instance: Any, names: List<String>): Any? =
         findField(instance, names)?.let { field -> runCatching { field.get(instance) }.getOrNull() }
 
     private fun findField(instance: Any, names: List<String>): Field? {
-        var clazz: Class<*>? = instance.javaClass
-        while (clazz != null) {
-            names.forEach { name ->
-                findDeclaredField(clazz, name)?.let { return it }
-            }
-            clazz = clazz.superclass
+        names.forEach { name ->
+            findFieldIfExists(instance.javaClass, name)?.let { return it }
         }
         return null
-    }
-
-    private fun findDeclaredField(clazz: Class<*>, name: String): Field? {
-        val cacheKey = FieldCacheKey(clazz, name)
-        synchronized(fieldCache) {
-            if (fieldCache.containsKey(cacheKey)) return fieldCache[cacheKey]
-        }
-
-        val field = runCatching {
-            clazz.getDeclaredField(name).apply { isAccessible = true }
-        }.getOrNull()
-        synchronized(fieldCache) {
-            fieldCache[cacheKey] = field
-        }
-        return field
     }
 }

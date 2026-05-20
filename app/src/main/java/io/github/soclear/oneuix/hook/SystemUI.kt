@@ -101,7 +101,6 @@ object SystemUI {
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
                         val mBatteryIconView = getObjectField(param.thisObject, "mBatteryIconView") as ImageView
-                        HideBatteryIconHook.restoreBatteryIconLayout(mBatteryIconView)
                         mBatteryIconView.layoutParams = mBatteryIconView.layoutParams.apply {
                             if (widthScale != null) {
                                 width = (width * widthScale).roundToInt()
@@ -110,7 +109,6 @@ object SystemUI {
                                 height = (height * heightScale).roundToInt()
                             }
                         }
-                        HideBatteryIconHook.forgetBatteryIconLayout(mBatteryIconView)
                     }
                 }
             )
