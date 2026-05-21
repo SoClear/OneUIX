@@ -164,6 +164,7 @@ object SystemUI {
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
                         val detailView = param.result as? ViewGroup ?: return
+                        if (detailView.findViewWithTag<View>(outdoorModeRowTag()) != null) return
                         val context = param.args[0] as Context
                         addOutdoorModeRow(context, detailView, switchPreferenceClass)
                     }
@@ -185,7 +186,8 @@ object SystemUI {
                 "inflateSwitch",
                 context,
                 detailView
-            ) as LinearLayout
+            ) as View
+            outdoorContainer.tag = outdoorModeRowTag()
 
             val res = context.resources
             val titleId = res.getIdentifier("sec_brightness_outdoor_mode_title", "string", Package.SYSTEMUI)
@@ -193,9 +195,10 @@ object SystemUI {
             val titleViewId = res.getIdentifier("title", "id", Package.SYSTEMUI)
             val summaryViewId = res.getIdentifier("title_summary", "id", Package.SYSTEMUI)
             val switchViewId = res.getIdentifier("title_switch", "id", Package.SYSTEMUI)
+            if (titleId == 0 || titleViewId == 0 || switchViewId == 0) return
 
             outdoorContainer.findViewById<TextView>(titleViewId)?.text =
-                if (titleId != 0) res.getString(titleId) else "Outdoor mode"
+                res.getString(titleId)
 
             outdoorContainer.findViewById<TextView>(summaryViewId)?.apply {
                 text = if (summaryId != 0) res.getString(summaryId) else ""
@@ -212,12 +215,15 @@ object SystemUI {
                 switch.isChecked = !switch.isChecked
             }
 
-            val index = if (detailView.childCount > 1) 2 else detailView.childCount
+            // Keep the row directly below Samsung's Adaptive brightness row.
+            val index = minOf(2, detailView.childCount)
             detailView.addView(outdoorContainer, index)
         } catch (t: Throwable) {
             XposedBridge.log(t)
         }
     }
+
+    private fun outdoorModeRowTag() = "io.github.soclear.oneuix.outdoor_mode_row"
 
     private fun isOutdoorModeEnabled(context: Context): Boolean {
         return (callStaticMethod(
