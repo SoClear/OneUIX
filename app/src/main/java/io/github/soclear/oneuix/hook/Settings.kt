@@ -101,6 +101,32 @@ object Settings {
         }
     }
 
+    fun supportOutdoorMode(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SETTINGS) return
+        try {
+            findAndHookMethod(
+                "com.samsung.android.settings.display.controller.SecOutDoorModePreferenceController",
+                loadPackageParam.classLoader,
+                "isAvailable",
+                returnConstant(true)
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.samsung.android.settings.Rune",
+                loadPackageParam.classLoader,
+                "supportOutdoorMode",
+                Context::class.java,
+                returnConstant(true)
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
     fun supportAutoPowerOnOff(loadPackageParam: LoadPackageParam) {
         if (loadPackageParam.packageName != Package.SETTINGS) return
 

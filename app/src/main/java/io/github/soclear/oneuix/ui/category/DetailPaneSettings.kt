@@ -33,6 +33,12 @@ fun DetailPaneSettings(
             onCheckedChange = { onEvent(SettingsEvent.ShowForcePeakRefreshRatePreference(it)) },
         )
         SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.light_mode),
+            title = stringResource(id = R.string.supportOutdoorMode_title),
+            checked = uiState.supportOutdoorMode,
+            onCheckedChange = { onEvent(SettingsEvent.SupportOutdoorMode(it)) }
+        )
+        SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.battery),
             title = stringResource(id = R.string.showMoreBatteryInfo_title),
             summary = stringResource(id = R.string.showMoreBatteryInfo_summary),
@@ -74,6 +80,9 @@ sealed interface SettingsEvent {
     value class ShowForcePeakRefreshRatePreference(val value: Boolean) : SettingsEvent
 
     @JvmInline
+    value class SupportOutdoorMode(val value: Boolean) : SettingsEvent
+
+    @JvmInline
     value class ShowMoreBatteryInfo(val value: Boolean) : SettingsEvent
 
     @JvmInline
@@ -95,6 +104,12 @@ fun SettingViewModel.onSettingsEvent(event: SettingsEvent) {
             is SettingsEvent.ShowForcePeakRefreshRatePreference -> preference.copy(
                 settings = preference.settings.copy(
                     showForcePeakRefreshRatePreference = event.value
+                )
+            )
+
+            is SettingsEvent.SupportOutdoorMode -> preference.copy(
+                settings = preference.settings.copy(
+                    supportOutdoorMode = event.value
                 )
             )
 

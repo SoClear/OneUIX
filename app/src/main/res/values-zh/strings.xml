@@ -72,6 +72,7 @@
     <string name="showMemoryUsageInRecents_title">最近任务页面显示内存信息</string>
     <string name="showForcePeakRefreshRatePreference_title">开发者选项显示强制最大刷新率选项</string>
     <string name="showForcePeakRefreshRatePreference_summary">设置中搜索 Force peak refresh rate</string>
+    <string name="supportOutdoorMode_title">解锁户外模式</string>
     <string name="disablePinVerifyPer72h_title">禁用每 72 小时验证锁屏密码</string>
     <string name="hideAODStatusBar_title">隐藏息屏提醒的状态栏</string>
     <string name="aodLockSupportLunar_title">息屏提醒显示中国农历</string>

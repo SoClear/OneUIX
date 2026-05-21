@@ -87,6 +87,7 @@ data class Preference(
     @Serializable
     data class Settings(
         val showForcePeakRefreshRatePreference: Boolean = true,
+        val supportOutdoorMode: Boolean = false,
         val showMoreBatteryInfo: Boolean = true,
         val showPackageInfo: Boolean = true,
         val showWiFiLinkSpeed: Boolean = false,

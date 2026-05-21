@@ -72,6 +72,7 @@
     <string name="showMemoryUsageInRecents_title">Использование памяти в меню запущенных приложений</string>
     <string name="showForcePeakRefreshRatePreference_title">Пункт «Частота обновления экрана» в параметрах разработчика</string>
     <string name="showForcePeakRefreshRatePreference_summary">Появится в поиске настроек как «Частота обновления экрана»</string>
+    <string name="supportOutdoorMode_title">Разблокировать режим “На улице”</string>
     <string name="disablePinVerifyPer72h_title">Отключить подтверждение ПИН-кода каждые 72 часа</string>
     <string name="hideAODStatusBar_title">Скрыть строку состояния на AOD</string>
     <string name="aodLockSupportLunar_title">Лунный календарь на AOD и экране блокировки</string>

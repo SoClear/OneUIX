@@ -14,6 +14,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -25,6 +26,7 @@ import de.robv.android.xposed.XC_MethodReplacement.returnConstant
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedBridge.hookAllMethods
 import de.robv.android.xposed.XposedHelpers.callMethod
+import de.robv.android.xposed.XposedHelpers.callStaticMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.XposedHelpers.findClass
@@ -143,6 +145,100 @@ object SystemUI {
         } catch (t: Throwable) {
             XposedBridge.log(t)
         }
+    }
+
+    fun supportOutdoorMode(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI) return
+        try {
+            val switchPreferenceClass = findClass(
+                "com.android.systemui.qs.SecQSSwitchPreference",
+                loadPackageParam.classLoader
+            )
+            findAndHookMethod(
+                "com.android.systemui.settings.brightness.BrightnessDetail\$1",
+                loadPackageParam.classLoader,
+                "createDetailView",
+                Context::class.java,
+                View::class.java,
+                ViewGroup::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val detailView = param.result as? ViewGroup ?: return
+                        val context = param.args[0] as Context
+                        addOutdoorModeRow(context, detailView, switchPreferenceClass)
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    private fun addOutdoorModeRow(
+        context: Context,
+        detailView: ViewGroup,
+        switchPreferenceClass: Class<*>
+    ) {
+        try {
+            val outdoorContainer = callStaticMethod(
+                switchPreferenceClass,
+                "inflateSwitch",
+                context,
+                detailView
+            ) as LinearLayout
+
+            val res = context.resources
+            val titleId = res.getIdentifier("sec_brightness_outdoor_mode_title", "string", Package.SYSTEMUI)
+            val summaryId = res.getIdentifier("sec_brightness_outdoor_mode_summary", "string", Package.SYSTEMUI)
+            val titleViewId = res.getIdentifier("title", "id", Package.SYSTEMUI)
+            val summaryViewId = res.getIdentifier("title_summary", "id", Package.SYSTEMUI)
+            val switchViewId = res.getIdentifier("title_switch", "id", Package.SYSTEMUI)
+
+            outdoorContainer.findViewById<TextView>(titleViewId)?.text =
+                if (titleId != 0) res.getString(titleId) else "Outdoor mode"
+
+            outdoorContainer.findViewById<TextView>(summaryViewId)?.apply {
+                text = if (summaryId != 0) res.getString(summaryId) else ""
+                visibility = if (summaryId != 0) View.VISIBLE else View.GONE
+            }
+
+            val outdoorSwitch: CompoundButton? = outdoorContainer.findViewById(switchViewId)
+            outdoorSwitch?.isChecked = isOutdoorModeEnabled(context)
+            outdoorSwitch?.setOnCheckedChangeListener { _, isChecked ->
+                setOutdoorModeEnabled(context, isChecked)
+            }
+            outdoorContainer.setOnClickListener {
+                val switch = outdoorSwitch ?: return@setOnClickListener
+                switch.isChecked = !switch.isChecked
+            }
+
+            val index = if (detailView.childCount > 1) 2 else detailView.childCount
+            detailView.addView(outdoorContainer, index)
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    private fun isOutdoorModeEnabled(context: Context): Boolean {
+        return (callStaticMethod(
+            android.provider.Settings.System::class.java,
+            "getIntForUser",
+            context.contentResolver,
+            "display_outdoor_mode",
+            0,
+            -2
+        ) as Int) != 0
+    }
+
+    private fun setOutdoorModeEnabled(context: Context, enabled: Boolean) {
+        callStaticMethod(
+            android.provider.Settings.System::class.java,
+            "putIntForUser",
+            context.contentResolver,
+            "display_outdoor_mode",
+            if (enabled) 1 else 0,
+            -2
+        )
     }
 
 
