@@ -1,0 +1,281 @@
+app/src/main/java/io/github/soclear/oneuix/hook/Main.kt
+  fa9b65bd0955b866 9-10,318-321 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[9,10]},{"Range":[318,321]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenuRegistry.kt
+  fa9b65bd0955b866 1-32 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,32]}]}]}
+stub/src/main/java/com/samsung/android/globalactions/presentation/view/ResourceFactory.java
+  fa9b65bd0955b866 1-5 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,5]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenuAction.kt
+  fa9b65bd0955b866 1-63 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,63]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt
+  fa9b65bd0955b866 1-234 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,234]}]}]}
+stub/src/main/java/com/android/systemui/globalactions/presentation/viewmodel/ActionViewModelFactoryDecorator.java
+  fa9b65bd0955b866 1-11 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,11]}]}]}
+stub/src/main/java/com/samsung/android/globalactions/util/UtilFactory.java
+  fa9b65bd0955b866 1-5 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a106ec2fa664bcbdc7745d9","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,5]}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "b6f1d90168de7956ab770e239682615b94aa8c9a",
+  "prompts": {
+    "878736d24be8051a": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a0eb667713f70e45f4eff33",
+        "model": "gemini-3.1-pro__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "fa9b65bd0955b866": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a106137fa664bcbdc774462",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 431,
+      "total_deletions": 187,
+      "accepted_lines": 363,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/java/io/github/soclear/oneuix/hook/Main.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              9,
+              10
+            ]
+          },
+          {
+            "Range": [
+              318,
+              321
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  9,
+                  10
+                ]
+              },
+              {
+                "Range": [
+                  318,
+                  321
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              234
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  234
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenuAction.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              63
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  63
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenuRegistry.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              32
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  32
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stub/src/main/java/com/android/systemui/globalactions/presentation/viewmodel/ActionViewModelFactoryDecorator.java": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              11
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  11
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stub/src/main/java/com/samsung/android/globalactions/presentation/view/ResourceFactory.java": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              5
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  5
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stub/src/main/java/com/samsung/android/globalactions/util/UtilFactory.java": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              5
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a106ec2fa664bcbdc7745d9",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  5
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "878736d24be8051a": {
+      "tool": "trae",
+      "conversation_id": "6a0eb667713f70e45f4eff33",
+      "session_id": "6a0eb667713f70e45f4eff33",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    },
+    "fa9b65bd0955b866": {
+      "tool": "trae",
+      "conversation_id": "6a106137fa664bcbdc774462",
+      "session_id": "6a106137fa664bcbdc774462",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
