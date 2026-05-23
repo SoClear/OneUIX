@@ -1,0 +1,170 @@
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt
+  fa9b65bd0955b866 17-18,20-24,26-31 gitai:{"mixed_line_ranges":[{"Single":21},{"Single":26},{"Single":30}],"operations":[{"operation_id":"6a11ce91fa664bcbdc774b89","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[17,18]},{"Range":[20,24]},{"Range":[26,31]}]}]}
+  b354f2f0e8364af6 32-33 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a11e202fa664bcbdc774c01","tool_type":"agent","tool_id":"RunCommand","line_ranges":[{"Range":[32,33]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/Main.kt
+  fa9b65bd0955b866 328 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a11ce91fa664bcbdc774b89","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Single":328}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a22252f47c0f8bafe475d7fa73a1150cae5621ec",
+  "prompts": {
+    "b354f2f0e8364af6": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a11d504fa664bcbdc774ba0",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 11,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "fa9b65bd0955b866": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a106137fa664bcbdc774462",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 20,
+      "total_deletions": 6,
+      "accepted_lines": 7,
+      "overriden_lines": 3
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/java/io/github/soclear/oneuix/hook/Main.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Single": 328
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a11ce91fa664bcbdc774b89",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Single": 328
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt": [
+      {
+        "hash": "fa9b65bd0955b866",
+        "line_ranges": [
+          {
+            "Range": [
+              17,
+              18
+            ]
+          },
+          {
+            "Range": [
+              20,
+              24
+            ]
+          },
+          {
+            "Range": [
+              26,
+              31
+            ]
+          }
+        ],
+        "mixed_line_ranges": [
+          {
+            "Single": 21
+          },
+          {
+            "Single": 26
+          },
+          {
+            "Single": 30
+          }
+        ],
+        "operations": [
+          {
+            "operation_id": "6a11ce91fa664bcbdc774b89",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  17,
+                  18
+                ]
+              },
+              {
+                "Range": [
+                  20,
+                  24
+                ]
+              },
+              {
+                "Range": [
+                  26,
+                  31
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "hash": "b354f2f0e8364af6",
+        "line_ranges": [
+          {
+            "Range": [
+              32,
+              33
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a11e202fa664bcbdc774c01",
+            "tool_type": "agent",
+            "tool_id": "RunCommand",
+            "line_ranges": [
+              {
+                "Range": [
+                  32,
+                  33
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "b354f2f0e8364af6": {
+      "tool": "trae",
+      "conversation_id": "6a11d504fa664bcbdc774ba0",
+      "session_id": "6a11d504fa664bcbdc774ba0",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    },
+    "fa9b65bd0955b866": {
+      "tool": "trae",
+      "conversation_id": "6a106137fa664bcbdc774462",
+      "session_id": "6a106137fa664bcbdc774462",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
