@@ -1,0 +1,57 @@
+stub/src/main/java/com/samsung/android/globalactions/presentation/viewmodel/ActionInfo.java
+  ece965b2cdd21c5b 3 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a12b2b7fa664bcbdc7753d0","tool_type":"agent","tool_id":"Edit","line_ranges":[{"Single":3}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "4d4170e4cc31e9bd40111efb2ee06a0b14f4bbe0",
+  "prompts": {
+    "ece965b2cdd21c5b": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12b232fa664bcbdc7753b1",
+        "model": "openrouter-1o__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 29,
+      "total_deletions": 0,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "stub/src/main/java/com/samsung/android/globalactions/presentation/viewmodel/ActionInfo.java": [
+      {
+        "hash": "ece965b2cdd21c5b",
+        "line_ranges": [
+          {
+            "Single": 3
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a12b2b7fa664bcbdc7753d0",
+            "tool_type": "agent",
+            "tool_id": "Edit",
+            "line_ranges": [
+              {
+                "Single": 3
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "ece965b2cdd21c5b": {
+      "tool": "trae",
+      "conversation_id": "6a12b232fa664bcbdc7753b1",
+      "session_id": "6a12b232fa664bcbdc7753b1",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
