@@ -1,0 +1,100 @@
+app/src/main/res/values-ru/strings.xml
+  0e03b79d1ca9ed53 48-60 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a1261dffa664bcbdc774fd6","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[48,60]}]}]}
+app/src/main/res/values-fr/strings.xml
+  0e03b79d1ca9ed53 48-60,109 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a1261dffa664bcbdc774fd6","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[48,60]},{"Single":109}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "d1206e0902987ad6a1e466e8e4b41d656754c631",
+  "prompts": {
+    "0e03b79d1ca9ed53": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12012cfa664bcbdc774dc8",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 27,
+      "total_deletions": 3,
+      "accepted_lines": 27,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/res/values-fr/strings.xml": [
+      {
+        "hash": "0e03b79d1ca9ed53",
+        "line_ranges": [
+          {
+            "Range": [
+              48,
+              60
+            ]
+          },
+          {
+            "Single": 109
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a1261dffa664bcbdc774fd6",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  48,
+                  60
+                ]
+              },
+              {
+                "Single": 109
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/res/values-ru/strings.xml": [
+      {
+        "hash": "0e03b79d1ca9ed53",
+        "line_ranges": [
+          {
+            "Range": [
+              48,
+              60
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a1261dffa664bcbdc774fd6",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  48,
+                  60
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "0e03b79d1ca9ed53": {
+      "tool": "trae",
+      "conversation_id": "6a12012cfa664bcbdc774dc8",
+      "session_id": "6a12012cfa664bcbdc774dc8",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
