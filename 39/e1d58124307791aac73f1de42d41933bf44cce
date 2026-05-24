@@ -1,0 +1,25 @@
+README.md
+  ece965b2cdd21c5b 60,80,123-125,181,201,244-246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "39e1d58124307791aac73f1de42d41933bf44cce",
+  "prompts": {
+    "ece965b2cdd21c5b": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12b232fa664bcbdc7753b1",
+        "model": "openrouter-1o__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 8,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
