@@ -1,0 +1,450 @@
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt
+  59e07ba6b4112f6b 79-83 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[79,83]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartRecoveryActionViewModel.kt
+  59e07ba6b4112f6b 22-41 gitai:{"mixed_line_ranges":[{"Single":39},{"Single":41}],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[22,41]}]}]}
+app/src/main/java/io/github/soclear/oneuix/data/PowerMenuAction.kt
+  59e07ba6b4112f6b 19-20,22,31-32 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[19,20]},{"Single":22},{"Range":[31,32]}]}]}
+app/src/main/java/io/github/soclear/oneuix/data/RebootRequest.kt
+  59e07ba6b4112f6b 1-8 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,8]}]}]}
+app/src/main/java/io/github/soclear/oneuix/ui/category/DetailPaneSystemUI.kt
+  59e07ba6b4112f6b 715-716 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[715,716]}]}]}
+app/src/main/res/values-zh/strings.xml
+  59e07ba6b4112f6b 108-109 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[108,109]}]}]}
+app/src/main/res/values/strings.xml
+  59e07ba6b4112f6b 108-109 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[108,109]}]}]}
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartDownloadActionViewModel.kt
+  59e07ba6b4112f6b 22-41 gitai:{"mixed_line_ranges":[{"Single":39},{"Single":41}],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[22,41]}]}]}
+app/src/main/res/values-ru/strings.xml
+  59e07ba6b4112f6b 108-109 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[108,109]}]}]}
+app/src/main/AndroidManifest.xml
+  59e07ba6b4112f6b 61-64,67 gitai:{"mixed_line_ranges":[{"Single":64}],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[61,64]},{"Single":67}]}]}
+app/src/main/res/values-fr/strings.xml
+  59e07ba6b4112f6b 108-109 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[108,109]}]}]}
+app/src/main/java/io/github/soclear/oneuix/RebootReceiver.kt
+  59e07ba6b4112f6b 1-14 gitai:{"mixed_line_ranges":[{"Single":12}],"operations":[{"operation_id":"6a127102fa664bcbdc775295","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Range":[1,14]}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "1c3f2a2587f8888a83d61ca4780b8e1f73d46d29",
+  "prompts": {
+    "59e07ba6b4112f6b": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12630cfa664bcbdc774fe9",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 243,
+      "total_deletions": 114,
+      "accepted_lines": 121,
+      "overriden_lines": 11
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/AndroidManifest.xml": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              61,
+              64
+            ]
+          },
+          {
+            "Single": 67
+          }
+        ],
+        "mixed_line_ranges": [
+          {
+            "Single": 64
+          }
+        ],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  61,
+                  64
+                ]
+              },
+              {
+                "Single": 67
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/RebootReceiver.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              14
+            ]
+          }
+        ],
+        "mixed_line_ranges": [
+          {
+            "Single": 12
+          }
+        ],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  14
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/data/PowerMenuAction.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              19,
+              20
+            ]
+          },
+          {
+            "Single": 22
+          },
+          {
+            "Range": [
+              31,
+              32
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  19,
+                  20
+                ]
+              },
+              {
+                "Single": 22
+              },
+              {
+                "Range": [
+                  31,
+                  32
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/data/RebootRequest.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              1,
+              8
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  1,
+                  8
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              79,
+              83
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  79,
+                  83
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartDownloadActionViewModel.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              22,
+              41
+            ]
+          }
+        ],
+        "mixed_line_ranges": [
+          {
+            "Single": 39
+          },
+          {
+            "Single": 41
+          }
+        ],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  22,
+                  41
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartRecoveryActionViewModel.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              22,
+              41
+            ]
+          }
+        ],
+        "mixed_line_ranges": [
+          {
+            "Single": 39
+          },
+          {
+            "Single": 41
+          }
+        ],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  22,
+                  41
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/java/io/github/soclear/oneuix/ui/category/DetailPaneSystemUI.kt": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              715,
+              716
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  715,
+                  716
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/res/values-fr/strings.xml": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              108,
+              109
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  108,
+                  109
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/res/values-ru/strings.xml": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              108,
+              109
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  108,
+                  109
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/res/values-zh/strings.xml": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              108,
+              109
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  108,
+                  109
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "app/src/main/res/values/strings.xml": [
+      {
+        "hash": "59e07ba6b4112f6b",
+        "line_ranges": [
+          {
+            "Range": [
+              108,
+              109
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a127102fa664bcbdc775295",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Range": [
+                  108,
+                  109
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "59e07ba6b4112f6b": {
+      "tool": "trae",
+      "conversation_id": "6a12630cfa664bcbdc774fe9",
+      "session_id": "6a12630cfa664bcbdc774fe9",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
