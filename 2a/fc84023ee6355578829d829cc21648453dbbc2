@@ -1,0 +1,102 @@
+app/src/main/res/values-ru/strings.xml
+  0e03b79d1ca9ed53 48-59
+  59e07ba6b4112f6b 108-109
+app/src/main/java/io/github/soclear/oneuix/data/PowerMenuAction.kt
+  59e07ba6b4112f6b 19-20,22,31-32
+app/src/main/java/io/github/soclear/oneuix/RebootReceiver.kt
+  59e07ba6b4112f6b 1-14
+app/src/main/java/io/github/soclear/oneuix/ui/category/DetailPaneSystemUI.kt
+  0e03b79d1ca9ed53 22,601-604,606-620,622,641-642,645,647-699,701-706,717-719,841,843,845,1252,1256,1262-1265,1267-1271
+  fa9b65bd0955b866 621,840,842,1253-1255,1257-1261
+  59e07ba6b4112f6b 715-716
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/PowerMenu.kt
+  fa9b65bd0955b866 1-5,7-8,10-11,13-15,26,38,40,43-50,58-60,71-72,90
+  0e03b79d1ca9ed53 6,16-25,42,52,54,68,73-78,84-88
+  b354f2f0e8364af6 27-36,53,55-57
+  59e07ba6b4112f6b 79-83
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartDownloadActionViewModel.kt
+  59e07ba6b4112f6b 22-41
+app/src/main/java/io/github/soclear/oneuix/hook/Main.kt
+  fa9b65bd0955b866 3,6,11,17-21,328-329,380-381
+  0e03b79d1ca9ed53 323,327
+app/src/main/res/values/strings.xml
+  0e03b79d1ca9ed53 49-59
+  59e07ba6b4112f6b 108-109
+  fa9b65bd0955b866 110
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/powermenu/RestartRecoveryActionViewModel.kt
+  59e07ba6b4112f6b 22-41
+app/src/main/AndroidManifest.xml
+  59e07ba6b4112f6b 61-64,67
+app/src/main/java/io/github/soclear/oneuix/data/Preference.kt
+  0e03b79d1ca9ed53 83,135
+app/src/main/java/io/github/soclear/oneuix/data/RebootRequest.kt
+  59e07ba6b4112f6b 1-2,5,7-10
+app/src/main/res/values-fr/strings.xml
+  0e03b79d1ca9ed53 48-59,110
+  59e07ba6b4112f6b 108-109
+app/src/main/res/values-zh/strings.xml
+  0e03b79d1ca9ed53 49-59
+  59e07ba6b4112f6b 108-109
+  fa9b65bd0955b866 110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "2afc84023ee6355578829d829cc21648453dbbc2",
+  "prompts": {
+    "0e03b79d1ca9ed53": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12012cfa664bcbdc774dc8",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 8,
+      "total_deletions": 8,
+      "accepted_lines": 177,
+      "overriden_lines": 0
+    },
+    "59e07ba6b4112f6b": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a12630cfa664bcbdc774fe9",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 243,
+      "total_deletions": 114,
+      "accepted_lines": 86,
+      "overriden_lines": 0
+    },
+    "b354f2f0e8364af6": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a11d504fa664bcbdc774ba0",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 128,
+      "accepted_lines": 14,
+      "overriden_lines": 0
+    },
+    "fa9b65bd0955b866": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a106137fa664bcbdc774462",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 32,
+      "total_deletions": 15,
+      "accepted_lines": 54,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
