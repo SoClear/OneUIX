@@ -10,6 +10,7 @@ data class Preference(
     val settings: Settings = Settings(),
     val call: Call = Call(),
     val camera: Camera = Camera(),
+    val bixby: Bixby = Bixby(),
     val other: Other = Other(),
 ) {
     @Serializable
@@ -111,6 +112,13 @@ data class Preference(
     data class Camera(
         val supportAllCameraMenu: Boolean = true,
         val disableCameraTemperatureCheck: Boolean = false,
+    )
+
+    @Serializable
+    data class Bixby(
+        val injectModel: Boolean = false,
+        val labsMgr: Boolean = false,
+        val wwvBypass: Boolean = false,
     )
 
     @Serializable

@@ -122,4 +122,10 @@
     <string name="restartSystemUI">Reboot System UI</string>
     <string name="restartRecovery">Reboot to recovery</string>
     <string name="restartDownload">Reboot to download mode</string>
+    <string name="bixby_offline_title">Bixby offline support</string>
+    <string name="bixby_offline_summary">Inject device model to bypass Bixby offline restrictions</string>
+    <string name="bixby_custom_wakeup_title">Custom wakeup phrase</string>
+    <string name="bixby_custom_wakeup_summary">Bypass Labs feature check to enable custom wakeup phrases</string>
+    <string name="bixby_wwv_bypass_title">Bypass wakeup word blacklist</string>
+    <string name="bixby_wwv_bypass_summary">Bypass native word blacklist validation for custom wakeup words</string>
 </resources>

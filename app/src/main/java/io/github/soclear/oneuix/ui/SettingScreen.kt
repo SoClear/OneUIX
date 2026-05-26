@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.ui.category.Category
 import io.github.soclear.oneuix.ui.category.DetailPaneAndroid
+import io.github.soclear.oneuix.ui.category.DetailPaneBixby
 import io.github.soclear.oneuix.ui.category.DetailPaneCall
 import io.github.soclear.oneuix.ui.category.DetailPaneCamera
 import io.github.soclear.oneuix.ui.category.DetailPaneOther
@@ -30,6 +31,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneSettings
 import io.github.soclear.oneuix.ui.category.DetailPaneSystemUI
 import io.github.soclear.oneuix.ui.category.ListPaneCategory
 import io.github.soclear.oneuix.ui.category.onAndroidEvent
+import io.github.soclear.oneuix.ui.category.onBixbyEvent
 import io.github.soclear.oneuix.ui.category.onCallEvent
 import io.github.soclear.oneuix.ui.category.onCameraEvent
 import io.github.soclear.oneuix.ui.category.onOtherEvent
@@ -87,6 +89,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.Camera -> DetailPaneCamera(
                             uiState = preference.camera,
                             onEvent = viewModel::onCameraEvent
+                        )
+
+                        Category.Bixby -> DetailPaneBixby(
+                            uiState = preference.bixby,
+                            onEvent = viewModel::onBixbyEvent
                         )
 
                         Category.Other -> DetailPaneOther(

@@ -389,6 +389,17 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 }
             }
 
+            Package.BIXBY_AGENT, Package.BIXBY_WAKEUP -> {
+                if (preference.bixby.injectModel || preference.bixby.labsMgr || preference.bixby.wwvBypass) {
+                    Bixby.init(
+                        lpparam = lpparam,
+                        injectModel = preference.bixby.injectModel,
+                        labsMgr = preference.bixby.labsMgr,
+                        wwvBypass = preference.bixby.wwvBypass,
+                    )
+                }
+            }
+
             "com.samsung.android.service.airviewdictionary" -> {
                 if (preference.other.useSPenGoogleTranslate) {
                     SPen.switchTranslateSource(lpparam, useGoogle = true)

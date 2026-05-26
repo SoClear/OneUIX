@@ -2,6 +2,8 @@ package io.github.soclear.oneuix.data
 
 object Package {
     const val ANDROID = "android"
+    const val BIXBY_AGENT = "com.samsung.android.bixby.agent"
+    const val BIXBY_WAKEUP = "com.samsung.android.bixby.wakeup"
     const val BROWSER = "com.sec.android.app.sbrowser"
     const val CALENDAR = "com.samsung.android.calendar"
     const val CAMERA = "com.sec.android.app.camera"

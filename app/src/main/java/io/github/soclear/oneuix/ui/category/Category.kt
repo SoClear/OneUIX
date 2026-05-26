@@ -9,5 +9,6 @@ enum class Category(val packageName: String) {
     Settings(Package.SETTINGS),
     Call(Package.DIALER),
     Camera(Package.CAMERA),
+    Bixby(Package.BIXBY_AGENT),
     Other(BuildConfig.APPLICATION_ID);
 }
