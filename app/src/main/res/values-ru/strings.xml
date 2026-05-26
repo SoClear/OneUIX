@@ -122,4 +122,10 @@
     <string name="restartSystemUI">Перезапуск System UI</string>
     <string name="restartRecovery">Перезагрузка в Recovery</string>
     <string name="restartDownload">Перезагрузка в режим Download</string>
+    <string name="bixby_offline_title">Офлайн-поддержка Bixby</string>
+    <string name="bixby_offline_summary">Внедрить модель устройства для обхода офлайн-ограничений Bixby</string>
+    <string name="bixby_custom_wakeup_title">Пользовательская фраза пробуждения</string>
+    <string name="bixby_custom_wakeup_summary">Обойти проверку функции Labs для включения пользовательских фраз пробуждения</string>
+    <string name="bixby_wwv_bypass_title">Обход чёрного списка слов пробуждения</string>
+    <string name="bixby_wwv_bypass_summary">Обойти проверку чёрного списка нативных слов для пользовательских слов пробуждения</string>
 </resources>

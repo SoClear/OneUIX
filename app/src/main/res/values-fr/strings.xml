@@ -122,4 +122,10 @@
     <string name="restartSystemUI">Redémarrer l\'UI système</string>
     <string name="restartRecovery">Redémarrer en Recovery</string>
     <string name="restartDownload">Redémarrer en mode Download</string>
+    <string name="bixby_offline_title">Support hors ligne de Bixby</string>
+    <string name="bixby_offline_summary">Injecter le modèle de l\'appareil pour contourner les restrictions hors ligne de Bixby</string>
+    <string name="bixby_custom_wakeup_title">Phrase de réveil personnalisée</string>
+    <string name="bixby_custom_wakeup_summary">Contourner la vérification Labs pour activer les phrases de réveil personnalisées</string>
+    <string name="bixby_wwv_bypass_title">Contourner la liste noire des mots de réveil</string>
+    <string name="bixby_wwv_bypass_summary">Contourner la validation de la liste noire native pour les mots de réveil personnalisés</string>
 </resources>

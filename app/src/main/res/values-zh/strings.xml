@@ -122,4 +122,10 @@
     <string name="restartSystemUI">重启系统 UI</string>
     <string name="restartRecovery">重启到 Recovery</string>
     <string name="restartDownload">重启到下载模式</string>
+    <string name="bixby_offline_title">Bixby 离线支持</string>
+    <string name="bixby_offline_summary">注入设备型号以绕过 Bixby 离线限制</string>
+    <string name="bixby_custom_wakeup_title">自定义唤醒短语</string>
+    <string name="bixby_custom_wakeup_summary">绕过 Labs 功能检查以启用自定义唤醒短语</string>
+    <string name="bixby_wwv_bypass_title">绕过唤醒词黑名单</string>
+    <string name="bixby_wwv_bypass_summary">绕过原生词库黑名单验证，支持自定义唤醒词</string>
 </resources>
