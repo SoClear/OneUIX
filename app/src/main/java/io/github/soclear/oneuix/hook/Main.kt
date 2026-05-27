@@ -58,6 +58,21 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 }
             }
 
+            Package.BIXBY_AGENT,
+            Package.BIXBY_WAKEUP -> {
+                if (preference.other.unlockBixbyOfflineProcessing ||
+                    preference.other.supportBixbyCustomWakeup ||
+                    preference.other.bypassBixbyWakeWordRestrictions
+                ) {
+                    Bixby.init(
+                        lpparam = lpparam,
+                        unlockOfflineProcessing = preference.other.unlockBixbyOfflineProcessing,
+                        supportCustomWakeup = preference.other.supportBixbyCustomWakeup,
+                        bypassWakeWordRestrictions = preference.other.bypassBixbyWakeWordRestrictions
+                    )
+                }
+            }
+
             Package.CALENDAR -> {
                 if (preference.other.enableChineseHolidayDisplay) {
                     Calendar.enableChineseHolidayDisplay(lpparam)

@@ -118,6 +118,9 @@
 - 禁用图片编辑器 AI 水印
 - 绕过 Samsung Health Monitor 国家检查
 - S Pen 使用谷歌翻译
+- 解锁 Bixby 离线处理
+- 支持 Bixby 自定义唤醒词
+- 绕过 Bixby 唤醒词限制
 - 隐藏应用屏幕搜索栏
 - 移除快捷方式图标右下角小角标
 - 手表连接模式（WearOS CN / WearOS Global）
@@ -239,6 +242,9 @@
 - Disable Photo Editor AI watermark
 - Bypass Samsung Health Monitor country check
 - Use Google Translate for S Pen
+- Unlock Bixby offline processing
+- Support Bixby custom wake words
+- Bypass Bixby wake word restrictions
 - Hide search bar on app screen
 - Remove bottom-right shortcut badge
 - Watch connection mode (WearOS CN / WearOS Global)

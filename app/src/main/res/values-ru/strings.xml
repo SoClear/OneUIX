@@ -110,6 +110,12 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Разрешить использование Health Monitor в неподдерживаемых странах</string>
     <string name="useSPenGoogleTranslate_title">Использовать Google Переводчик для S Pen</string>
     <string name="useSPenGoogleTranslate_summary">Переключить источник перевода S Pen с Baidu на Google</string>
+    <string name="unlockBixbyOfflineProcessing_title">Разблокировать автономную обработку Bixby</string>
+    <string name="unlockBixbyOfflineProcessing_summary">Добавить модель этого устройства в список разрешенных Bixby, чтобы включить автономную обработку и диалоги без фразы пробуждения</string>
+    <string name="supportBixbyCustomWakeup_title">Поддержка пользовательских слов пробуждения Bixby</string>
+    <string name="supportBixbyCustomWakeup_summary">Обойти проверки Labs и исправить пустой текст пользовательского слова пробуждения</string>
+    <string name="bypassBixbyWakeWordRestrictions_title">Обход ограничений слов пробуждения Bixby</string>
+    <string name="bypassBixbyWakeWordRestrictions_summary">Обойти проверки текста слов пробуждения, чтобы пользовательские слова не блокировались нативными валидаторами</string>
     <string name="supportCallAndTextOnOtherDevices_title">Вызовы и СМС на других устройствах</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Настройки -> Подключенные устройства -> Вызовы и СМС на других устройствах</string>
     <string name="setCustomCarrierName_title">Собственное имя оператора</string>
