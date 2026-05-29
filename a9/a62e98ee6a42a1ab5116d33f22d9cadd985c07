@@ -1,0 +1,25 @@
+app/src/main/java/io/github/soclear/oneuix/FiveGTileService.kt
+  cb03c50bb02792b6 12,20-21,36,40-46,52,58-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a9a62e98ee6a42a1ab5116d33f22d9cadd985c07",
+  "prompts": {
+    "cb03c50bb02792b6": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a198fe15a467822eccdabf7",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 46,
+      "total_deletions": 43,
+      "accepted_lines": 54,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {},
+  "remote_transcripts": {}
+}
