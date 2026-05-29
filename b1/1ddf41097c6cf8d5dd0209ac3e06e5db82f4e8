@@ -1,0 +1,129 @@
+app/src/main/java/io/github/soclear/oneuix/hook/SystemUI.kt
+  10dc7f9c860d294c 35,101-105,114-115,204-213,250-253,255-269,271-272 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a1985b85a467822eccdab27","tool_type":"agent","tool_id":"RunCommand","line_ranges":[{"Single":35},{"Range":[101,105]},{"Range":[114,115]},{"Range":[204,213]},{"Range":[250,253]},{"Range":[255,269]},{"Range":[271,272]}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "b11ddf41097c6cf8d5dd0209ac3e06e5db82f4e8",
+  "prompts": {
+    "10dc7f9c860d294c": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a16ec93cdcb3f6bc9c7b077",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 100,
+      "total_deletions": 89,
+      "accepted_lines": 40,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/java/io/github/soclear/oneuix/hook/SystemUI.kt": [
+      {
+        "hash": "10dc7f9c860d294c",
+        "line_ranges": [
+          {
+            "Single": 35
+          },
+          {
+            "Range": [
+              101,
+              105
+            ]
+          },
+          {
+            "Range": [
+              114,
+              115
+            ]
+          },
+          {
+            "Range": [
+              204,
+              213
+            ]
+          },
+          {
+            "Range": [
+              250,
+              253
+            ]
+          },
+          {
+            "Range": [
+              255,
+              269
+            ]
+          },
+          {
+            "Range": [
+              271,
+              272
+            ]
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a1985b85a467822eccdab27",
+            "tool_type": "agent",
+            "tool_id": "RunCommand",
+            "line_ranges": [
+              {
+                "Single": 35
+              },
+              {
+                "Range": [
+                  101,
+                  105
+                ]
+              },
+              {
+                "Range": [
+                  114,
+                  115
+                ]
+              },
+              {
+                "Range": [
+                  204,
+                  213
+                ]
+              },
+              {
+                "Range": [
+                  250,
+                  253
+                ]
+              },
+              {
+                "Range": [
+                  255,
+                  269
+                ]
+              },
+              {
+                "Range": [
+                  271,
+                  272
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "10dc7f9c860d294c": {
+      "tool": "trae",
+      "conversation_id": "6a16ec93cdcb3f6bc9c7b077",
+      "session_id": "6a16ec93cdcb3f6bc9c7b077",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
