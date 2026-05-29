@@ -1,0 +1,141 @@
+app/src/main/java/io/github/soclear/oneuix/hook/systemui/ESIM.kt
+  f331743212fd6a29 17,85-90,92-98,153,155-174,177-178,240-244,298-308,614 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a1986905a467822eccdab65","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Single":17},{"Range":[85,90]},{"Range":[92,98]},{"Single":153},{"Range":[155,174]},{"Range":[177,178]},{"Range":[240,244]},{"Range":[298,308]},{"Single":614}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "c9ac3ffea4bda45bd37bf31a77b7693cb0d9166d",
+  "prompts": {
+    "f331743212fd6a29": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a1985ff5a467822eccdab2b",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 58,
+      "total_deletions": 25,
+      "accepted_lines": 54,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "app/src/main/java/io/github/soclear/oneuix/hook/systemui/ESIM.kt": [
+      {
+        "hash": "f331743212fd6a29",
+        "line_ranges": [
+          {
+            "Single": 17
+          },
+          {
+            "Range": [
+              85,
+              90
+            ]
+          },
+          {
+            "Range": [
+              92,
+              98
+            ]
+          },
+          {
+            "Single": 153
+          },
+          {
+            "Range": [
+              155,
+              174
+            ]
+          },
+          {
+            "Range": [
+              177,
+              178
+            ]
+          },
+          {
+            "Range": [
+              240,
+              244
+            ]
+          },
+          {
+            "Range": [
+              298,
+              308
+            ]
+          },
+          {
+            "Single": 614
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a1986905a467822eccdab65",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Single": 17
+              },
+              {
+                "Range": [
+                  85,
+                  90
+                ]
+              },
+              {
+                "Range": [
+                  92,
+                  98
+                ]
+              },
+              {
+                "Single": 153
+              },
+              {
+                "Range": [
+                  155,
+                  174
+                ]
+              },
+              {
+                "Range": [
+                  177,
+                  178
+                ]
+              },
+              {
+                "Range": [
+                  240,
+                  244
+                ]
+              },
+              {
+                "Range": [
+                  298,
+                  308
+                ]
+              },
+              {
+                "Single": 614
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "f331743212fd6a29": {
+      "tool": "trae",
+      "conversation_id": "6a1985ff5a467822eccdab2b",
+      "session_id": "6a1985ff5a467822eccdab2b",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
