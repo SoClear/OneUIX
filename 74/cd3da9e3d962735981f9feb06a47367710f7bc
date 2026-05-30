@@ -1,0 +1,135 @@
+README.md
+  7c12630aca401dd2 46,52,67,89,95,117,144-147,177,183,198,220,226,248 gitai:{"mixed_line_ranges":[],"operations":[{"operation_id":"6a1b0fef5a467822eccdb412","tool_type":"agent","tool_id":"apply_patch","line_ranges":[{"Single":46},{"Single":52},{"Single":67},{"Single":89},{"Single":95},{"Single":117},{"Range":[144,147]},{"Single":177},{"Single":183},{"Single":198},{"Single":220},{"Single":226},{"Single":248}]}]}
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "74cd3da9e3d962735981f9feb06a47367710f7bc",
+  "prompts": {
+    "7c12630aca401dd2": {
+      "agent_id": {
+        "tool": "trae",
+        "id": "6a1b0ec35a467822eccdb3d2",
+        "model": "gpt-5.5__dev"
+      },
+      "human_author": "SoClear <48470201+soclear@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 14,
+      "total_deletions": 0,
+      "accepted_lines": 12,
+      "overriden_lines": 0
+    }
+  },
+  "attestation_metadata": {
+    "README.md": [
+      {
+        "hash": "7c12630aca401dd2",
+        "line_ranges": [
+          {
+            "Single": 46
+          },
+          {
+            "Single": 52
+          },
+          {
+            "Single": 67
+          },
+          {
+            "Single": 89
+          },
+          {
+            "Single": 95
+          },
+          {
+            "Single": 117
+          },
+          {
+            "Range": [
+              144,
+              147
+            ]
+          },
+          {
+            "Single": 177
+          },
+          {
+            "Single": 183
+          },
+          {
+            "Single": 198
+          },
+          {
+            "Single": 220
+          },
+          {
+            "Single": 226
+          },
+          {
+            "Single": 248
+          }
+        ],
+        "mixed_line_ranges": [],
+        "operations": [
+          {
+            "operation_id": "6a1b0fef5a467822eccdb412",
+            "tool_type": "agent",
+            "tool_id": "apply_patch",
+            "line_ranges": [
+              {
+                "Single": 46
+              },
+              {
+                "Single": 52
+              },
+              {
+                "Single": 67
+              },
+              {
+                "Single": 89
+              },
+              {
+                "Single": 95
+              },
+              {
+                "Single": 117
+              },
+              {
+                "Range": [
+                  144,
+                  147
+                ]
+              },
+              {
+                "Single": 177
+              },
+              {
+                "Single": 183
+              },
+              {
+                "Single": 198
+              },
+              {
+                "Single": 220
+              },
+              {
+                "Single": 226
+              },
+              {
+                "Single": 248
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "remote_transcripts": {
+    "7c12630aca401dd2": {
+      "tool": "trae",
+      "conversation_id": "6a1b0ec35a467822eccdb3d2",
+      "session_id": "6a1b0ec35a467822eccdb3d2",
+      "status": "remote_only",
+      "message": "Remote transcript resolution is not implemented yet for TRAE prompts."
+    }
+  }
+}
