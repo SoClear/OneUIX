@@ -1196,12 +1196,8 @@ object SystemUI {
                         try {
                             val carrierTextCallbackInfo = param.args[0] ?: return
                             val clazz = carrierTextCallbackInfo.javaClass
-                            if (findFieldIfExists(clazz, "carrierText") != null) {
-                                setObjectField(carrierTextCallbackInfo, "carrierText", carrierName)
-                            }
-                            if (findFieldIfExists(clazz, "carrierTextShort") != null) {
-                                setObjectField(carrierTextCallbackInfo, "carrierTextShort", carrierName)
-                            }
+                            findFieldIfExists(clazz, "carrierText")?.set(carrierTextCallbackInfo, carrierName)
+                            findFieldIfExists(clazz, "carrierTextShort")?.set(carrierTextCallbackInfo, carrierName)
                         } catch (t: Throwable) {
                             XposedBridge.log(t)
                         }
