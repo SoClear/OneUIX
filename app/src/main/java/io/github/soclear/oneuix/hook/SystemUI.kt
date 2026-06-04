@@ -32,6 +32,7 @@ import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.XposedHelpers.findClass
 import de.robv.android.xposed.XposedHelpers.findClassIfExists
+import de.robv.android.xposed.XposedHelpers.findFieldIfExists
 import de.robv.android.xposed.XposedHelpers.getIntField
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.XposedHelpers.setIntField
@@ -1194,8 +1195,13 @@ object SystemUI {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         try {
                             val carrierTextCallbackInfo = param.args[0] ?: return
-                            setObjectField(carrierTextCallbackInfo, "carrierText", carrierName)
-                            setObjectField(carrierTextCallbackInfo, "carrierTextShort", carrierName)
+                            val clazz = carrierTextCallbackInfo.javaClass
+                            if (findFieldIfExists(clazz, "carrierText") != null) {
+                                setObjectField(carrierTextCallbackInfo, "carrierText", carrierName)
+                            }
+                            if (findFieldIfExists(clazz, "carrierTextShort") != null) {
+                                setObjectField(carrierTextCallbackInfo, "carrierTextShort", carrierName)
+                            }
                         } catch (t: Throwable) {
                             XposedBridge.log(t)
                         }
