@@ -1,4 +1,4 @@
-name: CII
+name: CI
 
 # 触发条件：所有分支的 push 和 PR 都会触发
 on:
