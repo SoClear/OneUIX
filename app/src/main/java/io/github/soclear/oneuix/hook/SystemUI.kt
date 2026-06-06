@@ -1171,11 +1171,41 @@ object SystemUI {
     fun disableNotificationGrouping(loadPackageParam: LoadPackageParam) {
         if (loadPackageParam.packageName != Package.SYSTEMUI) return
         try {
+            // Force individual display for all notifications
             findAndHookMethod(
                 "android.service.notification.StatusBarNotification",
                 loadPackageParam.classLoader,
                 "isGroup",
                 returnConstant(false)
+            )
+
+            // Block group-summary notifications from entering the collection pipeline.
+            // Uses reflection (callMethod) because isGroupSummary() is a @hide API.
+            findAndHookMethod(
+                "com.android.systemui.statusbar.notification.collection.NotifCollection",
+                loadPackageParam.classLoader,
+                "postNotification",
+                "android.service.notification.StatusBarNotification",
+                "android.service.notification.NotificationListenerService\$Ranking",
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        try {
+                            val sbn = param.args[0]
+                            val notification = callMethod(sbn, "getNotification")
+                            if (notification != null) {
+                                val isSummary = callMethod(
+                                    notification, "isGroupSummary"
+                                ) as? Boolean ?: false
+                                if (isSummary) {
+                                    // Skip original method to discard the notification
+                                    param.result = null
+                                }
+                            }
+                        } catch (t: Throwable) {
+                            XposedBridge.log(t)
+                        }
+                    }
+                }
             )
         } catch (t: Throwable) {
             XposedBridge.log(t)
