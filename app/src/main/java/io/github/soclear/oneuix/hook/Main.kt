@@ -1,9 +1,12 @@
 package io.github.soclear.oneuix.hook
 
+import android.bluetooth.BluetoothAdapter
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.IXposedHookInitPackageResources
 import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
+import de.robv.android.xposed.XC_MethodReplacement
+import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.BuildConfig
@@ -230,6 +233,11 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
             }
 
             Package.SYSTEMUI -> {
+                XposedHelpers.findAndHookMethod(
+                    BluetoothAdapter::class.java,
+                    "semIsDualPlaySupported",
+                    XC_MethodReplacement.returnConstant(true)
+                )
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }
