@@ -131,6 +131,9 @@
     <string name="supportCallAndTextOnOtherDevices_summary">Paramètres > Appareils connectés > Appels/SMS sur les autres appareils</string>
     <string name="setCustomCarrierName_title">Définir le nom de l\'opérateur personnalisé</string>
     <string name="hideLockscreenStatusBar_title">Masquer la barre d\'état sur l\'écran de verrouillage</string>
+    <string name="enableDoubleLineStatusBar_title">Activer la barre d\'état à deux lignes</string>
+    <string name="enableDoubleLineStatusBar_summary">Augmenter la hauteur de la barre d\'état pour plus de contenu</string>
+    <string name="statusBarHeightScale_title">Facteur d\'échelle de la hauteur de la barre d\'état</string>
     <string name="hideAppsSearchBar_title">Masquer la barre de recherche sur l\'écran des applications</string>
     <string name="removeShortcutBadge_title">Supprimer le badge en bas à droite du raccourci</string>
     <string name="removeShortcutBadge_summary">Supprimer le badge de l\'application d\'origine situé dans le coin inférieur droit des icônes de raccourci de l\'écran d\'accueil</string>

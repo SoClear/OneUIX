@@ -319,6 +319,13 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                     SystemUI.hideLockscreenStatusBar(lpparam)
                 }
 
+                if (preference.systemUI.statusBar.enableDoubleLineStatusBar) {
+                    SystemUI.setDoubleLineStatusBar(
+                        lpparam,
+                        preference.systemUI.statusBar.statusBarHeightScale
+                    )
+                }
+
                 if (preference.settings.supportOutdoorMode) {
                     SystemUI.supportOutdoorMode(lpparam)
                 }

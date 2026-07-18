@@ -498,6 +498,43 @@ fun DetailPaneSystemUI(
                 }
             }
         }
+        Column {
+            var heightScale by remember {
+                mutableFloatStateOf(uiState.statusBar.statusBarHeightScale)
+            }
+            var expanded by rememberSaveable { mutableStateOf(false) }
+
+            SwitchItem(
+                title = stringResource(id = R.string.enableDoubleLineStatusBar_title),
+                modifier = Modifier.animateContentSize(),
+                summary = if (uiState.statusBar.enableDoubleLineStatusBar) {
+                    "%.2fx".format(heightScale)
+                } else stringResource(id = R.string.enableDoubleLineStatusBar_summary),
+                icon = ImageVector.vectorResource(id = R.drawable.notifications),
+                clickable = true,
+                onClick = { expanded = !expanded },
+                checked = uiState.statusBar.enableDoubleLineStatusBar,
+                onCheckedChange = {
+                    if (it && heightScale == 2f) {
+                        expanded = true
+                    } else if (!it) {
+                        expanded = false
+                    }
+                    onEvent(SystemUIEvent.StatusBar.EnableDoubleLineStatusBar(it))
+                }
+            )
+            AnimatedVisibility(expanded && uiState.statusBar.enableDoubleLineStatusBar) {
+                Slider(
+                    value = heightScale,
+                    onValueChange = { heightScale = it },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    valueRange = 1.2f..3f,
+                    onValueChangeFinished = {
+                        onEvent(SystemUIEvent.StatusBar.StatusBarHeightScale(heightScale))
+                    }
+                )
+            }
+        }
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.mobile_screensaver),
             title = stringResource(id = R.string.hideLockscreenStatusBar_title),
@@ -981,6 +1018,12 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class HideLockscreenStatusBar(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class EnableDoubleLineStatusBar(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class StatusBarHeightScale(val value: Float) : StatusBar
     }
 
     sealed interface QS : SystemUIEvent {
@@ -1142,6 +1185,26 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             hideLockscreenStatusBar = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.EnableDoubleLineStatusBar -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            enableDoubleLineStatusBar = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.StatusBarHeightScale -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            statusBarHeightScale = event.value
                         )
                     )
                 )

@@ -1400,4 +1400,33 @@ object SystemUI {
             XposedBridge.log(t)
         }
     }
+
+    fun setDoubleLineStatusBar(loadPackageParam: LoadPackageParam, heightScale: Float) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI || heightScale <= 1f) return
+        // 状态栏高度的所有来源都汇聚到 SystemBarUtils 的两个静态方法:
+        // - StatusBarWindowControllerImpl: mBarHeight / heights[] / paramsForRotation[] / providedInsets
+        // - IndicatorGardenPresenter: IndicatorGardenModel.totalHeight
+        // - SystemBarUtilsState.statusBarHeight Flow (Compose 路径)
+        // - SystemBarUtilsProxyImpl.getStatusBarHeaderHeightKeyguard
+        // - StatusBarContentInsetsProviderImpl 等
+        // 只需 hook 这两个方法缩放返回值, 即可一处覆盖所有消费者.
+        try {
+            val systemBarUtilsClass = findClass(
+                "com.android.internal.policy.SystemBarUtils",
+                loadPackageParam.classLoader
+            )
+            val callback = object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val original = param.result as Int
+                    if (original > 0) {
+                        param.result = (original * heightScale).toInt()
+                    }
+                }
+            }
+            hookAllMethods(systemBarUtilsClass, "getStatusBarHeight", callback)
+            hookAllMethods(systemBarUtilsClass, "getStatusBarHeightForRotation", callback)
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
 }

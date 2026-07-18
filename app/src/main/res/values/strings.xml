@@ -131,6 +131,9 @@
     <string name="supportCallAndTextOnOtherDevices_summary">Settings -> Connected devices -> Call &amp; text on other devices</string>
     <string name="setCustomCarrierName_title">Set custom carrier name</string>
     <string name="hideLockscreenStatusBar_title">Hide status bar on lock screen</string>
+    <string name="enableDoubleLineStatusBar_title">Enable double-line status bar</string>
+    <string name="enableDoubleLineStatusBar_summary">Increase status bar height for more content</string>
+    <string name="statusBarHeightScale_title">Status bar height scale</string>
     <string name="hideAppsSearchBar_title">Hide search bar on app screen</string>
     <string name="removeShortcutBadge_title">Remove bottom-right shortcut badge</string>
     <string name="removeShortcutBadge_summary">Remove the original app badge from the bottom-right corner of home screen shortcuts</string>
