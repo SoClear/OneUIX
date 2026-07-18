@@ -1465,7 +1465,6 @@ object SystemUI {
                             }
 
                             val contentsId = res.getIdentifier("status_bar_contents", "id", pkg)
-                            val areaId = res.getIdentifier("notification_icon_area", "id", pkg)
                             val contents = sbv.findViewById<View>(contentsId) ?: return
                             val cLp = contents.layoutParams as? FrameLayout.LayoutParams
                                 ?: return
@@ -1481,15 +1480,6 @@ object SystemUI {
                                     contents.layoutParams = cLp
                                 }
                             }
-
-                            val notifArea = sbv.findViewById<View>(areaId)
-                            if (notifArea != null && notifArea.parent === sbv) {
-                                val nLp = notifArea.layoutParams as? FrameLayout.LayoutParams
-                                if (nLp != null && nLp.marginStart != contents.paddingLeft) {
-                                    nLp.marginStart = contents.paddingLeft
-                                    notifArea.layoutParams = nLp
-                                }
-                            }
                         } catch (t: Throwable) {
                             XposedBridge.log(t)
                         }
@@ -1500,7 +1490,11 @@ object SystemUI {
             XposedBridge.log(t)
         }
 
-        // 3. 将 notification_icon_area 从水平容器移出，放到底部居左作为第二行
+        // 3. 创建第二行水平容器，把 ongoing 实时通知（通话/媒体）和通知图标
+        //    从顶部行移到底部居左排列：[通话chip] [媒体胶囊(歌词)] [通知图标...]
+        //    媒体胶囊设置 weight=1 以占据更多水平空间，支持显示更长歌词。
+        //    使用持续的 OnGlobalLayoutListener 防止系统代码把视图移回原位或
+        //    把 LayoutParams 重置为 FrameLayout.LayoutParams 导致崩溃。
         try {
             findAndHookMethod(
                 "com.android.systemui.statusbar.phone.PhoneStatusBarView",
@@ -1509,35 +1503,444 @@ object SystemUI {
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(p: MethodHookParam) {
                         val sbv = p.thisObject as FrameLayout
-                        val key = "oneuix_dl_notif"
+                        val key = "oneuix_dl_bottom_row"
                         if (sbv.getTag(key.hashCode()) != null) return
                         sbv.setTag(key.hashCode(), true)
 
+                        val chipIds = listOf("ongoing_call_chip", "ongoing_activity_capsule")
+                        val notifAreaIdName = "notification_icon_area"
+                        val bottomRowKey = "oneuix_dl_bottom_row_container"
+
                         sbv.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                            private var currentContentsPadLeft = -1
                             override fun onGlobalLayout() {
                                 try {
                                     val res = sbv.resources
                                     val pkg = Package.SYSTEMUI
                                     val contentsId = res.getIdentifier("status_bar_contents", "id", pkg)
-                                    val areaId = res.getIdentifier("notification_icon_area", "id", pkg)
                                     val contents = sbv.findViewById<View>(contentsId) ?: return
-                                    val notifArea = sbv.findViewById<View>(areaId) ?: return
-                                    if (notifArea.parent !== sbv) {
-                                        (notifArea.parent as? ViewGroup)?.removeView(notifArea)
-                                        val lp = FrameLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    val startPad = contents.paddingLeft
+
+                                    var bottomRow = sbv.getTag(bottomRowKey.hashCode()) as? LinearLayout
+                                    if (bottomRow == null) {
+                                        bottomRow = LinearLayout(sbv.context).apply {
+                                            orientation = LinearLayout.HORIZONTAL
+                                            gravity = Gravity.CENTER_VERTICAL or Gravity.START
+                                            layoutDirection = View.LAYOUT_DIRECTION_LOCALE
+                                        }
+                                        val flp = FrameLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.MATCH_PARENT,
                                             ViewGroup.LayoutParams.WRAP_CONTENT,
                                             Gravity.BOTTOM or Gravity.START
                                         )
-                                        lp.marginStart = contents.paddingLeft
-                                        sbv.addView(notifArea, lp)
+                                        flp.marginStart = startPad
+                                        flp.marginEnd = startPad
+                                        sbv.addView(bottomRow, flp)
+                                        sbv.setTag(bottomRowKey.hashCode(), bottomRow)
+                                    } else if (currentContentsPadLeft != startPad) {
+                                        val brLp = bottomRow.layoutParams as? FrameLayout.LayoutParams
+                                        if (brLp != null) {
+                                            brLp.marginStart = startPad
+                                            brLp.marginEnd = startPad
+                                            bottomRow.layoutParams = brLp
+                                        }
+                                        currentContentsPadLeft = startPad
                                     }
-                                    sbv.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                                    val gap = TypedValue.applyDimension(
+                                        TypedValue.COMPLEX_UNIT_DIP, 4f, res.displayMetrics
+                                    ).toInt()
+
+                                    for (idName in chipIds) {
+                                        val id = res.getIdentifier(idName, "id", pkg)
+                                        val v = sbv.findViewById<View>(id) ?: continue
+                                        val parent = v.parent
+                                        if (parent !== bottomRow) {
+                                            (parent as? ViewGroup)?.removeView(v)
+                                        }
+                                        if (v.parent !== bottomRow) {
+                                            val llp = LinearLayout.LayoutParams(
+                                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                ViewGroup.LayoutParams.WRAP_CONTENT
+                                            )
+                                            val idx = bottomRow.indexOfChild(v)
+                                            val insertAt = if (idName == "ongoing_call_chip") 0 else bottomRow.childCount
+                                            if (insertAt > 0) llp.marginStart = gap
+                                            if (idName == "ongoing_activity_capsule") {
+                                                llp.weight = 1f
+                                                llp.width = 0
+                                            }
+                                            if (idx >= 0) {
+                                                bottomRow.updateViewLayout(v, llp)
+                                            } else {
+                                                bottomRow.addView(v, insertAt.coerceAtMost(bottomRow.childCount), llp)
+                                            }
+                                        } else {
+                                            val llp = v.layoutParams as? LinearLayout.LayoutParams
+                                            if (llp != null) {
+                                                var changed = false
+                                                if (idName == "ongoing_activity_capsule") {
+                                                    if (llp.width != 0 || llp.weight != 1f) {
+                                                        llp.width = 0
+                                                        llp.weight = 1f
+                                                        changed = true
+                                                    }
+                                                } else {
+                                                    if (llp.width != ViewGroup.LayoutParams.WRAP_CONTENT || llp.weight != 0f) {
+                                                        llp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                                                        llp.weight = 0f
+                                                        changed = true
+                                                    }
+                                                }
+                                                if (changed) v.layoutParams = llp
+                                            } else {
+                                                val newLp = LinearLayout.LayoutParams(
+                                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                    ViewGroup.LayoutParams.WRAP_CONTENT
+                                                )
+                                                if (idName == "ongoing_activity_capsule") {
+                                                    newLp.weight = 1f
+                                                    newLp.width = 0
+                                                }
+                                                val insertAt = if (idName == "ongoing_call_chip") 0 else -1
+                                                val idx = bottomRow.indexOfChild(v)
+                                                if (idx >= 0) bottomRow.updateViewLayout(v, newLp)
+                                            }
+                                        }
+                                    }
+
+                                    val areaId = res.getIdentifier(notifAreaIdName, "id", pkg)
+                                    val notifArea = sbv.findViewById<View>(areaId) ?: return
+                                    val nParent = notifArea.parent
+                                    if (nParent !== bottomRow) {
+                                        (nParent as? ViewGroup)?.removeView(notifArea)
+                                    }
+                                    if (notifArea.parent !== bottomRow) {
+                                        val llp = LinearLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT
+                                        )
+                                        if (bottomRow.childCount > 0) llp.marginStart = gap
+                                        bottomRow.addView(notifArea, llp)
+                                    } else {
+                                        val llp = notifArea.layoutParams as? LinearLayout.LayoutParams
+                                        if (llp != null && (llp.width != ViewGroup.LayoutParams.WRAP_CONTENT || llp.weight != 0f)) {
+                                            llp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                                            llp.weight = 0f
+                                            notifArea.layoutParams = llp
+                                        }
+                                    }
+
+                                    try {
+                                        val capsuleId = res.getIdentifier("ongoing_activity_capsule", "id", pkg)
+                                        val capsule = sbv.findViewById<View>(capsuleId)
+                                        val rvId = res.getIdentifier("capsule_recyclerview", "id", pkg)
+                                        if (capsule != null && rvId != 0) {
+                                            val rv = capsule.findViewById<View>(rvId)
+                                            if (rv != null) {
+                                                val lp = rv.layoutParams
+                                                if (lp != null && lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
+                                                    lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                                                    rv.layoutParams = lp
+                                                }
+                                                val screenW = res.displayMetrics.widthPixels
+                                                fun unlock(v: View) {
+                                                    when (v) {
+                                                        is TextView -> {
+                                                            v.maxWidth = screenW
+                                                            v.setHorizontallyScrolling(true)
+                                                            v.ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
+                                                        }
+                                                        is ViewGroup -> for (j in 0 until v.childCount) unlock(v.getChildAt(j))
+                                                    }
+                                                }
+                                                fun forceAdapterFields() {
+                                                    val rvCls = rv.javaClass
+                                                    val getAdapter = rvCls.methods.firstOrNull { it.name == "getAdapter" && it.parameterCount == 0 }
+                                                    val adapter = getAdapter?.invoke(rv) ?: return
+                                                    val zeroF = listOf(
+                                                        "availableSpace", "marqueeLimitedWidth", "shadowWidth",
+                                                        "notificationIconWidth", "infoTextTotalMargin", "cachedVisibleIconCount"
+                                                    )
+                                                    val largeF = listOf(
+                                                        "enableMaxWidth", "maximumWidth", "maxChipWidth", "sportScoreMaxWidth"
+                                                    )
+                                                    for (fn in zeroF) {
+                                                        try {
+                                                            val f = adapter.javaClass.getDeclaredField(fn)
+                                                            f.isAccessible = true
+                                                            f.setInt(adapter, 0)
+                                                        } catch (_: Throwable) {}
+                                                    }
+                                                    for (fn in largeF) {
+                                                        try {
+                                                            val f = adapter.javaClass.getDeclaredField(fn)
+                                                            f.isAccessible = true
+                                                            f.setInt(adapter, screenW)
+                                                        } catch (_: Throwable) {}
+                                                    }
+                                                    val getChildCount = rvCls.methods.firstOrNull { it.name == "getChildCount" && it.parameterCount == 0 }
+                                                    val getChildAt = rvCls.methods.firstOrNull { it.name == "getChildAt" && it.parameterCount == 1 }
+                                                    val getChildViewHolder = rvCls.methods.firstOrNull { it.name == "getChildViewHolder" && it.parameterCount == 1 }
+                                                    val childCount = getChildCount?.invoke(rv) as? Int ?: 0
+                                                    for (i in 0 until childCount) {
+                                                        val child = getChildAt?.invoke(rv, i) as? View ?: continue
+                                                        val holder = getChildViewHolder?.invoke(rv, child) ?: continue
+                                                        try {
+                                                            val f = holder.javaClass.getDeclaredField("maximumWidth")
+                                                            f.isAccessible = true
+                                                            f.setInt(holder, screenW)
+                                                        } catch (_: Throwable) {}
+                                                        try {
+                                                            val f = holder.javaClass.getDeclaredField("infoTextExtra")
+                                                            f.isAccessible = true
+                                                            f.setInt(holder, 0)
+                                                        } catch (_: Throwable) {}
+                                                        val itemView = try {
+                                                            holder.javaClass.getField("itemView").apply { isAccessible = true }.get(holder) as? View
+                                                        } catch (_: Throwable) { null }
+                                                        if (itemView != null) unlock(itemView)
+                                                    }
+                                                }
+                                                rv.post {
+                                                    try { forceAdapterFields() } catch (_: Throwable) {}
+                                                }
+                                                forceAdapterFields()
+                                            }
+                                        }
+                                    } catch (_: Throwable) {}
                                 } catch (t: Throwable) {
                                     XposedBridge.log(t)
                                 }
                             }
                         })
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        // 4. 解除 OngoingChipAdapter 对媒体胶囊宽度的限制，支持显示长歌词。
+        //    核心思路：直接 hook 宽度判定和绑定方法（而不是仅靠 OnGlobalLayout 反射字段，
+        //    因为系统有自己的 OnLayoutChangeListener/协程在持续覆写宽度值）：
+        //    a) 让 hasAvailableSpaceToExpand() 永远返回 true，系统就永远认为空间充足、
+        //       会展开显示文本而不是收缩成只有图标的小 chip。
+        //    b) 在 onBindViewHolder() 之后，递归解除 ViewHolder 里所有 TextView 的 maxWidth
+        //       限制，并修正 ChipViewHolder.maximumWidth。
+        //    c) hook 内部的 containerOnLayoutChangeListener.onLayoutChange()，
+        //       在系统设置完 enableMaxWidth 之后再强制覆盖为屏幕宽度。
+        //    d) 在构造函数里放大几个宽度相关字段作为第二道保险。
+        try {
+            val adapterCls = findClass(
+                "com.android.systemui.statusbar.phone.ongoingactivity.OngoingChipAdapter",
+                loadPackageParam.classLoader
+            )
+
+            // a) hasAvailableSpaceToExpand 永远返回 true
+            findAndHookMethod(adapterCls, "hasAvailableSpaceToExpand", Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(p: MethodHookParam) {
+                        p.result = true
+                    }
+                }
+            )
+
+            // b) onBindViewHolder 之前和之后都做处理：
+            //    - beforeHookedMethod: 提前把所有宽度字段设为正确值（开销/阈值=0，上限=屏宽），
+            //      这样系统计算 i5 = enableMaxWidth - i4 时得到足够大的值，不会进入收缩分支。
+            //    - afterHookedMethod: 解除 TextView maxWidth 限制、修正容器宽度、Viewholder 字段。
+            val vhClsName = "com.android.systemui.statusbar.phone.ongoingactivity.OngoingChipAdapter\$ChipViewHolder"
+            val vhCls = try { findClass(vhClsName, loadPackageParam.classLoader) } catch (_: Throwable) { null }
+            val zf = listOf("availableSpace", "marqueeLimitedWidth", "shadowWidth",
+                "notificationIconWidth", "infoTextTotalMargin", "cachedVisibleIconCount")
+            val lf = listOf("enableMaxWidth", "maximumWidth", "maxChipWidth", "sportScoreMaxWidth")
+            hookAllMethods(adapterCls, "onBindViewHolder", object : XC_MethodHook() {
+                override fun beforeHookedMethod(p: MethodHookParam) {
+                    try {
+                        val ctx = adapterCls.getDeclaredField("mContext").let {
+                            it.isAccessible = true
+                            it.get(p.thisObject) as? Context
+                        } ?: return
+                        val screenW = ctx.resources.displayMetrics.widthPixels
+                        for (fn in zf) {
+                            try { val f = adapterCls.getDeclaredField(fn); f.isAccessible = true; f.setInt(p.thisObject, 0) } catch (_: Throwable) {}
+                        }
+                        for (fn in lf) {
+                            try { val f = adapterCls.getDeclaredField(fn); f.isAccessible = true; f.setInt(p.thisObject, screenW) } catch (_: Throwable) {}
+                        }
+                        val holder = p.args[0] ?: return
+                        if (vhCls != null && vhCls.isInstance(holder)) {
+                            try { val f = vhCls.getDeclaredField("maximumWidth"); f.isAccessible = true; f.setInt(holder, screenW) } catch (_: Throwable) {}
+                            try { val f = vhCls.getDeclaredField("infoTextExtra"); f.isAccessible = true; f.setInt(holder, 0) } catch (_: Throwable) {}
+                        }
+                    } catch (_: Throwable) {}
+                }
+                override fun afterHookedMethod(p: MethodHookParam) {
+                    try {
+                        val holder = p.args[0] ?: return
+                        val mContextField = runCatching {
+                            val f = adapterCls.getDeclaredField("mContext")
+                            f.isAccessible = true
+                            f.get(p.thisObject) as Context
+                        }.getOrNull() ?: return
+                        val largeW = mContextField.resources.displayMetrics.widthPixels
+                        val itemView = try {
+                            holder.javaClass.getField("itemView").apply { isAccessible = true }.get(holder) as? View
+                        } catch (_: Throwable) { null } ?: return
+                        fun unlock(v: View) {
+                            when (v) {
+                                is TextView -> {
+                                    v.maxWidth = largeW
+                                    v.setHorizontallyScrolling(true)
+                                    v.ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
+                                }
+                                is ViewGroup -> {
+                                    for (j in 0 until v.childCount) unlock(v.getChildAt(j))
+                                }
+                            }
+                        }
+                        fun forceContainerWidth(v: View) {
+                            val lp = v.layoutParams
+                            if (lp != null && lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
+                                lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                                v.layoutParams = lp
+                            }
+                        }
+                        val fixViews = listOf("mNotiParentLayout", "mRemoteContainer", "mExpandedInfo")
+                        for (vn in fixViews) {
+                            try {
+                                val f = holder.javaClass.getDeclaredField(vn)
+                                f.isAccessible = true
+                                val v = f.get(holder) as? View ?: continue
+                                forceContainerWidth(v)
+                            } catch (_: Throwable) {}
+                        }
+                        forceContainerWidth(itemView)
+                        itemView.post {
+                            try {
+                                unlock(itemView)
+                                for (vn in fixViews) {
+                                    try {
+                                        val f = holder.javaClass.getDeclaredField(vn)
+                                        f.isAccessible = true
+                                        val v = f.get(holder) as? View ?: continue
+                                        forceContainerWidth(v)
+                                    } catch (_: Throwable) {}
+                                }
+                            } catch (_: Throwable) {}
+                        }
+                        unlock(itemView)
+                        try {
+                            if (vhCls != null && vhCls.isInstance(holder)) {
+                                val f1 = vhCls.getDeclaredField("maximumWidth")
+                                f1.isAccessible = true
+                                f1.setInt(holder, largeW)
+                                val f2 = vhCls.getDeclaredField("infoTextExtra")
+                                f2.isAccessible = true
+                                f2.setInt(holder, 0)
+                            }
+                        } catch (_: Throwable) {}
+                    } catch (_: Throwable) {}
+                }
+            })
+
+            // c) 构造函数里设置宽度字段：
+            //    - "预留开销/阈值"类字段（会从总宽度中减去，或作为收缩阈值）→ 设为 0
+            //    - "上限"类字段（maxWidth、maximumWidth 等）→ 设为屏幕宽度
+            //    这样 i5 = enableMaxWidth - (availableSpace+shadowWidth+notifIcon) = screenW - 0 = screenW,
+            //    肯定大于 marqueeLimitedWidth(=0)，系统就不会收缩成仅显示图标的 chip 模式。
+            val zeroFields = listOf(
+                "availableSpace", "marqueeLimitedWidth", "shadowWidth",
+                "notificationIconWidth", "infoTextTotalMargin", "cachedVisibleIconCount"
+            )
+            val largeFields = listOf(
+                "maximumWidth", "maxChipWidth", "sportScoreMaxWidth"
+            )
+            hookAllConstructors(adapterCls, object : XC_MethodHook() {
+                override fun afterHookedMethod(p: MethodHookParam) {
+                    try {
+                        val ctx = adapterCls.getDeclaredField("mContext").let {
+                            it.isAccessible = true
+                            it.get(p.thisObject) as Context
+                        }
+                        val screenW = ctx.resources.displayMetrics.widthPixels
+                        for (fName in zeroFields) {
+                            try {
+                                val f = adapterCls.getDeclaredField(fName)
+                                f.isAccessible = true
+                                f.setInt(p.thisObject, 0)
+                            } catch (_: Throwable) {}
+                        }
+                        for (fName in largeFields) {
+                            try {
+                                val f = adapterCls.getDeclaredField(fName)
+                                f.isAccessible = true
+                                f.setInt(p.thisObject, screenW)
+                            } catch (_: Throwable) {}
+                        }
+                        try {
+                            val f = adapterCls.getDeclaredField("enableMaxWidth")
+                            f.isAccessible = true
+                            f.setInt(p.thisObject, screenW)
+                        } catch (_: Throwable) {}
+                    } catch (_: Throwable) {}
+                }
+            })
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        // d) Hook containerOnLayoutChangeListener.onLayoutChange 在系统设置完
+        //    enableMaxWidth 后覆盖正确的值，避免点击后又被缩短。
+        //    注意：预留开销类字段置 0，上限类字段置屏幕宽度。
+        try {
+            val listenerCls = findClass(
+                "com.android.systemui.statusbar.phone.ongoingactivity.OngoingActivityController\$containerOnLayoutChangeListener\$1",
+                loadPackageParam.classLoader
+            )
+            findAndHookMethod(listenerCls, "onLayoutChange",
+                View::class.java,
+                Int::class.javaPrimitiveType, Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType, Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType, Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType, Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(p: MethodHookParam) {
+                        try {
+                            val this0 = p.thisObject
+                            val outer = this0.javaClass.declaredFields.firstOrNull {
+                                it.type.name == "com.android.systemui.statusbar.phone.ongoingactivity.OngoingActivityController"
+                            }?.apply { isAccessible = true }?.get(this0) ?: return
+                            val adapterField = outer.javaClass.getDeclaredField("mOngoingChipAdapter")
+                            adapterField.isAccessible = true
+                            val adapter = adapterField.get(outer) ?: return
+                            val ctxField = outer.javaClass.getDeclaredField("mContext")
+                            ctxField.isAccessible = true
+                            val ctx = ctxField.get(outer) as Context
+                            val screenW = ctx.resources.displayMetrics.widthPixels
+                            val zeroF = listOf(
+                                "availableSpace", "marqueeLimitedWidth", "shadowWidth",
+                                "notificationIconWidth", "infoTextTotalMargin", "cachedVisibleIconCount"
+                            )
+                            val largeF = listOf(
+                                "enableMaxWidth", "maximumWidth", "maxChipWidth", "sportScoreMaxWidth"
+                            )
+                            for (fn in zeroF) {
+                                try {
+                                    val f = adapter.javaClass.getDeclaredField(fn)
+                                    f.isAccessible = true
+                                    f.setInt(adapter, 0)
+                                } catch (_: Throwable) {}
+                            }
+                            for (fn in largeF) {
+                                try {
+                                    val f = adapter.javaClass.getDeclaredField(fn)
+                                    f.isAccessible = true
+                                    f.setInt(adapter, screenW)
+                                } catch (_: Throwable) {}
+                            }
+                        } catch (_: Throwable) {}
                     }
                 }
             )
