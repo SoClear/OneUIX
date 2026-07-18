@@ -6,7 +6,7 @@
     <string name="confirm">확인</string>
     <string name="other">기타</string>
     <string name="status_bar">상태바</string>
-    <string name="qs">빠른 설정 panel</string>
+    <string name="qs">빠른 설정창</string>
     <string name="aod">Always On Display</string>
     <string name="statusBarLeftPaddingDp_title">상태바 왼쪽 여백 수정</string>
     <string name="statusBarRightPaddingDp_title">상태바 오른쪽 여백 수정</string>
