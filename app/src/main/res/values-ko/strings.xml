@@ -148,7 +148,7 @@
     <string name="restartDownload">다운로드 모드로 부팅</string>
     <string name="sideKeySettings">측면 버튼 설정</string>
     <string name="allowAllRotation_title">모든 회전 각도 허용</string>
-    <string name="allowAllRotation_summary">스마트폰에서 180도 뒤집힌 회전을 허용합니다 (일반적으로 태블릿에서만 가능)</string>
+    <string name="allowAllRotation_summary">스마트폰에서 180도 회전을 허용합니다 (일반적으로 태블릿에서만 가능)</string>
     <string name="liftFcmNetworkLimit_title">FCM 네트워크 제한 해제</string>
     <string name="liftFcmNetworkLimit_summary">중국(홍콩 포함) 펌웨어에서 GMS/FCM 푸시 네트워크 연결을 억제하는 제한을 제거합니다</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">충전기 분리 시 화면 꺼짐 유지</string>
