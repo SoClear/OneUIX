@@ -131,9 +131,6 @@
     <string name="supportCallAndTextOnOtherDevices_summary">Настройки -> Подключенные устройства -> Вызовы и СМС на других устройствах</string>
     <string name="setCustomCarrierName_title">Собственное имя оператора</string>
     <string name="hideLockscreenStatusBar_title">Скрыть строку состояния на экране блокировки</string>
-    <string name="enableDoubleLineStatusBar_title">Включить двухстрочную строку состояния</string>
-    <string name="enableDoubleLineStatusBar_summary">Увеличить высоту строки состояния для большего содержимого</string>
-    <string name="statusBarHeightScale_title">Масштаб высоты строки состояния</string>
     <string name="hideAppsSearchBar_title">Скрыть строку поиска на экране приложений</string>
     <string name="removeShortcutBadge_title">Убрать значок в правом нижнем углу ярлыка</string>
     <string name="removeShortcutBadge_summary">Убрать маленький значок исходного приложения в правом нижнем углу ярлыков на рабочем столе</string>

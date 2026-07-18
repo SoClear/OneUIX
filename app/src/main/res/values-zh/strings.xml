@@ -131,9 +131,6 @@
     <string name="supportCallAndTextOnOtherDevices_summary">设置 -> 已连接的设备 -> 跨设备接打电话和收发短信</string>
     <string name="setCustomCarrierName_title">自定义运营商名称</string>
     <string name="hideLockscreenStatusBar_title">隐藏锁屏界面的状态栏</string>
-    <string name="enableDoubleLineStatusBar_title">启用双行状态栏</string>
-    <string name="enableDoubleLineStatusBar_summary">增加状态栏高度以容纳更多内容</string>
-    <string name="statusBarHeightScale_title">状态栏高度缩放</string>
     <string name="hideAppsSearchBar_title">隐藏应用屏幕搜索栏</string>
     <string name="removeShortcutBadge_title">移除快捷方式图标右下角小角标</string>
     <string name="removeShortcutBadge_summary">去掉桌面快捷方式图标右下角的原 APP 小角标</string>

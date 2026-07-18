@@ -14,6 +14,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.CompoundButton
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -1403,28 +1404,143 @@ object SystemUI {
 
     fun setDoubleLineStatusBar(loadPackageParam: LoadPackageParam, heightScale: Float) {
         if (loadPackageParam.packageName != Package.SYSTEMUI || heightScale <= 1f) return
-        // 状态栏高度的所有来源都汇聚到 SystemBarUtils 的两个静态方法:
-        // - StatusBarWindowControllerImpl: mBarHeight / heights[] / paramsForRotation[] / providedInsets
-        // - IndicatorGardenPresenter: IndicatorGardenModel.totalHeight
-        // - SystemBarUtilsState.statusBarHeight Flow (Compose 路径)
-        // - SystemBarUtilsProxyImpl.getStatusBarHeaderHeightKeyguard
-        // - StatusBarContentInsetsProviderImpl 等
-        // 只需 hook 这两个方法缩放返回值, 即可一处覆盖所有消费者.
+
+        // 1. 放大状态栏高度：一处 hook SystemBarUtils 覆盖所有消费者
+        //    (IndicatorGardenPresenter / StatusBarWindowController 等都通过它取高度)
         try {
-            val systemBarUtilsClass = findClass(
+            val cls = findClass(
                 "com.android.internal.policy.SystemBarUtils",
                 loadPackageParam.classLoader
             )
-            val callback = object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    val original = param.result as Int
-                    if (original > 0) {
-                        param.result = (original * heightScale).toInt()
-                    }
+            val cb = object : XC_MethodHook() {
+                override fun afterHookedMethod(p: MethodHookParam) {
+                    val h = p.result as Int
+                    if (h > 0) p.result = (h * heightScale).toInt()
                 }
             }
-            hookAllMethods(systemBarUtilsClass, "getStatusBarHeight", callback)
-            hookAllMethods(systemBarUtilsClass, "getStatusBarHeightForRotation", callback)
+            hookAllMethods(cls, "getStatusBarHeight", cb)
+            hookAllMethods(cls, "getStatusBarHeightForRotation", cb)
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        // 2. 双行布局：
+        //    IndicatorGarden 在 updateGarden() 里直接设置 PhoneStatusBarView 和
+        //    status_bar_contents 的 layoutParams(height/topMargin)。由于 totalHeight
+        //    被放大了 heightScale 倍，contents 被撑满双倍高度，子 View(left/center/right)
+        //    在其中垂直居中/底部对齐，两行重叠到底部。
+        //
+        //    解决：在 updateGarden 返回后，同步把 contents 的高度收缩回单行
+        //    （保持原有 topMargin 以兼容刘海），避免异步竞争和布局循环。
+        //    通过阈值检测（高度是否被放大）防止重复收缩。
+        try {
+            val gardenerCls = findClass(
+                "com.android.systemui.statusbar.phone.IndicatorBasicGardener",
+                loadPackageParam.classLoader
+            )
+            val modelCls = findClass(
+                "com.android.systemui.statusbar.phone.IndicatorGardenModel",
+                loadPackageParam.classLoader
+            )
+            val inputPropsCls = findClass(
+                "com.android.systemui.statusbar.phone.IndicatorGardenInputProperties",
+                loadPackageParam.classLoader
+            )
+            findAndHookMethod(gardenerCls, "updateGarden", modelCls, inputPropsCls,
+                object : XC_MethodHook() {
+                    private var cachedSingleLineHeight = -1
+                    override fun afterHookedMethod(p: MethodHookParam) {
+                        try {
+                            val gardenView = XposedHelpers.getObjectField(p.thisObject, "gardenView")
+                            val hc = XposedHelpers.callMethod(gardenView, "getHeightContainer") as? ViewGroup
+                                ?: return
+                            if (hc.javaClass.name != "com.android.systemui.statusbar.phone.PhoneStatusBarView") return
+                            val sbv = hc as FrameLayout
+                            val res = sbv.resources
+                            val pkg = Package.SYSTEMUI
+
+                            if (cachedSingleLineHeight <= 0) {
+                                val sbhId = res.getIdentifier("status_bar_height", "dimen", "android")
+                                cachedSingleLineHeight = if (sbhId != 0) res.getDimensionPixelSize(sbhId) else 0
+                            }
+
+                            val contentsId = res.getIdentifier("status_bar_contents", "id", pkg)
+                            val areaId = res.getIdentifier("notification_icon_area", "id", pkg)
+                            val contents = sbv.findViewById<View>(contentsId) ?: return
+                            val cLp = contents.layoutParams as? FrameLayout.LayoutParams
+                                ?: return
+                            val currentTotal = cLp.topMargin + cLp.height + cLp.bottomMargin
+                            val sh = cachedSingleLineHeight
+                            if (sh > 0 && currentTotal > sh * 1.5f) {
+                                val targetHeight = sh - cLp.topMargin - cLp.bottomMargin
+                                if (targetHeight > 0 && cLp.height != targetHeight) {
+                                    cLp.height = targetHeight
+                                    if (cLp.gravity and Gravity.VERTICAL_GRAVITY_MASK != Gravity.TOP) {
+                                        cLp.gravity = (cLp.gravity and Gravity.VERTICAL_GRAVITY_MASK.inv()) or Gravity.TOP
+                                    }
+                                    contents.layoutParams = cLp
+                                }
+                            }
+
+                            val notifArea = sbv.findViewById<View>(areaId)
+                            if (notifArea != null && notifArea.parent === sbv) {
+                                val nLp = notifArea.layoutParams as? FrameLayout.LayoutParams
+                                if (nLp != null && nLp.marginStart != contents.paddingLeft) {
+                                    nLp.marginStart = contents.paddingLeft
+                                    notifArea.layoutParams = nLp
+                                }
+                            }
+                        } catch (t: Throwable) {
+                            XposedBridge.log(t)
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        // 3. 将 notification_icon_area 从水平容器移出，放到底部居左作为第二行
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.phone.PhoneStatusBarView",
+                loadPackageParam.classLoader,
+                "onAttachedToWindow",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(p: MethodHookParam) {
+                        val sbv = p.thisObject as FrameLayout
+                        val key = "oneuix_dl_notif"
+                        if (sbv.getTag(key.hashCode()) != null) return
+                        sbv.setTag(key.hashCode(), true)
+
+                        sbv.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                            override fun onGlobalLayout() {
+                                try {
+                                    val res = sbv.resources
+                                    val pkg = Package.SYSTEMUI
+                                    val contentsId = res.getIdentifier("status_bar_contents", "id", pkg)
+                                    val areaId = res.getIdentifier("notification_icon_area", "id", pkg)
+                                    val contents = sbv.findViewById<View>(contentsId) ?: return
+                                    val notifArea = sbv.findViewById<View>(areaId) ?: return
+                                    if (notifArea.parent !== sbv) {
+                                        (notifArea.parent as? ViewGroup)?.removeView(notifArea)
+                                        val lp = FrameLayout.LayoutParams(
+                                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                                            Gravity.BOTTOM or Gravity.START
+                                        )
+                                        lp.marginStart = contents.paddingLeft
+                                        sbv.addView(notifArea, lp)
+                                    }
+                                    sbv.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                                } catch (t: Throwable) {
+                                    XposedBridge.log(t)
+                                }
+                            }
+                        })
+                    }
+                }
+            )
         } catch (t: Throwable) {
             XposedBridge.log(t)
         }
