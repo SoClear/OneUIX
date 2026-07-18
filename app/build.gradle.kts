@@ -70,7 +70,7 @@ android {
 
     androidResources {
         generateLocaleConfig = true
-        localeFilters += listOf("en", "zh", "fr", "ru")
+        localeFilters += listOf("en", "zh", "fr", "ru","ko")
         // 用于添加模块资源到宿主。
         // 默认情况下，所有安卓应用的资源 ID 都是以 0x7f 开头
         // 为防止冲突，自定义资源 ID 前缀（--package-id），避开 0x7f 防止冲突
