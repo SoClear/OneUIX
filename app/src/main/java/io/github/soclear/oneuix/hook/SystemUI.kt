@@ -1566,10 +1566,6 @@ object SystemUI {
                                             val idx = bottomRow.indexOfChild(v)
                                             val insertAt = if (idName == "ongoing_call_chip") 0 else bottomRow.childCount
                                             if (insertAt > 0) llp.marginStart = gap
-                                            if (idName == "ongoing_activity_capsule") {
-                                                llp.weight = 1f
-                                                llp.width = 0
-                                            }
                                             if (idx >= 0) {
                                                 bottomRow.updateViewLayout(v, llp)
                                             } else {
@@ -1578,31 +1574,16 @@ object SystemUI {
                                         } else {
                                             val llp = v.layoutParams as? LinearLayout.LayoutParams
                                             if (llp != null) {
-                                                var changed = false
-                                                if (idName == "ongoing_activity_capsule") {
-                                                    if (llp.width != 0 || llp.weight != 1f) {
-                                                        llp.width = 0
-                                                        llp.weight = 1f
-                                                        changed = true
-                                                    }
-                                                } else {
-                                                    if (llp.width != ViewGroup.LayoutParams.WRAP_CONTENT || llp.weight != 0f) {
-                                                        llp.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                                                        llp.weight = 0f
-                                                        changed = true
-                                                    }
+                                                if (llp.width != ViewGroup.LayoutParams.WRAP_CONTENT || llp.weight != 0f) {
+                                                    llp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                                                    llp.weight = 0f
+                                                    v.layoutParams = llp
                                                 }
-                                                if (changed) v.layoutParams = llp
                                             } else {
                                                 val newLp = LinearLayout.LayoutParams(
                                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                                     ViewGroup.LayoutParams.WRAP_CONTENT
                                                 )
-                                                if (idName == "ongoing_activity_capsule") {
-                                                    newLp.weight = 1f
-                                                    newLp.width = 0
-                                                }
-                                                val insertAt = if (idName == "ongoing_call_chip") 0 else -1
                                                 val idx = bottomRow.indexOfChild(v)
                                                 if (idx >= 0) bottomRow.updateViewLayout(v, newLp)
                                             }
@@ -1635,23 +1616,39 @@ object SystemUI {
                                         val capsuleId = res.getIdentifier("ongoing_activity_capsule", "id", pkg)
                                         val capsule = sbv.findViewById<View>(capsuleId)
                                         val rvId = res.getIdentifier("capsule_recyclerview", "id", pkg)
+                                        val callId = res.getIdentifier("ongoing_call_chip", "id", pkg)
+                                        val areaIdVal = res.getIdentifier(notifAreaIdName, "id", pkg)
                                         if (capsule != null && rvId != 0) {
                                             val rv = capsule.findViewById<View>(rvId)
                                             if (rv != null) {
+                                                // 动态计算媒体胶囊在第二行中的可用宽度：
+                                                // bottomRow 宽度 - 通话芯片宽度 - 通知图标区域宽度 - 间距
+                                                val callChip = sbv.findViewById<View>(callId)
+                                                val notifAreaV = sbv.findViewById<View>(areaIdVal)
+                                                val minChipW = runCatching {
+                                                    val id = res.getIdentifier("ongoing_activity_expanded_chip_min_width", "dimen", pkg)
+                                                    if (id != 0) res.getDimensionPixelSize(id) else 0
+                                                }.getOrDefault(0).coerceAtLeast(
+                                                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 72f, res.displayMetrics).toInt()
+                                                )
+                                                val availForCapsule = (bottomRow.width
+                                                    - (callChip?.width ?: 0)
+                                                    - (notifAreaV?.width ?: 0)
+                                                    - gap * 3).coerceAtLeast(minChipW)
+                                                val maxTextW = availForCapsule
                                                 val lp = rv.layoutParams
-                                                if (lp != null && lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
-                                                    lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                                                if (lp != null && lp.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                                                    lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
                                                     rv.layoutParams = lp
                                                 }
-                                                val screenW = res.displayMetrics.widthPixels
-                                                fun unlock(v: View) {
+                                                fun unlock(v: View, maxW: Int) {
                                                     when (v) {
                                                         is TextView -> {
-                                                            v.maxWidth = screenW
+                                                            v.maxWidth = maxW
                                                             v.setHorizontallyScrolling(true)
                                                             v.ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
                                                         }
-                                                        is ViewGroup -> for (j in 0 until v.childCount) unlock(v.getChildAt(j))
+                                                        is ViewGroup -> for (j in 0 until v.childCount) unlock(v.getChildAt(j), maxW)
                                                     }
                                                 }
                                                 fun forceAdapterFields() {
@@ -1662,7 +1659,7 @@ object SystemUI {
                                                         "availableSpace", "marqueeLimitedWidth", "shadowWidth",
                                                         "notificationIconWidth", "infoTextTotalMargin", "cachedVisibleIconCount"
                                                     )
-                                                    val largeF = listOf(
+                                                    val capF = listOf(
                                                         "enableMaxWidth", "maximumWidth", "maxChipWidth", "sportScoreMaxWidth"
                                                     )
                                                     for (fn in zeroF) {
@@ -1672,11 +1669,11 @@ object SystemUI {
                                                             f.setInt(adapter, 0)
                                                         } catch (_: Throwable) {}
                                                     }
-                                                    for (fn in largeF) {
+                                                    for (fn in capF) {
                                                         try {
                                                             val f = adapter.javaClass.getDeclaredField(fn)
                                                             f.isAccessible = true
-                                                            f.setInt(adapter, screenW)
+                                                            f.setInt(adapter, maxTextW)
                                                         } catch (_: Throwable) {}
                                                     }
                                                     val getChildCount = rvCls.methods.firstOrNull { it.name == "getChildCount" && it.parameterCount == 0 }
@@ -1689,17 +1686,37 @@ object SystemUI {
                                                         try {
                                                             val f = holder.javaClass.getDeclaredField("maximumWidth")
                                                             f.isAccessible = true
-                                                            f.setInt(holder, screenW)
+                                                            f.setInt(holder, maxTextW)
                                                         } catch (_: Throwable) {}
                                                         try {
                                                             val f = holder.javaClass.getDeclaredField("infoTextExtra")
                                                             f.isAccessible = true
                                                             f.setInt(holder, 0)
                                                         } catch (_: Throwable) {}
+                                                        // 内部容器也改为 WRAP_CONTENT
+                                                        for (vn in listOf("mNotiParentLayout", "mRemoteContainer", "mExpandedInfo")) {
+                                                            try {
+                                                                val f = holder.javaClass.getDeclaredField(vn)
+                                                                f.isAccessible = true
+                                                                val cv = f.get(holder) as? View ?: continue
+                                                                val clp = cv.layoutParams
+                                                                if (clp != null && clp.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                                                                    clp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                                                                    cv.layoutParams = clp
+                                                                }
+                                                            } catch (_: Throwable) {}
+                                                        }
                                                         val itemView = try {
                                                             holder.javaClass.getField("itemView").apply { isAccessible = true }.get(holder) as? View
                                                         } catch (_: Throwable) { null }
-                                                        if (itemView != null) unlock(itemView)
+                                                        if (itemView != null) {
+                                                            val ilp = itemView.layoutParams
+                                                            if (ilp != null && ilp.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                                                                ilp.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                                                                itemView.layoutParams = ilp
+                                                            }
+                                                            unlock(itemView, maxTextW)
+                                                        }
                                                     }
                                                 }
                                                 rv.post {
@@ -1788,22 +1805,22 @@ object SystemUI {
                         val itemView = try {
                             holder.javaClass.getField("itemView").apply { isAccessible = true }.get(holder) as? View
                         } catch (_: Throwable) { null } ?: return
-                        fun unlock(v: View) {
+                        fun unlock(v: View, maxW: Int = largeW) {
                             when (v) {
                                 is TextView -> {
-                                    v.maxWidth = largeW
+                                    v.maxWidth = maxW
                                     v.setHorizontallyScrolling(true)
                                     v.ellipsize = android.text.TextUtils.TruncateAt.MARQUEE
                                 }
                                 is ViewGroup -> {
-                                    for (j in 0 until v.childCount) unlock(v.getChildAt(j))
+                                    for (j in 0 until v.childCount) unlock(v.getChildAt(j), maxW)
                                 }
                             }
                         }
-                        fun forceContainerWidth(v: View) {
+                        fun forceWrapContent(v: View) {
                             val lp = v.layoutParams
-                            if (lp != null && lp.width != ViewGroup.LayoutParams.MATCH_PARENT) {
-                                lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            if (lp != null && lp.width != ViewGroup.LayoutParams.WRAP_CONTENT) {
+                                lp.width = ViewGroup.LayoutParams.WRAP_CONTENT
                                 v.layoutParams = lp
                             }
                         }
@@ -1813,10 +1830,10 @@ object SystemUI {
                                 val f = holder.javaClass.getDeclaredField(vn)
                                 f.isAccessible = true
                                 val v = f.get(holder) as? View ?: continue
-                                forceContainerWidth(v)
+                                forceWrapContent(v)
                             } catch (_: Throwable) {}
                         }
-                        forceContainerWidth(itemView)
+                        forceWrapContent(itemView)
                         itemView.post {
                             try {
                                 unlock(itemView)
@@ -1825,7 +1842,7 @@ object SystemUI {
                                         val f = holder.javaClass.getDeclaredField(vn)
                                         f.isAccessible = true
                                         val v = f.get(holder) as? View ?: continue
-                                        forceContainerWidth(v)
+                                        forceWrapContent(v)
                                     } catch (_: Throwable) {}
                                 }
                             } catch (_: Throwable) {}
