@@ -287,6 +287,11 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                     SystemUI.updateStatusBarClockEverySecond(lpparam)
                 }
 
+                if (preference.systemUI.statusBar.setStatusBarClockTextScale) {
+                    val scale = preference.systemUI.statusBar.statusBarClockTextScale
+                    SystemUI.setStatusBarClockTextScale(lpparam, scale)
+                }
+
                 if (preference.systemUI.statusBar.hideSecureFolderStatusBarIcon) {
                     SystemUI.hideSecureFolderStatusBarIcon(lpparam)
                 }

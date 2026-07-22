@@ -28,6 +28,7 @@
     <string name="turnOn5gQsTile_summary">Nécessite de cocher l\'UI système et les paramètres d\'appel</string>
     <string name="root5gQsTile_summary">Veuillez accorder l\'accès root à cette application, puis ajoutez manuellement la tuile 5G</string>
     <string name="setStatusBarClockFormat_title">Définir le format de l\'horloge de la barre d\'état</string>
+    <string name="setStatusBarClockTextScale_title">Définir le facteur d\'échelle de l\'horloge de la barre d\'état</string>
     <string name="updateStatusBarClockEverySecond_title">Mettre à jour l\'heure de la barre d\'état chaque seconde</string>
     <string name="updateStatusBarClockEverySecond_summary">Définit également les chiffres avec une police à espacement fixe (monospace)</string>
     <string name="hideSecureFolderStatusBarIcon_title">Masquer l\'icône du dossier sécurisé dans la barre d\'état</string>

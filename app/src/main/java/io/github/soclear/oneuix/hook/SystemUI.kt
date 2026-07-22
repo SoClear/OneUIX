@@ -720,6 +720,29 @@ object SystemUI {
         )
     }
 
+    fun setStatusBarClockTextScale(loadPackageParam: LoadPackageParam, scale: Float) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI) return
+        // QSClockIndicatorView 是状态栏的时间/日期 TextView。
+        // onDensityOrFontScaleChanged 每次都会按系统基准(px)重设字号，
+        // 在其后再乘用户倍数覆盖，可兼容密度/字体缩放变化且不会累积放大。
+        val callback = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val clockView = getObjectField(param.thisObject, "view") as TextView
+                clockView.setTextSize(TypedValue.COMPLEX_UNIT_PX, clockView.textSize * scale)
+            }
+        }
+        try {
+            findAndHookMethod(
+                "com.android.systemui.statusbar.policy.QSClockIndicatorViewController",
+                loadPackageParam.classLoader,
+                "onDensityOrFontScaleChanged",
+                callback
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
     fun setStatusBarClockFormat(loadPackageParam: LoadPackageParam, format: String) {
         if (loadPackageParam.packageName != Package.SYSTEMUI) return
         val dateTimeFormatter = try {

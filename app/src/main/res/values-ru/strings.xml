@@ -28,6 +28,7 @@
     <string name="turnOn5gQsTile_summary">Требуется выбрать «System UI» и «Настройки вызовов» в LSPosed</string>
     <string name="root5gQsTile_summary">Предоставьте Root-права приложению, затем добавьте плитку 5G вручную</string>
     <string name="setStatusBarClockFormat_title">Формат даты и времени в строке состояния</string>
+    <string name="setStatusBarClockTextScale_title">Масштаб часов в строке состояния</string>
     <string name="updateStatusBarClockEverySecond_title">Обновлять часы в строке состояния каждую секунду</string>
     <string name="updateStatusBarClockEverySecond_summary">Также включает моноширинный шрифт для цифр</string>
     <string name="hideSecureFolderStatusBarIcon_title">Скрыть иконку защищенной папки в строке состояния</string>

@@ -50,6 +50,8 @@ data class Preference(
             val showSeparateUpDownNetworkSpeeds: Boolean = false,
             val setStatusBarClockFormat: Boolean = false,
             val statusBarClockFormat: String = "HH:mm",
+            val setStatusBarClockTextScale: Boolean = false,
+            val statusBarClockTextScale: Float = 1f,
             val updateStatusBarClockEverySecond: Boolean = false,
             val hideSecureFolderStatusBarIcon: Boolean = false,
             val physicalEsimAdapterWorkaround: Boolean = false,

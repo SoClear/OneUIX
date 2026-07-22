@@ -28,6 +28,7 @@
     <string name="turnOn5gQsTile_summary">Requires checking System UI and Call Settings</string>
     <string name="root5gQsTile_summary">Please grant root access to this app, then manually add the 5G tile</string>
     <string name="setStatusBarClockFormat_title">Set status bar date and time format</string>
+    <string name="setStatusBarClockTextScale_title">Set status bar clock scale factor</string>
     <string name="updateStatusBarClockEverySecond_title">Update status bar clock every second</string>
     <string name="updateStatusBarClockEverySecond_summary">Also sets numbers to monospaced font</string>
     <string name="hideSecureFolderStatusBarIcon_title">Hide Secure Folder status bar icon</string>

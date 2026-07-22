@@ -350,6 +350,43 @@ fun DetailPaneSystemUI(
                 }
             }
         }
+        Column {
+            var scale by remember {
+                mutableFloatStateOf(uiState.statusBar.statusBarClockTextScale)
+            }
+            var expanded by rememberSaveable { mutableStateOf(false) }
+
+            SwitchItem(
+                title = stringResource(id = R.string.setStatusBarClockTextScale_title),
+                modifier = Modifier.animateContentSize(),
+                summary = if (uiState.statusBar.setStatusBarClockTextScale) {
+                    "%.2fx".format(scale)
+                } else null,
+                icon = ImageVector.vectorResource(id = R.drawable.format_size),
+                clickable = true,
+                onClick = { expanded = !expanded },
+                checked = uiState.statusBar.setStatusBarClockTextScale,
+                onCheckedChange = {
+                    if (it && scale == 1f) {
+                        expanded = true
+                    } else if (!it) {
+                        expanded = false
+                    }
+                    onEvent(SystemUIEvent.StatusBar.SetStatusBarClockTextScale(it))
+                }
+            )
+            AnimatedVisibility(expanded && uiState.statusBar.setStatusBarClockTextScale) {
+                Slider(
+                    value = scale,
+                    onValueChange = { scale = it },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    valueRange = 0.5f..2.5f,
+                    onValueChangeFinished = {
+                        onEvent(SystemUIEvent.StatusBar.StatusBarClockTextScale(scale))
+                    }
+                )
+            }
+        }
         SwitchItem(
             title = stringResource(id = R.string.updateStatusBarClockEverySecond_title),
             summary = stringResource(id = R.string.updateStatusBarClockEverySecond_summary),
@@ -950,6 +987,12 @@ sealed interface SystemUIEvent {
         value class StatusBarClockFormat(val value: String) : StatusBar
 
         @JvmInline
+        value class SetStatusBarClockTextScale(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class StatusBarClockTextScale(val value: Float) : StatusBar
+
+        @JvmInline
         value class UpdateStatusBarClockEverySecond(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -1253,6 +1296,26 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             statusBarClockFormat = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.SetStatusBarClockTextScale -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            setStatusBarClockTextScale = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.StatusBarClockTextScale -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            statusBarClockTextScale = event.value
                         )
                     )
                 )
