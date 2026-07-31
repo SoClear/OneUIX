@@ -1,9 +1,15 @@
 package io.github.soclear.oneuix.hook
 
-import de.robv.android.xposed.IXposedHookZygoteInit
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import de.robv.android.xposed.IXposedHookInitPackageResources
 import de.robv.android.xposed.IXposedHookLoadPackage
+import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.IXposedHookZygoteInit.StartupParam
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XposedBridge
+import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.BuildConfig
@@ -12,6 +18,7 @@ import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
+import io.github.soclear.oneuix.hook.util.xlog
 
 
 class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHookZygoteInit {
@@ -228,7 +235,46 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 }
             }
 
+            "tw.nekomimi.nekogram" -> {
+                xlog("11111111111")
+//                XposedHelpers.findAndHookMethod(
+//                    Menu::class.java,  // 直接 hook 接口的实现,或者具体 hook MenuBuilder
+//                    "add",
+//                    Int::class.javaPrimitiveType,
+//                    Int::class.javaPrimitiveType,
+//                    Int::class.javaPrimitiveType,
+//                    CharSequence::class.java,
+//                    object : XC_MethodHook() {
+//                        override fun afterHookedMethod(param: MethodHookParam) {
+//                            val title = param.args[3] as CharSequence?
+//                            if (title != null && title.toString().contains("写作")) {
+//                                xlog(
+//                                    "命中写作工具菜单,调用栈:\n"
+//                                            + Log.getStackTraceString(Throwable())
+//                                )
+//                            }
+//                        }
+//                    }
+//                )
+                XposedBridge.hookAllMethods(
+                    XposedHelpers.findClass("com.android.internal.view.menu.MenuBuilder", lpparam.classLoader),
+                    "add",
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            val result = param.getResult() // 返回的是新增的 MenuItem
+                            if (result is MenuItem) {
+                                val title = result.getTitle()
+                                if (title != null && title.toString().contains("写作")) {
+                                    xlog("命中!堆栈:\n" + Log.getStackTraceString(Throwable()))
+                                }
+                            }
+                        }
+                    }
+                )
+                xlog("ok")
+            }
             Package.SYSTEMUI -> {
+
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }
