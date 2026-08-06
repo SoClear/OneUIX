@@ -128,6 +128,12 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="useSPenGoogleTranslate_title">Use Google Translate for S Pen</string>
     <string name="useSPenGoogleTranslate_summary">Switch S Pen translate source from Baidu to Google</string>
+    <string name="unlockBixbyOfflineProcessing_title">Unlock Bixby offline processing</string>
+    <string name="unlockBixbyOfflineProcessing_summary">Add this device model to Bixby\'s allowlist to enable offline processing and hands-free conversations</string>
+    <string name="supportBixbyCustomWakeup_title">Support Bixby custom wake words</string>
+    <string name="supportBixbyCustomWakeup_summary">Bypass Labs checks and fix empty custom wake word text</string>
+    <string name="bypassBixbyWakeWordRestrictions_title">Bypass Bixby wake word restrictions</string>
+    <string name="bypassBixbyWakeWordRestrictions_summary">Bypass wake word text checks so custom wake words are not blocked by native validators</string>
     <string name="supportCallAndTextOnOtherDevices_title">Support call &amp; text on other devices</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Settings -> Connected devices -> Call &amp; text on other devices</string>
     <string name="setCustomCarrierName_title">Set custom carrier name</string>

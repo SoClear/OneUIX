@@ -128,6 +128,12 @@
     <string name="bypassHealthMonitorCountryCheck_summary">Utiliser Health Monitor dans les pays non pris en charge</string>
     <string name="useSPenGoogleTranslate_title">Utiliser Google Traduction pour S Pen</string>
     <string name="useSPenGoogleTranslate_summary">Basculer la source de traduction S Pen de Baidu à Google</string>
+    <string name="unlockBixbyOfflineProcessing_title">Déverrouiller le traitement hors ligne de Bixby</string>
+    <string name="unlockBixbyOfflineProcessing_summary">Ajouter ce modèle d\'appareil à la liste d\'autorisation de Bixby pour activer le traitement hors ligne et les conversations mains libres</string>
+    <string name="supportBixbyCustomWakeup_title">Prendre en charge les mots de réveil Bixby personnalisés</string>
+    <string name="supportBixbyCustomWakeup_summary">Contourner les vérifications Labs et corriger le texte vide des mots de réveil personnalisés</string>
+    <string name="bypassBixbyWakeWordRestrictions_title">Contourner les restrictions des mots de réveil Bixby</string>
+    <string name="bypassBixbyWakeWordRestrictions_summary">Contourner les vérifications du texte des mots de réveil pour éviter le blocage par les validateurs natifs</string>
     <string name="supportCallAndTextOnOtherDevices_title">Prend en charge les Appels/SMS sur les autres appareils</string>
     <string name="supportCallAndTextOnOtherDevices_summary">Paramètres > Appareils connectés > Appels/SMS sur les autres appareils</string>
     <string name="setCustomCarrierName_title">Définir le nom de l\'opérateur personnalisé</string>

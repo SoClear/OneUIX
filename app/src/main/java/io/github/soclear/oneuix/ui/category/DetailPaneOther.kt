@@ -131,6 +131,27 @@ fun DetailPaneOther(
             onCheckedChange = { onEvent(OtherEvent.UseSPenGoogleTranslate(it)) }
         )
         SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.wifi_link_speed),
+            title = stringResource(id = R.string.unlockBixbyOfflineProcessing_title),
+            summary = stringResource(id = R.string.unlockBixbyOfflineProcessing_summary),
+            checked = uiState.unlockBixbyOfflineProcessing,
+            onCheckedChange = { onEvent(OtherEvent.UnlockBixbyOfflineProcessing(it)) }
+        )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.phone_forwarded),
+            title = stringResource(id = R.string.supportBixbyCustomWakeup_title),
+            summary = stringResource(id = R.string.supportBixbyCustomWakeup_summary),
+            checked = uiState.supportBixbyCustomWakeup,
+            onCheckedChange = { onEvent(OtherEvent.SupportBixbyCustomWakeup(it)) }
+        )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.lock_open),
+            title = stringResource(id = R.string.bypassBixbyWakeWordRestrictions_title),
+            summary = stringResource(id = R.string.bypassBixbyWakeWordRestrictions_summary),
+            checked = uiState.bypassBixbyWakeWordRestrictions,
+            onCheckedChange = { onEvent(OtherEvent.BypassBixbyWakeWordRestrictions(it)) }
+        )
+        SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.apps),
             title = stringResource(id = R.string.hideAppsSearchBar_title),
             checked = uiState.hideAppsSearchBar,
@@ -220,6 +241,15 @@ sealed interface OtherEvent {
 
     @JvmInline
     value class UseSPenGoogleTranslate(val value: Boolean) : OtherEvent
+
+    @JvmInline
+    value class UnlockBixbyOfflineProcessing(val value: Boolean) : OtherEvent
+
+    @JvmInline
+    value class SupportBixbyCustomWakeup(val value: Boolean) : OtherEvent
+
+    @JvmInline
+    value class BypassBixbyWakeWordRestrictions(val value: Boolean) : OtherEvent
 
     @JvmInline
     value class HideAppsSearchBar(val value: Boolean) : OtherEvent
@@ -327,6 +357,24 @@ fun SettingViewModel.onOtherEvent(event: OtherEvent) {
             is OtherEvent.UseSPenGoogleTranslate -> preference.copy(
                 other = preference.other.copy(
                     useSPenGoogleTranslate = event.value
+                )
+            )
+
+            is OtherEvent.UnlockBixbyOfflineProcessing -> preference.copy(
+                other = preference.other.copy(
+                    unlockBixbyOfflineProcessing = event.value
+                )
+            )
+
+            is OtherEvent.SupportBixbyCustomWakeup -> preference.copy(
+                other = preference.other.copy(
+                    supportBixbyCustomWakeup = event.value
+                )
+            )
+
+            is OtherEvent.BypassBixbyWakeWordRestrictions -> preference.copy(
+                other = preference.other.copy(
+                    bypassBixbyWakeWordRestrictions = event.value
                 )
             )
 

@@ -128,6 +128,12 @@
     <string name="bypassHealthMonitorCountryCheck_summary">在不支持的国家/地区使用 Health Monitor</string>
     <string name="useSPenGoogleTranslate_title">S Pen 使用谷歌翻译</string>
     <string name="useSPenGoogleTranslate_summary">将 S Pen 翻译源从百度切换为谷歌</string>
+    <string name="unlockBixbyOfflineProcessing_title">解锁 Bixby 离线处理</string>
+    <string name="unlockBixbyOfflineProcessing_summary">将本机型号加入 Bixby 白名单，以启用离线处理和免唤醒对话</string>
+    <string name="supportBixbyCustomWakeup_title">支持 Bixby 自定义唤醒词</string>
+    <string name="supportBixbyCustomWakeup_summary">绕过 Labs 检查，并修复自定义唤醒词文本为空的问题</string>
+    <string name="bypassBixbyWakeWordRestrictions_title">绕过 Bixby 唤醒词限制</string>
+    <string name="bypassBixbyWakeWordRestrictions_summary">绕过唤醒词文本校验，避免自定义唤醒词被原生校验器拦截</string>
     <string name="supportCallAndTextOnOtherDevices_title">支持跨设备接打电话和收发短信</string>
     <string name="supportCallAndTextOnOtherDevices_summary">设置 -> 已连接的设备 -> 跨设备接打电话和收发短信</string>
     <string name="setCustomCarrierName_title">自定义运营商名称</string>
