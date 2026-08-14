@@ -27,6 +27,9 @@
     <string name="turnOn5gQsTile_title">Enable 5G Quick Settings tile</string>
     <string name="turnOn5gQsTile_summary">Requires checking System UI and Call Settings</string>
     <string name="root5gQsTile_summary">Please grant root access to this app, then manually add the 5G tile</string>
+    <string name="immersiveModeQsTile_label">Immersive mode</string>
+    <string name="immersiveModeQsTile_title">Enable Immersive mode Quick Settings tile</string>
+    <string name="rootImmersiveModeQsTile_summary">Requires root access. Add the tile manually; tap it to hide or restore the status bar</string>
     <string name="setStatusBarClockFormat_title">Set status bar date and time format</string>
     <string name="updateStatusBarClockEverySecond_title">Update status bar clock every second</string>
     <string name="updateStatusBarClockEverySecond_summary">Also sets numbers to monospaced font</string>

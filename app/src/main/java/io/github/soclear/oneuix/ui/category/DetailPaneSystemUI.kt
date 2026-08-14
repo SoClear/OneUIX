@@ -554,6 +554,16 @@ fun DetailPaneSystemUI(
                 },
                 supportingContent = { Text(stringResource(id = R.string.root5gQsTile_summary)) }
             )
+            ListItem(
+                headlineContent = { Text(stringResource(id = R.string.immersiveModeQsTile_title)) },
+                leadingContent = {
+                    Icon(
+                        ImageVector.vectorResource(id = R.drawable.immersive_mode),
+                        stringResource(id = R.string.immersiveModeQsTile_title)
+                    )
+                },
+                supportingContent = { Text(stringResource(id = R.string.rootImmersiveModeQsTile_summary)) }
+            )
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.tile_medium),

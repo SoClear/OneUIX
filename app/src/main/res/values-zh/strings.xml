@@ -27,6 +27,9 @@
     <string name="turnOn5gQsTile_title">开启快捷设置 5G 磁贴</string>
     <string name="turnOn5gQsTile_summary">需要勾选系统 UI 和通话设置</string>
     <string name="root5gQsTile_summary">请授予本应用 root 权限后手动添加 5G 磁贴</string>
+    <string name="immersiveModeQsTile_label">沉浸模式</string>
+    <string name="immersiveModeQsTile_title">开启沉浸模式快捷设置磁贴</string>
+    <string name="rootImmersiveModeQsTile_summary">需要 root 权限。请手动添加磁贴，点击后隐藏状态栏，再次点击恢复</string>
     <string name="setStatusBarClockFormat_title">设置状态栏日期时间格式</string>
     <string name="updateStatusBarClockEverySecond_title">状态栏时间每秒更新</string>
     <string name="updateStatusBarClockEverySecond_summary">同时设置数字为等宽字体</string>
