@@ -40,8 +40,10 @@ object Gallery {
             "SUPPORT_HEIF_CONVERSION",
             // 分享时转换 HDR10+ 视频
             "SUPPORT_HDR10PLUS_CONVERSION",
-            // 音频橡皮擦
+            // One UI 7 音频橡皮擦（视频编辑器）
             "SUPPORT_AUDIO_ERASER",
+            // One UI 8 音频橡皮擦（相册内）
+            "SUPPORT_AUDIO_ERASER_IN_GALLERY",
         )
         val returnTrue = returnConstant(true)
 
@@ -65,8 +67,19 @@ object Gallery {
                 "com.samsung.android.gallery.module.settings.SettingPreference",
                 loadPackageParam.classLoader
             )
-            val trashClass = getStaticObjectField(settingPreferenceClass, "Trash").javaClass
-            findAndHookMethod(trashClass, "support", Context::class.java, returnTrue)
+            listOf("Trash", "AudioEraser").forEach { preference ->
+                try {
+                    val preferenceClass =
+                        getStaticObjectField(settingPreferenceClass, preference).javaClass
+                    findAndHookMethod(
+                        preferenceClass,
+                        "support",
+                        Context::class.java,
+                        returnTrue
+                    )
+                } catch (_: Throwable) {
+                }
+            }
         } catch (_: Throwable) {
         }
     }
