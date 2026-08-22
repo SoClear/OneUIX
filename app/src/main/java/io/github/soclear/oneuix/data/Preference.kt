@@ -49,6 +49,7 @@ data class Preference(
             val hideBatteryLevelTextChargingIcon: Boolean = false,
             val supportRealTimeNetworkSpeed: Boolean = true,
             val showSeparateUpDownNetworkSpeeds: Boolean = false,
+            val networkSpeedThresholdKb: Int = 0,
             val setStatusBarClockFormat: Boolean = false,
             val statusBarClockFormat: String = "HH:mm",
             val setStatusBarClockTextScale: Boolean = false,

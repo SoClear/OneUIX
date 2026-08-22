@@ -25,6 +25,8 @@
     <string name="supportRealTimeNetworkSpeed_summary">设置->通知->高级设置->显示实时网速</string>
     <string name="showSeparateUpDownNetworkSpeeds_title">状态栏显示上传下载网速</string>
     <string name="showSeparateUpDownNetworkSpeeds_summary">上行为上传速度，下行为下载速度</string>
+    <string name="networkSpeedThreshold_title">网速显示阈值</string>
+    <string name="networkSpeedThreshold_label">阈值（KB/s）</string>
     <string name="turnOn5gQsTile_title">开启快捷设置 5G 磁贴</string>
     <string name="turnOn5gQsTile_summary">需要勾选系统 UI 和通话设置</string>
     <string name="root5gQsTile_summary">请授予本应用 root 权限后手动添加 5G 磁贴</string>
