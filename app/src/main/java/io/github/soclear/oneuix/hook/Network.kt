@@ -53,7 +53,8 @@ object Network {
 
     fun showSeparateUpDownNetworkSpeeds(
         loadPackageParam: LoadPackageParam,
-        intervalMillisecond: Long = 3000L
+        intervalMillisecond: Long = 3000L,
+        thresholdKb: Int = 0
     ) {
         if (loadPackageParam.packageName != Package.SYSTEMUI || intervalMillisecond <= 0L) {
             return
@@ -115,6 +116,9 @@ object Network {
             ): String {
                 val txBytesPerSecond = (current.totalTx - previous.totalTx) / actualIntervalSeconds
                 val rxBytesPerSecond = (current.totalRx - previous.totalRx) / actualIntervalSeconds
+                if (!shouldDisplayNetworkSpeed(txBytesPerSecond, rxBytesPerSecond, thresholdKb)) {
+                    return ""
+                }
                 return "${formatSpeed(txBytesPerSecond)}\n${formatSpeed(rxBytesPerSecond)}"
             }
 
@@ -302,4 +306,15 @@ object Network {
             XposedBridge.log(t)
         }
     }
+}
+
+internal fun shouldDisplayNetworkSpeed(
+    txBytesPerSecond: Float,
+    rxBytesPerSecond: Float,
+    thresholdKb: Int,
+): Boolean {
+    if (thresholdKb <= 0) return true
+    val thresholdBytesPerSecond = thresholdKb * 1024f
+    return txBytesPerSecond > thresholdBytesPerSecond ||
+        rxBytesPerSecond > thresholdBytesPerSecond
 }

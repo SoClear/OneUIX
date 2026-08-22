@@ -297,7 +297,10 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 }
 
                 if (preference.systemUI.statusBar.showSeparateUpDownNetworkSpeeds) {
-                    Network.showSeparateUpDownNetworkSpeeds(lpparam)
+                    Network.showSeparateUpDownNetworkSpeeds(
+                        lpparam,
+                        thresholdKb = preference.systemUI.statusBar.networkSpeedThresholdKb
+                    )
                 }
 
                 if (preference.systemUI.statusBar.setStatusBarClockFormat) {
