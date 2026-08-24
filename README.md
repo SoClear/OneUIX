@@ -4,7 +4,7 @@
 
 ## 释放三星 One UI 的无限可能 | Unleash the full potential of Samsung One UI
 
-[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?include_prereleases&style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.1)
+[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?include_prereleases&style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.2)
 
 ![LSPosed](https://img.shields.io/badge/Powered_by-LSPosed-blue?style=flat-square&logo=android)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/xrzcc/OneUIX/blob/main/LICENSE.txt)
@@ -28,7 +28,7 @@
 >
 > This repository is a personal enhanced fork of [SoClear/OneUIX](https://github.com/SoClear/OneUIX), primarily tested on rooted Samsung devices running One UI 8.5 / Android 16 with LSPosed. Every added interaction feature is disabled by default and can be enabled individually without bypassing Android lock-screen authentication.
 >
-> **[下载当前个人版 APK / Download the current personal build](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.1)**
+> **[下载当前个人版 APK / Download the current personal build](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.2)**
 
 ## 简体中文
 
@@ -80,7 +80,7 @@
 - 修改状态栏最大通知图标数量
 - 自定义运营商名称
 - 隐藏锁屏界面的状态栏
-- 在亮屏锁屏界面强制显示当前系统导航条，支持三键和手势导航，不影响 AOD 或解锁后的导航逻辑
+- 在亮屏锁屏界面显示当前系统导航条；手势导航的小白条会随上滑解锁进度上移、拉伸并在取消后回弹，不影响 AOD 或解锁后的导航逻辑
 
 ##### 快捷设置
 
@@ -145,6 +145,7 @@
 - 应用分身支持所有用户应用
 - 天气源设为中国天气
 - 最近任务页面显示内存信息
+- 隐藏最近任务页面的“全部关闭”按钮，保留逐个上滑关闭应用
 - 视频播放器添加 3.0 和 4.0 倍速
 - 强制链接跳转外部三星浏览器
 - 显示相册的所有设置
@@ -236,6 +237,7 @@
 - Modify maximum number of notification icons in status bar
 - Set custom carrier name
 - Hide status bar on lock screen
+- Show the system navigation bar on the active lock screen; in gesture mode, the handle follows upward swipe progress, stretches slightly, and springs back when the gesture is cancelled without affecting AOD or unlocked navigation
 
 ##### Quick Settings
 
