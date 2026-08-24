@@ -5,7 +5,7 @@
 ## 实现边界
 
 - 锁屏距离：在 `KeyguardTouchBase` 的唯一安全 `initDimens*` 初始化点完成后，仅缩放 `swipeUnlockRadius`，范围为 10%～100%，按 10% 分档。
-- 锁屏导航条：在三星 `SecStatusBarKeyguardViewManager` 认定导航条不可见时，仅对“锁屏正在显示、未被遮挡、非 AOD、非熄屏动画”的状态强制显示导航栏窗口；同时在 `SamsungNavigationBarView` 中放开中间手势提示条的可见性，左右提示保持系统原逻辑。关闭后恢复三星默认行为。
+- 锁屏导航条：在三星 `SecStatusBarKeyguardViewManager` 认定导航条不可见时，仅对“锁屏正在显示、未被遮挡、非 AOD、非熄屏动画”的状态强制显示导航栏窗口；同时在 `SamsungNavigationBarView` 中放开中间手势提示条的可见性，左右提示保持系统原逻辑。锁屏上滑时，小白条按实际解锁进度向上移动、横向拉伸并轻微增强不透明度；取消手势后用 220ms 动画回到底部。关闭后恢复三星默认行为。
 - 最近任务按钮：在 One UI Home 创建 `CloseAllButton` 时将其隐藏，并持续阻止布局刷新重新显示。仅移除“全部关闭”入口，不影响逐个上滑关闭应用，不结束或锁定任何后台应用；关闭选项并重启 One UI Home 后恢复三星默认界面。
 - 通知直达：只在通知行点击、Keyguard 仍显示、`canDismissLockScreen` 为真、系统已不再判定设备为锁定时，取消三星额外的 swipe bouncer；通知点击和 `PendingIntent` 仍走 SystemUI 原生流程。
 - 主屏搜索：在 One UI 8.5 `HomeView` 上识别从下方 75% 空白区域开始的单指向下手势，复用 `SearchScreenController.startSearch(SEARCH_FROM_KEY, true)`，并聚焦 Finder 原生输入框、请求显示输入法；不启动或伪造 Finder Activity。
