@@ -27,6 +27,17 @@
 
 ### ✨ 功能
 
+#### 交互增强（One UI 8.5 / Android 16）
+
+- 在主屏幕中部空白区域向下滑动即可打开三星查找器，并自动聚焦搜索框和显示键盘；屏幕顶部的通知栏下拉手势保持不变
+- 将锁屏上滑解锁行程设置为三星默认距离的 10%～100%，仅调整手势距离，不绕过人脸、指纹、图案、PIN 或密码验证
+- 系统已经完成人脸、指纹等认证且允许解除锁定时，点击锁屏通知直接进入对应应用，无需再手动上滑
+- 普通新通知到达时自动点亮屏幕，可设置 1～10 秒亮屏时长；常驻通知、分组摘要和屏幕已亮场景不会重复触发
+- 交互增强滑轨实时显示当前数值，并在跨越档位时调用遵循系统设置的震动反馈
+- 可隐藏主界面中不常使用的功能分类；隐藏只影响菜单显示，不会关闭功能或删除原有配置
+- 提供与 KernelSU 管理器相同的 zygote 软重启操作，并在执行前显示确认提示
+- 可选择带桌面入口的用户安装应用，在完整开机或软重启后通过 Root 依次打开；不会修改目标应用权限或系统后台策略
+
 #### Android 系统
 
 - 禁用每 72 小时验证锁屏密码
@@ -170,6 +181,17 @@
 **One UI X** is a powerful LSPosed module explicitly designed for Samsung devices. It aims to provide a highly customizable system experience, remove annoying restrictions, and inject powerful enhancements into the Status Bar, Quick Settings, and native apps.
 
 ### ✨ Features
+
+#### Interaction Enhancements (One UI 8.5 / Android 16)
+
+- Swipe down on an empty area in the middle of Home to open Samsung Finder with its search field focused and keyboard shown, while keeping the top-edge notification-shade gesture unchanged
+- Set the lock-screen upward swipe distance to 10%–100% of Samsung's default without bypassing Face, fingerprint, pattern, PIN, or password authentication
+- Open a lock-screen notification directly after Face, fingerprint, or another system authentication has already made the lock screen dismissible, without requiring an additional swipe
+- Wake the screen for eligible new notifications with a configurable 1–10 second duration, excluding ongoing notifications, group summaries, and already-screen-on cases
+- Show live values above interaction sliders and provide system-respecting haptic feedback when crossing discrete steps
+- Hide rarely used categories from the main menu without disabling their features or deleting saved settings
+- Provide a confirmed zygote soft restart using the same operation as KernelSU Manager
+- Select launchable user-installed apps to open sequentially through root after a full boot or soft restart without changing their permissions or Android background policies
 
 #### Android System
 
