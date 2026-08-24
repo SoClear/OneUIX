@@ -115,6 +115,8 @@
     <string name="addBrightnessProgressToQsBar_title">Afficher le niveau de luminosité (Paramètres rapides)</string>
     <string name="addVolumeProgressToQsBar_title">Afficher le niveau de volume (Paramètres rapides)</string>
     <string name="showMemoryUsageInRecents_title">Afficher l\'utilisation de la RAM dans les applications récentes</string>
+    <string name="hideRecentsCloseAllButton_title">Masquer « Tout fermer » dans les applications récentes</string>
+    <string name="hideRecentsCloseAllButton_summary">Supprime uniquement le bouton « Tout fermer ». Les applications peuvent toujours être fermées individuellement. Cette option ne ferme ni ne protège automatiquement les applications en arrière-plan. Redémarrez l’accueil One UI après modification.</string>
     <string name="showForcePeakRefreshRatePreference_title">Afficher l\'option Forcer le taux de rafraîchissement maximal</string>
     <string name="showForcePeakRefreshRatePreference_summary">Rechercher \"Force peak refresh rate\" dans les paramètres</string>
     <string name="supportOutdoorMode_title">Déverrouiller le mode Extérieur</string>

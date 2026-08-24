@@ -300,6 +300,7 @@
 - Make all user apps available for app cloning
 - Set weather provider to China Weather
 - Show memory usage in Recents page
+- Hide the “Close all” button in Recents while keeping per-app swipe dismissal available
 - Add 3.0x and 4.0x playback speeds to video player
 - Force links to open in external Samsung Internet
 - Show all Gallery settings

@@ -115,6 +115,8 @@
     <string name="addBrightnessProgressToQsBar_title">快捷设置面板显示亮度级别</string>
     <string name="addVolumeProgressToQsBar_title">快捷设置面板显示音量级别</string>
     <string name="showMemoryUsageInRecents_title">最近任务页面显示内存信息</string>
+    <string name="hideRecentsCloseAllButton_title">隐藏最近任务的“全部关闭”按钮</string>
+    <string name="hideRecentsCloseAllButton_summary">仅移除后台多任务界面底部的“全部关闭”按钮，仍可逐个上滑关闭应用；此功能不会自动关闭后台应用，也不会将应用锁定在后台。修改后需重启 One UI 主屏。</string>
     <string name="showForcePeakRefreshRatePreference_title">开发者选项显示强制最大刷新率选项</string>
     <string name="showForcePeakRefreshRatePreference_summary">设置中搜索 Force peak refresh rate</string>
     <string name="supportOutdoorMode_title">解锁户外模式</string>

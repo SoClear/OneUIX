@@ -115,6 +115,8 @@
     <string name="addBrightnessProgressToQsBar_title">Показывать уровень яркости в панели быстрых настроек</string>
     <string name="addVolumeProgressToQsBar_title">Показывать уровень громкости в панели быстрых настроек</string>
     <string name="showMemoryUsageInRecents_title">Использование памяти в меню запущенных приложений</string>
+    <string name="hideRecentsCloseAllButton_title">Скрыть «Закрыть все» в недавних приложениях</string>
+    <string name="hideRecentsCloseAllButton_summary">Удаляет только кнопку «Закрыть все». Отдельные приложения по-прежнему можно смахивать. Функция не закрывает и не закрепляет фоновые приложения автоматически. После изменения перезапустите главный экран One UI.</string>
     <string name="showForcePeakRefreshRatePreference_title">Пункт «Частота обновления экрана» в параметрах разработчика</string>
     <string name="showForcePeakRefreshRatePreference_summary">Появится в поиске настроек как «Частота обновления экрана»</string>
     <string name="supportOutdoorMode_title">Разблокировать режим “На улице”</string>

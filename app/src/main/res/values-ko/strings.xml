@@ -115,6 +115,8 @@
     <string name="addBrightnessProgressToQsBar_title">빠른 설정창에 밝기 조절 바 표시</string>
     <string name="addVolumeProgressToQsBar_title">빠른 설정창에 볼륨 조절 바 표시</string>
     <string name="showMemoryUsageInRecents_title">최근 앱 화면에 메모리(RAM) 사용량 표시</string>
+    <string name="hideRecentsCloseAllButton_title">최근 앱에서 ‘모두 닫기’ 숨기기</string>
+    <string name="hideRecentsCloseAllButton_summary">최근 앱 화면의 ‘모두 닫기’ 버튼만 제거합니다. 앱을 하나씩 밀어서 닫는 기능은 그대로 사용할 수 있으며, 백그라운드 앱을 자동으로 종료하거나 보호하지 않습니다. 변경 후 One UI 홈을 다시 시작하세요.</string>
     <string name="showForcePeakRefreshRatePreference_title">개발자 옵션에 \'최고 주사율 강제 적용\' 메뉴 표시</string>
     <string name="showForcePeakRefreshRatePreference_summary">설정에서 \'최고 주사율 강제 적용\' 검색 가능</string>
     <string name="supportOutdoorMode_title">야외 모드 잠금 해제</string>

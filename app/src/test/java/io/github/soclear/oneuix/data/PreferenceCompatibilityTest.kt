@@ -21,6 +21,7 @@ class PreferenceCompatibilityTest {
         assertFalse(preference.interaction.customizeLockscreenSwipeDistance)
         assertFalse(preference.interaction.autoStartEnabled)
         assertFalse(preference.systemUI.other.showNavigationBarOnLockscreen)
+        assertFalse(preference.other.hideRecentsCloseAllButton)
         assertTrue(preference.interaction.autoStartPackages.isEmpty())
         assertEquals(8, preference.interaction.wakeDurationSeconds)
         assertEquals(96f, preference.interaction.homeSwipeDownThresholdDp)
@@ -77,5 +78,18 @@ class PreferenceCompatibilityTest {
         )
 
         assertTrue(restored.systemUI.other.showNavigationBarOnLockscreen)
+    }
+
+    @Test
+    fun hideRecentsCloseAllButtonSettingRoundTrips() {
+        val original = Preference(
+            other = Preference.Other(hideRecentsCloseAllButton = true)
+        )
+
+        val restored = IgnoreUnknownKeysJson.decodeFromString<Preference>(
+            IgnoreUnknownKeysJson.encodeToString(Preference.serializer(), original)
+        )
+
+        assertTrue(restored.other.hideRecentsCloseAllButton)
     }
 }

@@ -115,6 +115,8 @@
     <string name="addBrightnessProgressToQsBar_title">Show brightness level in QS panel</string>
     <string name="addVolumeProgressToQsBar_title">Show volume level in QS panel</string>
     <string name="showMemoryUsageInRecents_title">Show memory usage in Recents page</string>
+    <string name="hideRecentsCloseAllButton_title">Hide “Close all” in Recents</string>
+    <string name="hideRecentsCloseAllButton_summary">Removes only the “Close all” button from the recent-apps screen. You can still swipe away individual apps, and this option does not close or protect any background app. Restart One UI Home after changing it.</string>
     <string name="showForcePeakRefreshRatePreference_title">Show \'Force peak refresh rate\' in Developer options</string>
     <string name="showForcePeakRefreshRatePreference_summary">Search for \'Force peak refresh rate\' in Settings</string>
     <string name="supportOutdoorMode_title">Unlock Outdoor mode</string>

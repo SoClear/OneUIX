@@ -171,6 +171,10 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                     Launcher.showMemoryUsageInRecents(lpparam)
                 }
 
+                if (preference.other.hideRecentsCloseAllButton) {
+                    Launcher.hideRecentsCloseAllButton(lpparam)
+                }
+
                 if (preference.other.hideAppsSearchBar) {
                     Launcher.hideAppsSearchBar(lpparam)
                 }
