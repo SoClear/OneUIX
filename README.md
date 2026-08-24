@@ -4,13 +4,13 @@
 
 ## 释放三星 One UI 的无限可能 | Unleash the full potential of Samsung One UI
 
-[![Stars](https://img.shields.io/github/stars/SoClear/OneUIX?style=for-the-badge&logo=github)](https://github.com/SoClear/OneUIX) [![Release](https://img.shields.io/github/v/release/SoClear/OneUIX?style=for-the-badge)](https://github.com/SoClear/OneUIX/releases/latest)
+[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/latest)
 
 ![LSPosed](https://img.shields.io/badge/Powered_by-LSPosed-blue?style=flat-square&logo=android)
-[![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/SoClear/OneUIX/blob/main/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/xrzcc/OneUIX/blob/main/LICENSE.txt)
 [![Min SDK](https://img.shields.io/badge/Min_SDK-33-brightgreen?style=flat-square&logo=android)](https://developer.android.com/about/versions)
-[![Language](https://img.shields.io/github/languages/top/SoClear/OneUIX?style=flat-square&color=blueviolet&logo=kotlin)](https://github.com/SoClear/OneUIX)
-[![GitHub Downloads](https://img.shields.io/github/downloads/SoClear/OneUIX/total?style=flat-square&color=blue&label=GitHub%20Downloads)](https://github.com/SoClear/OneUIX/releases)
+[![Language](https://img.shields.io/github/languages/top/xrzcc/OneUIX?style=flat-square&color=blueviolet&logo=kotlin)](https://github.com/xrzcc/OneUIX)
+[![GitHub Downloads](https://img.shields.io/github/downloads/xrzcc/OneUIX/total?style=flat-square&color=blue&label=Personal%20Downloads)](https://github.com/xrzcc/OneUIX/releases)
 [![LSPosed Downloads](https://img.shields.io/github/downloads/Xposed-Modules-Repo/io.github.soclear.oneuix/total?style=flat-square&color=orange&label=LSPosed%20Downloads)](https://github.com/Xposed-Modules-Repo/io.github.soclear.oneuix/releases)
 
 <img src="./icon.svg" width="150" alt="One UI X Logo">
@@ -20,6 +20,15 @@
 </div>
 
 ---
+
+> [!IMPORTANT]
+> **个人增强分支 / Personal Enhanced Fork**
+>
+> 本仓库是基于 [SoClear/OneUIX](https://github.com/SoClear/OneUIX) 的个人增强版本，重点适配已 Root、已启用 LSPosed 的 Samsung One UI 8.5 / Android 16 设备。新增交互功能全部默认关闭，可按需启用；使用前请阅读对应功能说明并保留系统锁屏安全验证。
+>
+> This repository is a personal enhanced fork of [SoClear/OneUIX](https://github.com/SoClear/OneUIX), primarily tested on rooted Samsung devices running One UI 8.5 / Android 16 with LSPosed. Every added interaction feature is disabled by default and can be enabled individually without bypassing Android lock-screen authentication.
+>
+> **[下载最新版 APK / Download the latest APK](https://github.com/xrzcc/OneUIX/releases/latest)**
 
 ## 简体中文
 
