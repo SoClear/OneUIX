@@ -821,6 +821,15 @@ fun DetailPaneSystemUI(
         )
 
         DividerText(R.string.other)
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.lock_open),
+            title = stringResource(id = R.string.showNavigationBarOnLockscreen_title),
+            summary = stringResource(id = R.string.showNavigationBarOnLockscreen_summary),
+            checked = uiState.other.showNavigationBarOnLockscreen,
+            onCheckedChange = {
+                onEvent(SystemUIEvent.Other.ShowNavigationBarOnLockscreen(it))
+            }
+        )
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
             SwitchItem(
@@ -1097,6 +1106,9 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface Other : SystemUIEvent {
+        @JvmInline
+        value class ShowNavigationBarOnLockscreen(val value: Boolean) : Other
+
         @JvmInline
         value class CustomPowerMenu(val value: Boolean) : Other
 
@@ -1634,6 +1646,16 @@ private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
 private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.Other.ShowNavigationBarOnLockscreen -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        other = preference.systemUI.other.copy(
+                            showNavigationBarOnLockscreen = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.Other.CustomPowerMenu -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(

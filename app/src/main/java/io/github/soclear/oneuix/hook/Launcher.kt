@@ -31,6 +31,32 @@ import kotlin.math.roundToInt
 
 
 object Launcher {
+    fun hideRecentsCloseAllButton(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.LAUNCHER) return
+
+        try {
+            findAndHookConstructor(
+                "com.honeyspace.ui.honeypots.tasklist.presentation.CloseAllButton",
+                loadPackageParam.classLoader,
+                Context::class.java,
+                AttributeSet::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val button = param.thisObject as View
+                        button.visibility = View.GONE
+                        button.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
+                            if (view.visibility != View.GONE) view.visibility = View.GONE
+                        }
+                    }
+                }
+            )
+            XposedBridge.log("OneUIX [Launcher] Recents close-all button hidden")
+        } catch (t: Throwable) {
+            XposedBridge.log("OneUIX [Launcher] Failed to hide Recents close-all button")
+            XposedBridge.log(t)
+        }
+    }
+
     fun showMemoryUsageInRecents(loadPackageParam: LoadPackageParam) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
             showMemoryUsageInRecentsTargetSdk36(loadPackageParam)

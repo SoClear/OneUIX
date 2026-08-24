@@ -4,13 +4,13 @@
 
 ## 释放三星 One UI 的无限可能 | Unleash the full potential of Samsung One UI
 
-[![Stars](https://img.shields.io/github/stars/SoClear/OneUIX?style=for-the-badge&logo=github)](https://github.com/SoClear/OneUIX) [![Release](https://img.shields.io/github/v/release/SoClear/OneUIX?style=for-the-badge)](https://github.com/SoClear/OneUIX/releases/latest)
+[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?include_prereleases&style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.2)
 
 ![LSPosed](https://img.shields.io/badge/Powered_by-LSPosed-blue?style=flat-square&logo=android)
-[![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/SoClear/OneUIX/blob/main/LICENSE.txt)
+[![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/xrzcc/OneUIX/blob/main/LICENSE.txt)
 [![Min SDK](https://img.shields.io/badge/Min_SDK-33-brightgreen?style=flat-square&logo=android)](https://developer.android.com/about/versions)
-[![Language](https://img.shields.io/github/languages/top/SoClear/OneUIX?style=flat-square&color=blueviolet&logo=kotlin)](https://github.com/SoClear/OneUIX)
-[![GitHub Downloads](https://img.shields.io/github/downloads/SoClear/OneUIX/total?style=flat-square&color=blue&label=GitHub%20Downloads)](https://github.com/SoClear/OneUIX/releases)
+[![Language](https://img.shields.io/github/languages/top/xrzcc/OneUIX?style=flat-square&color=blueviolet&logo=kotlin)](https://github.com/xrzcc/OneUIX)
+[![GitHub Downloads](https://img.shields.io/github/downloads/xrzcc/OneUIX/total?style=flat-square&color=blue&label=Personal%20Downloads)](https://github.com/xrzcc/OneUIX/releases)
 [![LSPosed Downloads](https://img.shields.io/github/downloads/Xposed-Modules-Repo/io.github.soclear.oneuix/total?style=flat-square&color=orange&label=LSPosed%20Downloads)](https://github.com/Xposed-Modules-Repo/io.github.soclear.oneuix/releases)
 
 <img src="./icon.svg" width="150" alt="One UI X Logo">
@@ -21,11 +21,31 @@
 
 ---
 
+> [!IMPORTANT]
+> **个人增强分支 / Personal Enhanced Fork**
+>
+> 本仓库是基于 [SoClear/OneUIX](https://github.com/SoClear/OneUIX) 的个人增强版本，重点适配已 Root、已启用 LSPosed 的 Samsung One UI 8.5 / Android 16 设备。新增交互功能全部默认关闭，可按需启用；使用前请阅读对应功能说明并保留系统锁屏安全验证。
+>
+> This repository is a personal enhanced fork of [SoClear/OneUIX](https://github.com/SoClear/OneUIX), primarily tested on rooted Samsung devices running One UI 8.5 / Android 16 with LSPosed. Every added interaction feature is disabled by default and can be enabled individually without bypassing Android lock-screen authentication.
+>
+> **[下载当前个人版 APK / Download the current personal build](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.2)**
+
 ## 简体中文
 
 **One UI X** 是一个专为三星设备设计的强大 LSPosed 模块。它旨在提供高度可定制的系统体验，解除烦人的限制，并为状态栏、快捷设置以及系统自带应用注入强大的增强功能。
 
 ### ✨ 功能
+
+#### 交互增强（One UI 8.5 / Android 16）
+
+- 在主屏幕中部空白区域向下滑动即可打开三星查找器，并自动聚焦搜索框和显示键盘；屏幕顶部的通知栏下拉手势保持不变
+- 将锁屏上滑解锁行程设置为三星默认距离的 10%～100%，仅调整手势距离，不绕过人脸、指纹、图案、PIN 或密码验证
+- 系统已经完成人脸、指纹等认证且允许解除锁定时，点击锁屏通知直接进入对应应用，无需再手动上滑
+- 普通新通知到达时自动点亮屏幕，并请求三星原生人脸识别（仍受密码、锁定及摄像头隐私等系统规则约束）；可设置 1～10 秒亮屏时长，常驻通知、分组摘要和屏幕已亮场景不会重复触发
+- 交互增强滑轨实时显示当前数值，并在跨越档位时调用遵循系统设置的震动反馈
+- 可隐藏主界面中不常使用的功能分类；隐藏只影响菜单显示，不会关闭功能或删除原有配置
+- 提供与 KernelSU 管理器相同的 zygote 软重启操作，并在执行前显示确认提示
+- 可选择带桌面入口的用户安装应用，在完整开机或软重启后通过 Root 依次打开；不会修改目标应用权限或系统后台策略
 
 #### Android 系统
 
@@ -60,6 +80,7 @@
 - 修改状态栏最大通知图标数量
 - 自定义运营商名称
 - 隐藏锁屏界面的状态栏
+- 在亮屏锁屏界面显示当前系统导航条；手势导航的小白条会随上滑解锁进度上移、拉伸并在取消后回弹，不影响 AOD 或解锁后的导航逻辑
 
 ##### 快捷设置
 
@@ -124,6 +145,7 @@
 - 应用分身支持所有用户应用
 - 天气源设为中国天气
 - 最近任务页面显示内存信息
+- 隐藏最近任务页面的“全部关闭”按钮，保留逐个上滑关闭应用
 - 视频播放器添加 3.0 和 4.0 倍速
 - 强制链接跳转外部三星浏览器
 - 显示相册的所有设置
@@ -171,6 +193,17 @@
 
 ### ✨ Features
 
+#### Interaction Enhancements (One UI 8.5 / Android 16)
+
+- Swipe down on an empty area in the middle of Home to open Samsung Finder with its search field focused and keyboard shown, while keeping the top-edge notification-shade gesture unchanged
+- Set the lock-screen upward swipe distance to 10%–100% of Samsung's default without bypassing Face, fingerprint, pattern, PIN, or password authentication
+- Open a lock-screen notification directly after Face, fingerprint, or another system authentication has already made the lock screen dismissible, without requiring an additional swipe
+- Wake the screen for eligible new notifications with a configurable 1–10 second duration, excluding ongoing notifications, group summaries, and already-screen-on cases
+- Show live values above interaction sliders and provide system-respecting haptic feedback when crossing discrete steps
+- Hide rarely used categories from the main menu without disabling their features or deleting saved settings
+- Provide a confirmed zygote soft restart using the same operation as KernelSU Manager
+- Select launchable user-installed apps to open sequentially through root after a full boot or soft restart without changing their permissions or Android background policies
+
 #### Android System
 
 - Disable PIN verification every 72 hours
@@ -204,6 +237,7 @@
 - Modify maximum number of notification icons in status bar
 - Set custom carrier name
 - Hide status bar on lock screen
+- Show the system navigation bar on the active lock screen; in gesture mode, the handle follows upward swipe progress, stretches slightly, and springs back when the gesture is cancelled without affecting AOD or unlocked navigation
 
 ##### Quick Settings
 
@@ -268,6 +302,7 @@
 - Make all user apps available for app cloning
 - Set weather provider to China Weather
 - Show memory usage in Recents page
+- Hide the “Close all” button in Recents while keeping per-app swipe dismissal available
 - Add 3.0x and 4.0x playback speeds to video player
 - Force links to open in external Samsung Internet
 - Show all Gallery settings

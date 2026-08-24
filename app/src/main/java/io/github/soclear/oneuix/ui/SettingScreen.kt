@@ -36,6 +36,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
 import io.github.soclear.oneuix.ui.category.DetailPaneLauncher
+import io.github.soclear.oneuix.ui.category.DetailPaneInteraction
 import io.github.soclear.oneuix.ui.category.DetailPaneMessaging
 import io.github.soclear.oneuix.ui.category.DetailPaneNotes
 import io.github.soclear.oneuix.ui.category.DetailPanePhotoRetouching
@@ -58,6 +59,7 @@ import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
 import io.github.soclear.oneuix.ui.category.onLauncherEvent
+import io.github.soclear.oneuix.ui.category.onInteractionEvent
 import io.github.soclear.oneuix.ui.category.onMessagingEvent
 import io.github.soclear.oneuix.ui.category.onNotesEvent
 import io.github.soclear.oneuix.ui.category.onPhotoRetouchingEvent
@@ -79,6 +81,7 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val categoryAppInfoList by viewModel.categoryAppInfoList.collectAsStateWithLifecycle()
+    val userLaunchableApps by viewModel.userLaunchableApps.collectAsStateWithLifecycle()
     val preference by viewModel.preference.collectAsStateWithLifecycle()
 
     val backupLauncher = rememberLauncherForActivityResult(
@@ -114,6 +117,7 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
             AnimatedPane {
                 ListPaneCategory(
                     categoryAppInfoList = categoryAppInfoList,
+                    hiddenCategoryNames = preference.hiddenMainMenuCategories,
                     onItemClick = { category ->
                         scope.launch {
                             scaffoldNavigator.navigateTo(
@@ -122,6 +126,8 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                             )
                         }
                     },
+                    onCategoryVisibilityChange = viewModel::setCategoryVisible,
+                    onShowAllCategories = viewModel::showAllCategories,
                     onBackup = {
                         val name = "OneUIX_backup_${
                             LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
@@ -136,6 +142,12 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
             AnimatedPane {
                 scaffoldNavigator.currentDestination?.contentKey?.let {
                     when (it) {
+                        Category.Interaction -> DetailPaneInteraction(
+                            uiState = preference.interaction,
+                            userLaunchableApps = userLaunchableApps,
+                            onEvent = viewModel::onInteractionEvent
+                        )
+
                         Category.Android -> DetailPaneAndroid(
                             uiState = preference.android,
                             onEvent = viewModel::onAndroidEvent
