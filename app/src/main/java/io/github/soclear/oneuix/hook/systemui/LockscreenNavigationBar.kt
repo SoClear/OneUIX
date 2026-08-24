@@ -7,6 +7,7 @@ import de.robv.android.xposed.XposedHelpers.getBooleanField
 import de.robv.android.xposed.XposedHelpers.getObjectField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.hook.util.InteractionHookLog
+import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
 
 object LockscreenNavigationBar {
@@ -14,6 +15,7 @@ object LockscreenNavigationBar {
     private const val CLASS_NAME =
         "com.android.systemui.statusbar.phone.SecStatusBarKeyguardViewManager"
     private val stateReadFailureLogged = AtomicBoolean(false)
+    private var managerRef: WeakReference<Any>? = null
 
     fun showOnLockscreen(lpparam: LoadPackageParam) {
         try {
@@ -26,21 +28,33 @@ object LockscreenNavigationBar {
                 "isNavBarVisible",
                 object : XC_MethodHook() {
                     override fun afterHookedMethod(param: MethodHookParam) {
+                        managerRef = WeakReference(param.thisObject)
                         if (param.result == true) return
                         try {
-                            val keyguardStateController = getObjectField(
-                                param.thisObject,
-                                "mKeyguardStateController",
-                            )
-                            val showing = getBooleanField(keyguardStateController, "mShowing")
-                            val occluded = getBooleanField(keyguardStateController, "mOccluded")
-                            val dozing = getBooleanField(param.thisObject, "mDozing")
-                            val screenOffAnimationPlaying = getBooleanField(
-                                param.thisObject,
-                                "mScreenOffAnimationPlaying",
-                            )
-                            if (showing && !occluded && !dozing && !screenOffAnimationPlaying) {
+                            if (shouldShowOnLockscreen(param.thisObject)) {
                                 param.result = true
+                            }
+                        } catch (error: Throwable) {
+                            if (stateReadFailureLogged.compareAndSet(false, true)) {
+                                InteractionHookLog.failure(COMPONENT, error)
+                            }
+                        }
+                    }
+                },
+            )
+            findAndHookMethod(
+                "com.android.systemui.navigationbar.views.SamsungNavigationBarView",
+                lpparam.classLoader,
+                "updateHintVisibility",
+                Boolean::class.javaPrimitiveType,
+                Boolean::class.javaPrimitiveType,
+                Boolean::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val manager = managerRef?.get() ?: return
+                        try {
+                            if (shouldShowOnLockscreen(manager)) {
+                                param.args[1] = true
                             }
                         } catch (error: Throwable) {
                             if (stateReadFailureLogged.compareAndSet(false, true)) {
@@ -52,10 +66,18 @@ object LockscreenNavigationBar {
             )
             InteractionHookLog.info(
                 COMPONENT,
-                "lockscreen navigation bar visibility override installed",
+                "lockscreen navigation bar window and gesture handle overrides installed",
             )
         } catch (error: Throwable) {
             InteractionHookLog.failure(COMPONENT, error)
         }
+    }
+
+    private fun shouldShowOnLockscreen(manager: Any): Boolean {
+        val keyguardStateController = getObjectField(manager, "mKeyguardStateController")
+        return getBooleanField(keyguardStateController, "mShowing") &&
+            !getBooleanField(keyguardStateController, "mOccluded") &&
+            !getBooleanField(manager, "mDozing") &&
+            !getBooleanField(manager, "mScreenOffAnimationPlaying")
     }
 }
