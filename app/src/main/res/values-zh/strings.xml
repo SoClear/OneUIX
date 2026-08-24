@@ -67,6 +67,8 @@
     <string name="supportAllCameraMenu_summary">快门音、自动 HDR、Log、边框叠加水印</string>
     <string name="disableCameraTemperatureCheck_title">禁用相机过热检查</string>
     <string name="disableScreenshotCaptureSound_title">禁用截图声音</string>
+    <string name="showNavigationBarOnLockscreen_title">锁屏显示导航条</string>
+    <string name="showNavigationBarOnLockscreen_summary">开启后，在锁屏已经亮起时强制显示当前系统导航条，三键导航和手势导航均适用；息屏显示、正在熄屏以及解锁后的界面仍按三星原有逻辑处理。关闭后恢复三星默认的锁屏导航条行为。修改此选项后需要重启系统界面才能生效。</string>
     <string name="disableNotificationGrouping_title">禁用通知分组</string>
     <string name="disableNotificationGrouping_summary">禁止同一应用的多个通知在状态栏合并图标、在通知中心分组显示</string>
     <string name="autoExpandNotifications_title">自动展开通知</string>

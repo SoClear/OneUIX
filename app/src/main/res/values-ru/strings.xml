@@ -67,6 +67,8 @@
     <string name="supportAllCameraMenu_summary">Звук затвора, Auto HDR, Log, Рамка-водяной знак</string>
     <string name="disableCameraTemperatureCheck_title">Отключить проверку температуры камеры</string>
     <string name="disableScreenshotCaptureSound_title">Отключить звук скриншота</string>
+    <string name="showNavigationBarOnLockscreen_title">Показывать панель навигации на экране блокировки</string>
+    <string name="showNavigationBarOnLockscreen_summary">Когда включено, системная панель навигации отображается на активном экране блокировки в режиме кнопок или жестов. На AOD и при выключении экрана она не показывается. Отключение возвращает стандартное поведение Samsung. После изменения перезапустите System UI.</string>
     <string name="disableNotificationGrouping_title">Отключить группировку уведомлений</string>
     <string name="disableNotificationGrouping_summary">Запретить объединение значков в строке состояния и группировку в центре уведомлений для уведомлений одного приложения</string>
     <string name="autoExpandNotifications_title">Автоматически разворачивать уведомления</string>

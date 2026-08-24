@@ -67,6 +67,8 @@
     <string name="supportAllCameraMenu_summary">셔터음, 자동 HDR, Log 촬영, 프레임 워터마크</string>
     <string name="disableCameraTemperatureCheck_title">카메라 온도 체크 비활성화</string>
     <string name="disableScreenshotCaptureSound_title">스크린샷 캡처음 비활성화</string>
+    <string name="showNavigationBarOnLockscreen_title">잠금 화면에 내비게이션 바 표시</string>
+    <string name="showNavigationBarOnLockscreen_summary">활성화하면 잠금 화면이 켜져 있는 동안 버튼 또는 제스처 내비게이션 바를 표시합니다. AOD와 화면이 꺼지는 동안에는 표시하지 않으며, 비활성화하면 Samsung 기본 동작으로 복원됩니다. 변경 후 시스템 UI를 다시 시작하세요.</string>
     <string name="disableNotificationGrouping_title">알림 그룹화 비활성화</string>
     <string name="disableNotificationGrouping_summary">동일한 앱의 알림이 상태바 아이콘에서 합쳐지거나 알림창에서 하나로 묶이는 것을 방지합니다</string>
     <string name="autoExpandNotifications_title">알림 자동으로 확장</string>

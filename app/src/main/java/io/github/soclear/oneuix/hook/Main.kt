@@ -15,6 +15,7 @@ import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.KeyguardGesture
+import io.github.soclear.oneuix.hook.systemui.LockscreenNavigationBar
 import io.github.soclear.oneuix.hook.systemui.NotificationQuickLaunch
 import io.github.soclear.oneuix.hook.systemui.SystemUiWakeBridge
 import io.github.soclear.oneuix.hook.systemui.Other
@@ -292,6 +293,10 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 }
                 if (preference.systemUI.other.autoExpandNotifications) {
                     Notification.autoExpandNotifications(lpparam)
+                }
+
+                if (preference.systemUI.other.showNavigationBarOnLockscreen) {
+                    LockscreenNavigationBar.showOnLockscreen(lpparam)
                 }
 
                 run {

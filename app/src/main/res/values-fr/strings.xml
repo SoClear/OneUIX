@@ -67,6 +67,8 @@
     <string name="supportAllCameraMenu_summary">Son de l\'obturateur, Auto HDR, Log, Filigrane avec cadre</string>
     <string name="disableCameraTemperatureCheck_title">Désactiver la vérification de surchauffe de l\'appareil photo</string>
     <string name="disableScreenshotCaptureSound_title">Désactiver le son des captures d\'écran</string>
+    <string name="showNavigationBarOnLockscreen_title">Afficher la barre de navigation sur l’écran de verrouillage</string>
+    <string name="showNavigationBarOnLockscreen_summary">Lorsqu’elle est activée, la barre de navigation du système reste visible lorsque l’écran de verrouillage est allumé, avec les boutons ou les gestes. Elle ne s’affiche pas sur l’écran toujours actif ni pendant l’extinction. La désactivation rétablit le comportement Samsung par défaut. Redémarrez l’interface système après toute modification.</string>
     <string name="disableNotificationGrouping_title">Désactiver le regroupement des notifications</string>
     <string name="disableNotificationGrouping_summary">Empêcher la fusion des icônes dans la barre d\'état et le regroupement dans le centre de notifications pour les notifications d\'une même application</string>
     <string name="autoExpandNotifications_title">Développer automatiquement les notifications</string>

@@ -20,6 +20,7 @@ class PreferenceCompatibilityTest {
         assertTrue(preference.interaction.keepOriginalSwipeUpSearch)
         assertFalse(preference.interaction.customizeLockscreenSwipeDistance)
         assertFalse(preference.interaction.autoStartEnabled)
+        assertFalse(preference.systemUI.other.showNavigationBarOnLockscreen)
         assertTrue(preference.interaction.autoStartPackages.isEmpty())
         assertEquals(8, preference.interaction.wakeDurationSeconds)
         assertEquals(96f, preference.interaction.homeSwipeDownThresholdDp)
@@ -59,5 +60,22 @@ class PreferenceCompatibilityTest {
             setOf("com.example.alpha", "com.example.beta"),
             restored.interaction.autoStartPackages,
         )
+    }
+
+    @Test
+    fun lockscreenNavigationBarSettingRoundTrips() {
+        val original = Preference(
+            systemUI = Preference.SystemUI(
+                other = Preference.SystemUI.Other(
+                    showNavigationBarOnLockscreen = true,
+                )
+            )
+        )
+
+        val restored = IgnoreUnknownKeysJson.decodeFromString<Preference>(
+            IgnoreUnknownKeysJson.encodeToString(Preference.serializer(), original)
+        )
+
+        assertTrue(restored.systemUI.other.showNavigationBarOnLockscreen)
     }
 }

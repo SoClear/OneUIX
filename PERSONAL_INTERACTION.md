@@ -5,6 +5,7 @@
 ## 实现边界
 
 - 锁屏距离：在 `KeyguardTouchBase` 的唯一安全 `initDimens*` 初始化点完成后，仅缩放 `swipeUnlockRadius`，范围为 10%～100%，按 10% 分档。
+- 锁屏导航条：在三星 `SecStatusBarKeyguardViewManager` 认定导航条不可见时，仅对“锁屏正在显示、未被遮挡、非 AOD、非熄屏动画”的状态强制显示；关闭后恢复三星默认逻辑。
 - 通知直达：只在通知行点击、Keyguard 仍显示、`canDismissLockScreen` 为真、系统已不再判定设备为锁定时，取消三星额外的 swipe bouncer；通知点击和 `PendingIntent` 仍走 SystemUI 原生流程。
 - 主屏搜索：在 One UI 8.5 `HomeView` 上识别从下方 75% 空白区域开始的单指向下手势，复用 `SearchScreenController.startSearch(SEARCH_FROM_KEY, true)`，并聚焦 Finder 原生输入框、请求显示输入法；不启动或伪造 Finder Activity。
 - 通知亮屏：模块自身的 `NotificationListenerService` 过滤自身通知、常驻通知、group summary 和已亮屏状态；SystemUI 负责点亮，并在 1～10 秒滑轨设定的时长到达且仍处于锁屏时主动熄屏，不保存通知正文。

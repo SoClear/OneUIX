@@ -67,6 +67,8 @@
     <string name="supportAllCameraMenu_summary">Shutter sound, Auto HDR, Log, Frame watermark</string>
     <string name="disableCameraTemperatureCheck_title">Disable camera temperature check</string>
     <string name="disableScreenshotCaptureSound_title">Disable screenshot sound</string>
+    <string name="showNavigationBarOnLockscreen_title">Show navigation bar on lock screen</string>
+    <string name="showNavigationBarOnLockscreen_summary">When enabled, the current system navigation bar is forced visible while the lock screen is awake, for both button and gesture navigation. It is not shown on the always-on display or while the screen is turning off, and unlocked screens keep Samsung’s original behavior. When disabled, Samsung’s default lock-screen behavior is restored. Restart System UI after changing this option.</string>
     <string name="disableNotificationGrouping_title">Disable notification grouping</string>
     <string name="disableNotificationGrouping_summary">Prevent status bar icon merging and notification center grouping for same-app notifications</string>
     <string name="autoExpandNotifications_title">Auto expand notifications</string>
