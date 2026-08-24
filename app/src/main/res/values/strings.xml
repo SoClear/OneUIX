@@ -203,7 +203,7 @@
     <string name="open_notification_access">Open settings</string>
     <string name="wake_on_notification_title">Wake screen on notification</string>
     <string name="notification_access_summary">Current status: %1$s\nThis permission detects when a new notification arrives and is required by “Wake screen on notification.” Notification titles, message text, and images are never saved.</string>
-    <string name="wake_on_notification_summary">When enabled, an eligible new notification wakes the screen and continues to use Samsung’s normal lock screen and notification view. Ongoing notifications, group summaries, and this app’s own notifications do not wake the screen.</string>
+    <string name="wake_on_notification_summary">When enabled, an eligible new notification wakes the screen and asks Samsung’s native face authentication to start. It runs only when face unlock is enrolled, enabled, and currently permitted, and never bypasses password, lockout, or camera privacy restrictions. Ongoing notifications, group summaries, and this app’s own notifications do not wake the screen.</string>
     <string name="wake_duration_title">Wake duration</string>
     <string name="wake_duration_summary">Sets how long the screen remains on after a notification wakes it, from 1 to 10 seconds. The screen turns off at the timeout only if the device is still on the lock screen; it is not forced off after you unlock. Each slider step uses system haptic feedback when enabled.</string>
     <string name="wake_only_screen_off_title">Only wake when screen is off</string>

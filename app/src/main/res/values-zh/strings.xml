@@ -203,7 +203,7 @@
     <string name="open_notification_access">管理通知权限</string>
     <string name="wake_on_notification_title">通知到达自动亮屏</string>
     <string name="notification_access_summary">当前状态：%1$s\n此权限用于识别新通知是否到达，是“通知到达自动亮屏”的必要条件。应用不会保存通知标题、正文或图片。</string>
-    <string name="wake_on_notification_summary">开启后，收到普通新通知时会点亮屏幕，并继续显示三星原生锁屏和通知界面。常驻通知、通知分组摘要和本应用自己的通知不会触发亮屏。</string>
+    <string name="wake_on_notification_summary">开启后，收到普通新通知时会点亮屏幕，并请求三星系统启动人脸识别；只有已录入并启用人脸、系统当前允许认证时才会运行，不会绕过密码、锁定或摄像头隐私限制。常驻通知、通知分组摘要和本应用自己的通知不会触发亮屏。</string>
     <string name="wake_duration_title">亮屏时长</string>
     <string name="wake_duration_summary">设置通知自动亮屏后保持点亮的时间，可选 1 至 10 秒。到时仍停留在锁屏界面才会自动息屏；如果已经解锁进入手机，则不会强制息屏。拖动每个档位时会跟随系统设置产生震动反馈。</string>
     <string name="wake_only_screen_off_title">仅息屏时亮屏</string>
