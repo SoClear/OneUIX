@@ -4,7 +4,7 @@
 
 ## 释放三星 One UI 的无限可能 | Unleash the full potential of Samsung One UI
 
-[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/latest)
+[![Stars](https://img.shields.io/github/stars/xrzcc/OneUIX?style=for-the-badge&logo=github)](https://github.com/xrzcc/OneUIX) [![Personal Release](https://img.shields.io/github/v/release/xrzcc/OneUIX?include_prereleases&style=for-the-badge&label=Personal%20Release)](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.1)
 
 ![LSPosed](https://img.shields.io/badge/Powered_by-LSPosed-blue?style=flat-square&logo=android)
 [![License](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/xrzcc/OneUIX/blob/main/LICENSE.txt)
@@ -28,7 +28,7 @@
 >
 > This repository is a personal enhanced fork of [SoClear/OneUIX](https://github.com/SoClear/OneUIX), primarily tested on rooted Samsung devices running One UI 8.5 / Android 16 with LSPosed. Every added interaction feature is disabled by default and can be enabled individually without bypassing Android lock-screen authentication.
 >
-> **[下载最新版 APK / Download the latest APK](https://github.com/xrzcc/OneUIX/releases/latest)**
+> **[下载当前个人版 APK / Download the current personal build](https://github.com/xrzcc/OneUIX/releases/tag/v1.7.0-personal.1)**
 
 ## 简体中文
 
