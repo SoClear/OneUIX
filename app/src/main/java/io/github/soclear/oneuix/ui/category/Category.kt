@@ -3,6 +3,7 @@ package io.github.soclear.oneuix.ui.category
 import io.github.soclear.oneuix.data.Package
 
 enum class Category(val packageName: String) {
+    Interaction("io.github.soclear.oneuix"),
     Android(Package.ANDROID),
     SystemUI(Package.SYSTEMUI),
     Settings(Package.SETTINGS),

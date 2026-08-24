@@ -8,10 +8,15 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResou
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.BuildConfig
 import io.github.soclear.oneuix.data.Package
+import io.github.soclear.oneuix.data.ONE_UI_VERSION
+import io.github.soclear.oneuix.hook.launcher.HomeGesture
 import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
+import io.github.soclear.oneuix.hook.systemui.KeyguardGesture
+import io.github.soclear.oneuix.hook.systemui.NotificationQuickLaunch
+import io.github.soclear.oneuix.hook.systemui.SystemUiWakeBridge
 import io.github.soclear.oneuix.hook.systemui.Other
 import io.github.soclear.oneuix.hook.systemui.QS
 import io.github.soclear.oneuix.hook.systemui.StatusBar
@@ -149,6 +154,18 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
             }
 
             Package.LAUNCHER -> {
+                if (ONE_UI_VERSION >= 80500 &&
+                    (preference.interaction.homeSwipeDownSearch ||
+                        !preference.interaction.keepOriginalSwipeUpSearch)
+                ) {
+                    HomeGesture.enable(
+                        lpparam = lpparam,
+                        enableMiddleSwipeDown = preference.interaction.homeSwipeDownSearch,
+                        keepOriginalSwipeUpSearch = preference.interaction.keepOriginalSwipeUpSearch,
+                        requestedThresholdDp = preference.interaction.homeSwipeDownThresholdDp,
+                    )
+                }
+
                 if (preference.other.showMemoryUsageInRecents) {
                     Launcher.showMemoryUsageInRecents(lpparam)
                 }
@@ -251,6 +268,25 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
             }
 
             Package.SYSTEMUI -> {
+                if (ONE_UI_VERSION >= 80500) {
+                    SystemUiWakeBridge.enable(lpparam)
+                }
+
+                if (ONE_UI_VERSION >= 80500 &&
+                    preference.interaction.customizeLockscreenSwipeDistance
+                ) {
+                    KeyguardGesture.customizeSwipeDistance(
+                        lpparam,
+                        preference.interaction.lockscreenSwipeDistanceScale
+                    )
+                }
+
+                if (ONE_UI_VERSION >= 80500 &&
+                    preference.interaction.notificationDirectOpenAfterAuth
+                ) {
+                    NotificationQuickLaunch.enable(lpparam)
+                }
+
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }

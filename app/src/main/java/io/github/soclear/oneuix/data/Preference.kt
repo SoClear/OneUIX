@@ -5,6 +5,8 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class Preference(
+    val hiddenMainMenuCategories: Set<String> = emptySet(),
+    val interaction: Interaction = Interaction(),
     val android: Android = Android(),
     val systemUI: SystemUI = SystemUI(),
     val settings: Settings = Settings(),
@@ -12,6 +14,21 @@ data class Preference(
     val camera: Camera = Camera(),
     val other: Other = Other(),
 ) {
+    @Serializable
+    data class Interaction(
+        val wakeOnNotification: Boolean = false,
+        val wakeDurationSeconds: Int = 8,
+        val wakeOnlyWhenScreenOff: Boolean = true,
+        val notificationDirectOpenAfterAuth: Boolean = false,
+        val homeSwipeDownSearch: Boolean = false,
+        val keepOriginalSwipeUpSearch: Boolean = true,
+        val homeSwipeDownThresholdDp: Float = 96f,
+        val customizeLockscreenSwipeDistance: Boolean = false,
+        val lockscreenSwipeDistanceScale: Float = 1.0f,
+        val autoStartEnabled: Boolean = false,
+        val autoStartPackages: Set<String> = emptySet(),
+    )
+
     @Serializable
     data class Android(
         val disablePinVerifyPer72h: Boolean = false,
