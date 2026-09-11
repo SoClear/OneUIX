@@ -288,6 +288,47 @@ fun DetailPaneSystemUI(
         )
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
+            var threshold by remember {
+                mutableIntStateOf(uiState.statusBar.networkSpeedThresholdKb)
+            }
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.net_speed),
+                title = stringResource(id = R.string.networkSpeedThreshold_title),
+                summary = if (uiState.statusBar.networkSpeedThresholdKb > 0) {
+                    "${uiState.statusBar.networkSpeedThresholdKb} KB/s"
+                } else null,
+                modifier = Modifier.animateContentSize(),
+                clickable = true,
+                onClick = { expanded = !expanded },
+                checked = uiState.statusBar.networkSpeedThresholdKb > 0,
+                onCheckedChange = {
+                    if (it && threshold == 0) threshold = 1
+                    if (!it) threshold = 0
+                    onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(threshold))
+                }
+            )
+            AnimatedVisibility(expanded && uiState.statusBar.networkSpeedThresholdKb > 0) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                ) {
+                    OutlinedTextField(
+                        value = threshold.toString(),
+                        onValueChange = { threshold = it.toIntOrNull()?.coerceAtLeast(1) ?: 1 },
+                        modifier = Modifier.weight(1f),
+                        label = { Text(stringResource(id = R.string.networkSpeedThreshold_label)) }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = {
+                        onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(threshold))
+                    }) {
+                        Text(text = stringResource(id = R.string.confirm))
+                    }
+                }
+            }
+        }
+        Column {
+            var expanded by rememberSaveable { mutableStateOf(false) }
 
             SwitchItem(
                 title = stringResource(id = R.string.setStatusBarClockFormat_title),
@@ -993,6 +1034,9 @@ sealed interface SystemUIEvent {
         value class ShowSeparateUpDownNetworkSpeeds(val value: Boolean) : StatusBar
 
         @JvmInline
+        value class NetworkSpeedThreshold(val value: Int) : StatusBar
+
+        @JvmInline
         value class SetStatusBarClockFormat(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -1288,6 +1332,16 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             showSeparateUpDownNetworkSpeeds = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.NetworkSpeedThreshold -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            networkSpeedThresholdKb = event.value
                         )
                     )
                 )

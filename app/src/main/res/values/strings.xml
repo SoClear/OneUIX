@@ -25,6 +25,8 @@
     <string name="supportRealTimeNetworkSpeed_summary">Settings -> Notifications -> Advanced settings -> Show real-time network speed</string>
     <string name="showSeparateUpDownNetworkSpeeds_title">Show separate upload/download speeds in status bar</string>
     <string name="showSeparateUpDownNetworkSpeeds_summary">Top is upload speed, bottom is download speed</string>
+    <string name="networkSpeedThreshold_title">Network speed display threshold</string>
+    <string name="networkSpeedThreshold_label">Threshold (KB/s)</string>
     <string name="turnOn5gQsTile_title">Enable 5G Quick Settings tile</string>
     <string name="turnOn5gQsTile_summary">Requires checking System UI and Call Settings</string>
     <string name="root5gQsTile_summary">Please grant root access to this app, then manually add the 5G tile</string>
