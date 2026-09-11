@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.hook.systemui
 
+import android.content.Context
 import android.os.Build
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement.returnConstant
@@ -15,6 +16,7 @@ import de.robv.android.xposed.XposedHelpers.setIntField
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
 import io.github.soclear.oneuix.data.ONE_UI_VERSION
 import io.github.soclear.oneuix.data.Package
+import java.lang.reflect.Proxy
 
 object Notification {
     fun setStatusBarMaxNotificationIcons(loadPackageParam: LoadPackageParam, max: Int) {
@@ -24,6 +26,56 @@ object Notification {
         ) return
 
         if (ONE_UI_VERSION >= 80500) {
+            try {
+                findAndHookMethod(
+                    "com.android.systemui.facewidget.plugin.FaceWidgetNotificationControllerWrapper",
+                    loadPackageParam.classLoader,
+                    "initPlugin",
+                    "com.android.systemui.plugins.keyguardstatusview.PluginNotificationController",
+                    Context::class.java,
+                    object : XC_MethodHook() {
+                        private var typeHook: Unhook? = null
+
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            typeHook?.unhook()
+                            typeHook = null
+                            val plugin = param.args[0] ?: return
+                            try {
+                                val target = if (Proxy.isProxyClass(plugin.javaClass)) {
+                                    getObjectField(
+                                        Proxy.getInvocationHandler(plugin),
+                                        "mTargetInstance"
+                                    )
+                                } else {
+                                    plugin
+                                } ?: return
+                                val controller =
+                                    getObjectField(target, "mFaceWidgetKeyguardNIOController")
+                                        ?: return
+                                typeHook = findAndHookMethod(
+                                    "com.samsung.android.uniform.widget.notification.NotificationIconsOnlyContainer",
+                                    target.javaClass.classLoader,
+                                    "getNIOType",
+                                    object : XC_MethodHook() {
+                                        override fun afterHookedMethod(param: MethodHookParam) {
+                                            // Only status-bar icons (3) use LockStar's configurable cap (5).
+                                            // Keep the dot (4), card and cover-screen styles unchanged.
+                                            if (param.result == 3) {
+                                                setIntField(controller, "mLockStarThreshold", max)
+                                                param.result = 5
+                                            }
+                                        }
+                                    }
+                                )
+                            } catch (t: Throwable) {
+                                XposedBridge.log(t)
+                            }
+                        }
+                    }
+                )
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
             try {
                 findAndHookMethod(
                     "com.android.systemui.statusbar.phone.NotificationIconContainer",
