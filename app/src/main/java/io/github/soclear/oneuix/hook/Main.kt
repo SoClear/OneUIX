@@ -11,6 +11,7 @@ import io.github.soclear.oneuix.data.Package
 import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
+import io.github.soclear.oneuix.hook.systemui.LockscreenNotificationIcons
 import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.Other
 import io.github.soclear.oneuix.hook.systemui.QS
@@ -340,6 +341,7 @@ class Main : IXposedHookLoadPackage, IXposedHookInitPackageResources, IXposedHoo
                 if (preference.systemUI.statusBar.modifyStatusBarMaxNotificationIcons) {
                     val max = preference.systemUI.statusBar.statusBarMaxNotificationIcons
                     Notification.setStatusBarMaxNotificationIcons(lpparam, max)
+                    LockscreenNotificationIcons.setMaxLockscreenNotificationIcons(lpparam, max)
                 }
 
                 if (preference.systemUI.statusBar.setCustomCarrierName) {
