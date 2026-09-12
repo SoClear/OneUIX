@@ -155,9 +155,6 @@
     <string name="bypassWatchPairingRegionCheck_summary">지역, CSC 및 미지원 기기 페어링 제한을 우회합니다</string>
     <string name="supplementChinaWearOsGms_title">중국 WearOS GMS 보완</string>
     <string name="supplementChinaWearOsGms_summary">WearOS CN이 자동으로 추가하지 않는 경우, com.google.android.wearable.app.cn을 다운로드 목록에 추가합니다</string>
-    <string name="restartSystemUI">System UI 재시작</string>
-    <string name="restartRecovery">리커버리 모드로 부팅</string>
-    <string name="restartDownload">다운로드 모드로 부팅</string>
     <string name="sideKeySettings">측면 버튼 설정</string>
     <string name="allowAllRotation_title">모든 회전 각도 허용</string>
     <string name="allowAllRotation_summary">스마트폰에서 180도 회전을 허용합니다 (일반적으로 태블릿에서만 지원)</string>

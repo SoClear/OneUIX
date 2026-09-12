@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="io.github.soclear.oneuix.RebootActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:permission="android.permission.STATUS_BAR_SERVICE"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+</manifest>

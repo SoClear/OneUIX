@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="restartSystemUI">Reboot System UI</string>
+    <string name="restartRecovery">Reboot to recovery</string>
+    <string name="restartDownload">Reboot to download mode</string>
+</resources>

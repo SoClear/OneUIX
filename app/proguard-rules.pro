@@ -19,14 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class io.github.soclear.oneuix.hook.Main {
-    <init>();
-}
-
--keep class androidx.datastore.DataStoreFile {
-    public static java.io.File dataStoreFile(android.content.Context, java.lang.String);
-}
-
--keep class androidx.datastore.core.DeviceProtectedDataStoreFile {
-    public static java.io.File deviceProtectedDataStoreFile(android.content.Context, java.lang.String);
-}

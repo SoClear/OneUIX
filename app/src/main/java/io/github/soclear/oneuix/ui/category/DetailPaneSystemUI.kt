@@ -36,15 +36,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
-import io.github.soclear.oneuix.data.ONE_UI_VERSION
-import io.github.soclear.oneuix.data.PowerMenuAction
-import io.github.soclear.oneuix.data.Preference
+import io.github.soclear.oneuix.common.ONE_UI_VERSION
+import io.github.soclear.oneuix.common.PowerMenuAction
+import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+import io.github.soclear.oneuix.common.R as CommonR
 
 private const val ESIM_ADAPTER_SIM_BOTH = 2
 
@@ -66,7 +67,7 @@ fun DetailPaneSystemUI(
                 runCatching { Runtime.getRuntime().exec("su -c killall com.android.systemui") }
             }
         ) {
-            Text(text = stringResource(R.string.restartSystemUI))
+            Text(text = stringResource(CommonR.string.restartSystemUI))
         }
         DividerText(R.string.status_bar)
         Column {
@@ -980,9 +981,9 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
     PowerMenuAction.MEDICAL_INFO -> R.string.powerMenuAction_medicalInfo
     PowerMenuAction.SIDE_KEY_SETTINGS -> R.string.sideKeySettings
     PowerMenuAction.FORCE_RESTART_MESSAGE -> R.string.powerMenuAction_forceRestartMessage
-    PowerMenuAction.RESTART_SYSTEMUI -> R.string.restartSystemUI
-    PowerMenuAction.RESTART_RECOVERY -> R.string.restartRecovery
-    PowerMenuAction.RESTART_DOWNLOAD -> R.string.restartDownload
+    PowerMenuAction.RESTART_SYSTEMUI -> CommonR.string.restartSystemUI
+    PowerMenuAction.RESTART_RECOVERY -> CommonR.string.restartRecovery
+    PowerMenuAction.RESTART_DOWNLOAD -> CommonR.string.restartDownload
     else -> R.string.other
 }
 
