@@ -1,5 +1,7 @@
 package io.github.soclear.oneuix.hook.systemui
 
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement.returnConstant
@@ -137,19 +139,42 @@ object Notification {
     fun hideOngoingActivityMedia(loadPackageParam: LoadPackageParam, packages: Set<String>) {
         if (loadPackageParam.packageName != Package.SYSTEMUI || packages.isEmpty()) return
         try {
+            // Only change visibility for Samsung's synthetic MediaOngoingActivity notification.
+            // Keep the shared media pipeline and all player instances intact for QS playback.
             findAndHookMethod(
-                "com.android.systemui.media.controls.domain.pipeline.LegacyMediaDataManagerImpl",
+                "com.android.systemui.statusbar.phone.ongoingactivity.OngoingActivityController\$mediaPanelVisibilityListener\$1",
                 loadPackageParam.classLoader,
-                "onNotificationAdded",
-                String::class.java,
-                "android.service.notification.StatusBarNotification",
+                "onMediaVisibilityChanged",
+                Boolean::class.javaPrimitiveType,
                 object : XC_MethodHook() {
                     override fun beforeHookedMethod(param: MethodHookParam) {
                         try {
-                            val sbn = param.args[1] ?: return
-                            val packageName = callMethod(sbn, "getPackageName") as String
+                            if (param.args[0] != true) return
+                            val controller = getObjectField(param.thisObject, "this\$0")
+                            val mediaHost = getObjectField(controller, "mediaHost")
+                            val mediaData = if (ONE_UI_VERSION >= 80500) {
+                                // 8.5 shares and sorts media data across surfaces. The latest
+                                // notification may belong to a different player.
+                                val repository = getObjectField(mediaHost, "mSecMediaDataRepository")
+                                val data = callMethod(repository, "getMediaData") as Map<*, *>
+                                data.values.firstOrNull { value ->
+                                    value != null &&
+                                        (getObjectField(value, "packageName") as? String) in packages
+                                }
+                            } else {
+                                val currentData = getObjectField(mediaHost, "mCurrentMediaData") ?: return
+                                getObjectField(currentData, "data")
+                            } ?: return
+                            val packageName = getObjectField(mediaData, "packageName") as? String
                             if (packageName in packages) {
-                                param.result = null
+                                // Notifications survive a SystemUI restart, while isMediaVisible
+                                // starts false. Cancel stale entries even if the callback returns early.
+                                val context = getObjectField(controller, "mContext") as Context
+                                context.getSystemService(NotificationManager::class.java)
+                                    ?.cancel(12030705)
+                                // Let the original callback cancel an existing live activity
+                                // and update its own isMediaVisible state normally.
+                                param.args[0] = false
                             }
                         } catch (t: Throwable) {
                             XposedBridge.log(t)
