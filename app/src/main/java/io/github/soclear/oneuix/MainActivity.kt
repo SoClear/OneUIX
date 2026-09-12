@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.datastore.dataStoreFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import io.github.soclear.oneuix.data.Preference
+import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.ModuleDisabledScreen
 import io.github.soclear.oneuix.ui.SettingScreen
 import io.github.soclear.oneuix.ui.SettingViewModel

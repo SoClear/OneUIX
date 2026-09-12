@@ -1,0 +1,746 @@
+package io.github.soclear.oneuix.hook.systemui
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.os.Build
+import android.util.AttributeSet
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.SeekBar
+import android.widget.TextView
+import de.robv.android.xposed.XC_MethodHook
+import de.robv.android.xposed.XC_MethodReplacement
+import de.robv.android.xposed.XC_MethodReplacement.returnConstant
+import de.robv.android.xposed.XposedBridge
+import de.robv.android.xposed.XposedBridge.hookAllMethods
+import de.robv.android.xposed.XposedHelpers.callMethod
+import de.robv.android.xposed.XposedHelpers.callStaticMethod
+import de.robv.android.xposed.XposedHelpers.findAndHookConstructor
+import de.robv.android.xposed.XposedHelpers.findAndHookMethod
+import de.robv.android.xposed.XposedHelpers.findClass
+import de.robv.android.xposed.XposedHelpers.findClassIfExists
+import de.robv.android.xposed.XposedHelpers.getIntField
+import de.robv.android.xposed.XposedHelpers.getObjectField
+import de.robv.android.xposed.XposedHelpers.setObjectField
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import io.github.soclear.oneuix.common.ONE_UI_VERSION
+import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
+import kotlin.math.roundToInt
+
+object QS {
+    enum class QsBar {
+        MediaPlayer,
+        NearbyDevicesAndDeviceControl,
+        SecurityFooter,
+        DataUsage,
+        SmartViewAndModes,
+    }
+
+    fun hideDeviceControlQsTile(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        ) return
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.QSTileHost",
+                loadPackageParam.classLoader,
+                "createTile",
+                String::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (param.args[0] == "DeviceControl") {
+                            param.result = null
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun hideSmartViewQsTile(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+        ) return
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.QSTileHost",
+                loadPackageParam.classLoader,
+                "createTile",
+                String::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        if (param.args[0] == "custom(com.samsung.android.smartmirroring/.tile.SmartMirroringTile)") {
+                            param.result = null
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    // related classes: BarFactory BarController  BarOrderInteractor
+    fun hideQsBar(loadPackageParam: LoadPackageParam, qsBarSet: Set<QsBar>) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            qsBarSet.isEmpty() ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+        ) {
+            return
+        }
+
+        val callback = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val view = getObjectField(param.thisObject, "mBarRootView") as View?
+                view?.visibility = View.GONE
+            }
+        }
+
+        if (QsBar.NearbyDevicesAndDeviceControl in qsBarSet && ONE_UI_VERSION < 80500) {
+            try {
+                if (loadPackageParam.appInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
+                    findAndHookMethod(
+                        "com.android.systemui.qs.bar.BottomLargeTileBar",
+                        loadPackageParam.classLoader,
+                        "showBar",
+                        Boolean::class.javaPrimitiveType,
+                        callback
+                    )
+                } else {
+                    findAndHookMethod(
+                        "com.android.systemui.qs.bar.LargeTileBar",
+                        loadPackageParam.classLoader,
+                        "updateLayout",
+                        LinearLayout::class.java,
+                        object : XC_MethodHook() {
+                            override fun afterHookedMethod(param: MethodHookParam) {
+                                val string = getObjectField(param.thisObject, "TAG") as String
+                                if (string == "BottomLargeTileBar") {
+                                    val view =
+                                        getObjectField(param.thisObject, "mBarRootView") as View?
+                                    view?.visibility = View.GONE
+                                }
+                            }
+                        }
+                    )
+                }
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        if (QsBar.MediaPlayer in qsBarSet && ONE_UI_VERSION < 80500) {
+            try {
+                findAndHookMethod(
+                    "com.android.systemui.qs.bar.QSMediaPlayerBar",
+                    loadPackageParam.classLoader,
+                    "inflateViews",
+                    ViewGroup::class.java,
+                    callback
+                )
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        if (QsBar.SecurityFooter in qsBarSet) {
+            try {
+                if (ONE_UI_VERSION >= 80500) {
+                    findClassIfExists(
+                        $$"com.android.systemui.samsung.quicksetting.ui.banner.BottomBannerViewModel$1$1",
+                        loadPackageParam.classLoader
+                    )?.let { bottomBannerTransformClass ->
+                        hookAllMethods(
+                            bottomBannerTransformClass,
+                            "invoke",
+                            object : XC_MethodHook() {
+                                override fun beforeHookedMethod(param: MethodHookParam) {
+                                    if (param.args.getOrNull(1) is Boolean) {
+                                        param.args[1] = false
+                                    }
+                                }
+                            }
+                        )
+                    }
+                } else if (loadPackageParam.appInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
+                    findAndHookMethod(
+                        "com.android.systemui.qs.bar.BarItemImpl",
+                        loadPackageParam.classLoader,
+                        "showBar",
+                        Boolean::class.javaPrimitiveType,
+                        object : XC_MethodHook() {
+                            override fun beforeHookedMethod(param: MethodHookParam) {
+                                val tag = getObjectField(param.thisObject, "TAG")
+                                if (tag == "SecurityFooterBar") {
+                                    param.args[0] = false
+                                }
+                            }
+                        }
+                    )
+                    /* 另一种实现方式
+                    findAndHookMethod(
+                        "com.android.systemui.qs.QSSecurityFooter$3",
+                        loadPackageParam.classLoader,
+                        "run",
+                        object : XC_MethodHook() {
+                            override fun afterHookedMethod(param: MethodHookParam) {
+                                val qsSecurityFooter =
+                                    XposedHelpers.getSurroundingThis(param.thisObject)
+                                val securityFooterBar =
+                                    getObjectField(qsSecurityFooter, "mVisibilityChangedListener")
+                                val view =
+                                    getObjectField(securityFooterBar, "mBarRootView") as View?
+                                view?.visibility = View.GONE
+                            }
+                        }
+                    )
+                    */
+                } else {
+                    findAndHookMethod(
+                        "com.android.systemui.qs.bar.SecurityFooterBar",
+                        loadPackageParam.classLoader,
+                        "onVisibilityChanged",
+                        Int::class.javaPrimitiveType,
+                        callback
+                    )
+                }
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        if (QsBar.DataUsage in qsBarSet) {
+            try {
+                if (ONE_UI_VERSION >= 80500) {
+                    findClassIfExists(
+                        $$"com.android.systemui.samsung.quicksetting.ui.banner.BottomBannerViewModel$1$1",
+                        loadPackageParam.classLoader
+                    )?.let { bottomBannerTransformClass ->
+                        hookAllMethods(
+                            bottomBannerTransformClass,
+                            "invoke",
+                            object : XC_MethodHook() {
+                                override fun beforeHookedMethod(param: MethodHookParam) {
+                                    if (param.args.getOrNull(2) is Boolean) {
+                                        param.args[2] = false
+                                    }
+                                }
+                            }
+                        )
+                    }
+                } else {
+                    findAndHookMethod(
+                        "com.android.systemui.qs.bar.DataUsageBar",
+                        loadPackageParam.classLoader,
+                        "isAvailable",
+                        returnConstant(false)
+                    )
+                }
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        if (QsBar.SmartViewAndModes in qsBarSet && ONE_UI_VERSION < 80500) {
+            try {
+                findAndHookMethod(
+                    "com.android.systemui.qs.bar.BarItemImpl",
+                    loadPackageParam.classLoader,
+                    "showBar",
+                    Boolean::class.javaPrimitiveType,
+                    object : XC_MethodHook() {
+                        override fun beforeHookedMethod(param: MethodHookParam) {
+                            val tag = getObjectField(param.thisObject, "TAG")
+                            if (tag == "SmartViewLargeTileBar") {
+                                param.args[0] = false
+                            }
+                        }
+                    }
+                )
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        // 横屏
+        try {
+            if (ONE_UI_VERSION >= 80500) return
+            val nearbyDevicesAndDeviceControl = QsBar.NearbyDevicesAndDeviceControl in qsBarSet
+            val smartViewAndModes = QsBar.SmartViewAndModes in qsBarSet
+            if (!nearbyDevicesAndDeviceControl && !smartViewAndModes) {
+                return
+            }
+            findAndHookMethod(
+                "com.android.systemui.qs.bar.TopLargeTileBar",
+                loadPackageParam.classLoader,
+                "addTile",
+                $$"com.android.systemui.qs.SecQSPanelControllerBase$TileRecord",
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val tile = getObjectField(param.args[0], "tile")
+                        val tileSpec = callMethod(tile, "getTileSpec")
+                        val flag = when (tileSpec) {
+                            "DeviceControl" if nearbyDevicesAndDeviceControl -> true
+                            "custom(com.samsung.android.mydevice/.quicksettings.MyDeviceTileService)" if nearbyDevicesAndDeviceControl -> true
+                            "custom(com.samsung.android.smartmirroring/.tile.SmartMirroringTile)" if smartViewAndModes -> true
+                            "custom(com.samsung.android.app.routines/.LifestyleModeTile)" if smartViewAndModes -> true
+                            else -> false
+                        }
+                        if (flag) {
+                            param.result = null
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun alwaysExpandQsTileChunk(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            ONE_UI_VERSION >= 80500
+        ) return
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.bar.TileChunkLayoutBar",
+                loadPackageParam.classLoader,
+                "setContainerHeight",
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        param.args[0] = getObjectField(param.thisObject, "mContainerExpandedHeight")
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.bar.TileChunkLayoutBar",
+                loadPackageParam.classLoader,
+                "inflateViews",
+                ViewGroup::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val scrollIndicator = getObjectField(
+                            param.thisObject,
+                            "mScrollIndicatorClickContainer"
+                        ) as View
+                        scrollIndicator.visibility = View.GONE
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun alwaysShowTimeDateOnQs(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            ONE_UI_VERSION >= 80500
+        ) return
+        try {
+            // 单独
+            findAndHookMethod(
+                "com.android.systemui.qs.animator.PanelTransitionAnimator",
+                loadPackageParam.classLoader,
+                "setQs",
+                "com.android.systemui.plugins.qs.QS",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        if (loadPackageParam.appInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
+                            setObjectField(param.thisObject, "clockDateContainer", null)
+                            return
+                        }
+                        val context = getObjectField(param.thisObject, "context") as Context
+                        setObjectField(param.thisObject, "clockDateContainer", View(context))
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+
+        try {
+            // 两者
+            val callback = object : XC_MethodHook() {
+                override fun afterHookedMethod(param: MethodHookParam) {
+                    val mContext = getObjectField(param.thisObject, "mContext") as Context
+                    setObjectField(param.thisObject, "mClockDateContainer", View(mContext))
+                }
+            }
+            if (loadPackageParam.appInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
+                findAndHookMethod(
+                    "com.android.systemui.qs.animator.LegacyQsExpandAnimator",
+                    loadPackageParam.classLoader,
+                    "updateViews$2",
+                    callback
+                )
+            } else {
+                findAndHookMethod(
+                    "com.android.systemui.qs.animator.QsExpandAnimator",
+                    loadPackageParam.classLoader,
+                    "updateViews",
+                    callback
+                )
+            }
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun setQsClockStyle(
+        loadPackageParam: LoadPackageParam,
+        monospaced: Boolean,
+        modifyTextSize: Boolean,
+        textSize: Float
+    ) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI || !monospaced && !modifyTextSize) {
+            return
+        }
+        // 布局见 res/layout/sec_qqs_date_buttons.xml
+        val callback = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                val clockView = getObjectField(param.thisObject, "mClockView") as TextView
+                // 启用 tabular (等宽) 数字: 'tnum' 1
+                // 禁用 proportional (不等宽) 数字: 'pnum' 0
+                if (monospaced) {
+                    clockView.fontFeatureSettings = "'tnum' 1, 'pnum' 0"
+                }
+                if (modifyTextSize) {
+                    clockView.textSize = textSize
+
+                    val density = clockView.context.resources.displayMetrics.density
+                    // 15sp 到 70sp
+                    val ratio = 0.00218181f * textSize * textSize + 0.16727272f * textSize
+                    val padding = -(density * ratio).roundToInt()
+                    clockView.apply {
+                        setPadding(paddingLeft, padding, paddingRight, padding)
+                    }
+                }
+            }
+        }
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.SecQuickStatusBarHeader",
+                loadPackageParam.classLoader,
+                "onFinishInflate",
+                callback
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun supportOutdoorMode(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != io.github.soclear.oneuix.common.Package.SYSTEMUI) return
+
+        fun outdoorModeRowTag() = "io.github.soclear.oneuix.outdoor_mode_row"
+
+        fun isOutdoorModeEnabled(context: Context): Boolean {
+            return (callStaticMethod(
+                android.provider.Settings.System::class.java,
+                "getIntForUser",
+                context.contentResolver,
+                "display_outdoor_mode",
+                0,
+                -2
+            ) as Int) != 0
+        }
+
+        fun setOutdoorModeEnabled(context: Context, enabled: Boolean) {
+            callStaticMethod(
+                android.provider.Settings.System::class.java,
+                "putIntForUser",
+                context.contentResolver,
+                "display_outdoor_mode",
+                if (enabled) 1 else 0,
+                -2
+            )
+        }
+
+        @SuppressLint("DiscouragedApi")
+        fun addOutdoorModeRow(
+            context: Context,
+            detailView: ViewGroup,
+            switchPreferenceClass: Class<*>
+        ) {
+            try {
+                val outdoorContainer = callStaticMethod(
+                    switchPreferenceClass,
+                    "inflateSwitch",
+                    context,
+                    detailView
+                ) as View
+                outdoorContainer.tag = outdoorModeRowTag()
+
+                val res = context.resources
+                val titleId = res.getIdentifier(
+                    "sec_brightness_outdoor_mode_title",
+                    "string",
+                    io.github.soclear.oneuix.common.Package.SYSTEMUI
+                )
+                val summaryId = res.getIdentifier(
+                    "sec_brightness_outdoor_mode_summary",
+                    "string",
+                    io.github.soclear.oneuix.common.Package.SYSTEMUI
+                )
+                val titleViewId = res.getIdentifier("title", "id", io.github.soclear.oneuix.common.Package.SYSTEMUI)
+                val summaryViewId = res.getIdentifier("title_summary", "id", io.github.soclear.oneuix.common.Package.SYSTEMUI)
+                val switchViewId = res.getIdentifier("title_switch", "id", Package.SYSTEMUI)
+                if (titleId == 0 || titleViewId == 0 || switchViewId == 0) return
+
+                outdoorContainer.findViewById<TextView>(titleViewId)?.text =
+                    res.getString(titleId)
+
+                outdoorContainer.findViewById<TextView>(summaryViewId)?.apply {
+                    text = if (summaryId != 0) res.getString(summaryId) else ""
+                    visibility = if (summaryId != 0) View.VISIBLE else View.GONE
+                }
+
+                val outdoorSwitch: CompoundButton? = outdoorContainer.findViewById(switchViewId)
+                outdoorSwitch?.isChecked = isOutdoorModeEnabled(context)
+                outdoorSwitch?.setOnCheckedChangeListener { _, isChecked ->
+                    setOutdoorModeEnabled(context, isChecked)
+                }
+                outdoorContainer.setOnClickListener {
+                    val switch = outdoorSwitch ?: return@setOnClickListener
+                    switch.isChecked = !switch.isChecked
+                }
+
+                // Keep the row directly below Samsung's Adaptive brightness row.
+                val index = minOf(2, detailView.childCount)
+                detailView.addView(outdoorContainer, index)
+            } catch (t: Throwable) {
+                XposedBridge.log(t)
+            }
+        }
+
+        try {
+            val switchPreferenceClass = findClass(
+                "com.android.systemui.qs.SecQSSwitchPreference",
+                loadPackageParam.classLoader
+            )
+            (findClassIfExists(
+                "com.android.systemui.settings.brightness.BrightnessDetailAdapter",
+                loadPackageParam.classLoader
+            ) ?: findClassIfExists(
+                $$"com.android.systemui.settings.brightness.BrightnessDetail$1",
+                loadPackageParam.classLoader
+            ))?.let { brightnessDetailClass ->
+                findAndHookMethod(
+                    brightnessDetailClass,
+                    "createDetailView",
+                    Context::class.java,
+                    View::class.java,
+                    ViewGroup::class.java,
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            val detailView = param.result as? ViewGroup ?: return
+                            if (detailView.findViewWithTag<View>(outdoorModeRowTag()) != null) return
+                            val context = param.args[0] as Context
+                            addOutdoorModeRow(context, detailView, switchPreferenceClass)
+                        }
+                    }
+                )
+            }
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun showTraditionalChineseDateOnQS(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+        ) return
+        try {
+            val qsShortenDateClass = findClass(
+                "com.android.systemui.statusbar.policy.QSShortenDate",
+                loadPackageParam.classLoader
+            )
+            findAndHookConstructor(
+                qsShortenDateClass,
+                Context::class.java,
+                AttributeSet::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val textView = param.thisObject as TextView
+                        textView.apply {
+                            isSingleLine = false
+                            setLines(2)
+                            ellipsize = null
+                            setPadding(paddingLeft, -10, paddingRight, -10)
+                            setLineSpacing(0f, 0.8f)
+                            val density = context.resources.displayMetrics.density
+                            translationY = -10 * density
+                        }
+                    }
+                }
+            )
+            findAndHookMethod(
+                qsShortenDateClass,
+                "notifyTimeChanged",
+                "com.android.systemui.statusbar.policy.QSClockBellSound",
+                object : XC_MethodReplacement() {
+                    var previousDate = ""
+                    var result = ""
+                    override fun replaceHookedMethod(param: MethodHookParam): Any? {
+                        val shortDateText = getObjectField(param.args[0], "ShortDateText") as String
+                        if (shortDateText != previousDate) {
+                            previousDate = shortDateText
+                            result = "$shortDateText\n${TraditionalChineseCalendar.getMonthAndDay()}"
+                        }
+                        val dateTextView = param.thisObject as TextView
+                        if (dateTextView.text != result) {
+                            dateTextView.text = result
+                        }
+                        return null
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun addVolumeProgressToQsBar(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            ONE_UI_VERSION >= 80500
+        ) return
+        var textView: TextView? = null
+
+        val callback = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                try {
+                    val slider = getObjectField(param.thisObject, "mSlider") as View
+                    val sliderParent = slider.parent as FrameLayout
+                    textView = TextView(sliderParent.context).apply {
+                        setTextColor(Color.WHITE)
+                        val volumeSeekBar = getObjectField(param.thisObject, "mVolumeSeekBar")
+                        val progress = getIntField(volumeSeekBar, "progress")
+                        text = progress.toString()
+                    }
+                    val layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                        marginEnd = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            8.0f,
+                            sliderParent.context.resources.displayMetrics
+                        ).roundToInt()
+                    }
+                    sliderParent.addView(textView, layoutParams)
+                } catch (t: Throwable) {
+                    XposedBridge.log(t)
+                }
+            }
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.qs.bar.VolumeBar",
+                loadPackageParam.classLoader,
+                "inflateViews",
+                ViewGroup::class.java,
+                callback
+            )
+            findAndHookMethod(
+                $$"com.android.systemui.qs.bar.VolumeToggleSeekBar$VolumeSeekbarChangeListener",
+                loadPackageParam.classLoader,
+                "onProgressChanged",
+                SeekBar::class.java,
+                Int::class.javaPrimitiveType,
+                Boolean::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        textView?.text = param.args[1].toString()
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+
+    fun addBrightnessProgressToQsBar(loadPackageParam: LoadPackageParam) {
+        if (loadPackageParam.packageName != Package.SYSTEMUI ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM ||
+            ONE_UI_VERSION >= 80500
+        ) return
+        val textViewList = mutableListOf<TextView>()
+
+        val callback = object : XC_MethodHook() {
+            override fun afterHookedMethod(param: MethodHookParam) {
+                try {
+                    val view = getObjectField(param.thisObject, "mView")
+                    val slider = getObjectField(view, "mSlider") as View
+                    val frameLayout = slider.parent as FrameLayout
+
+                    val textView = TextView(frameLayout.context).apply {
+                        setTextColor(Color.WHITE)
+                    }
+                    val layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                        marginEnd = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            8.0f,
+                            frameLayout.context.resources.displayMetrics
+                        ).roundToInt()
+                    }
+                    textViewList.add(textView)
+                    frameLayout.addView(textView, layoutParams)
+                } catch (t: Throwable) {
+                    XposedBridge.log(t)
+                }
+            }
+        }
+
+        try {
+            findAndHookMethod(
+                "com.android.systemui.settings.brightness.BrightnessSliderController",
+                loadPackageParam.classLoader,
+                "onViewAttached",
+                callback
+            )
+
+            findAndHookMethod(
+                "com.android.systemui.settings.brightness.BrightnessSliderController$2",
+                loadPackageParam.classLoader,
+                "onProgressChanged",
+                SeekBar::class.java,
+                Int::class.javaPrimitiveType,
+                Boolean::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val progress = param.args[1].toString()
+                        textViewList.forEach {
+                            it.text = progress
+                        }
+                    }
+                }
+            )
+        } catch (t: Throwable) {
+            XposedBridge.log(t)
+        }
+    }
+}

@@ -4,7 +4,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -14,7 +13,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "io.github.soclear.oneuix"
+        applicationId = providers.gradleProperty("oneuix.applicationId").get()
         minSdk = 33
         targetSdk = 37
         versionCode = 9
@@ -88,6 +87,13 @@ android {
 }
 
 dependencies {
+    implementation(project(":common"))
+    // Hooks are loaded by Xposed, not called by the settings UI.
+    runtimeOnly(project(":hook"))
+
+    // R8 needs the host-provided types when shrinking the final APK.
+    compileOnly(libs.xposed.api)
+    compileOnly(project(":stub"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -98,10 +104,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    compileOnly(libs.xposed.api)
-    compileOnly(project(":stub"))
-
-    implementation(libs.dexkit)
     implementation(libs.adaptive)
     implementation(libs.adaptive.layout)
     implementation(libs.adaptive.navigation)

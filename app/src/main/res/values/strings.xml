@@ -153,9 +153,6 @@
     <string name="bypassWatchPairingRegionCheck_summary">Bypass region, CSC, and unsupported-phone pairing checks</string>
     <string name="supplementChinaWearOsGms_title">Supplement China WearOS GMS</string>
     <string name="supplementChinaWearOsGms_summary">If WearOS CN does not add it automatically, add com.google.android.wearable.app.cn to the download list</string>
-    <string name="restartSystemUI">Reboot System UI</string>
-    <string name="restartRecovery">Reboot to recovery</string>
-    <string name="restartDownload">Reboot to download mode</string>
     <string name="sideKeySettings">Side button settings</string>
     <string name="allowAllRotation_title">Allow all rotation angles</string>
     <string name="allowAllRotation_summary">Enable 180° rotation on phones (normally only available on tablets)</string>

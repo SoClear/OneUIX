@@ -3,8 +3,8 @@ package io.github.soclear.oneuix.ui
 import android.content.Context
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
-import io.github.soclear.oneuix.data.IgnoreUnknownKeysJson
-import io.github.soclear.oneuix.data.Preference
+import io.github.soclear.oneuix.common.IgnoreUnknownKeysJson
+import io.github.soclear.oneuix.common.Preference
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import java.io.InputStream

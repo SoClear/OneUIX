@@ -153,9 +153,6 @@
     <string name="bypassWatchPairingRegionCheck_summary">绕过区域、CSC 和不支持手机的配对检查</string>
     <string name="supplementChinaWearOsGms_title">补充国行 WearOS GMS</string>
     <string name="supplementChinaWearOsGms_summary">当 WearOS CN 未自动加入时，将 com.google.android.wearable.app.cn 加入下载列表</string>
-    <string name="restartSystemUI">重启系统 UI</string>
-    <string name="restartRecovery">重启到 Recovery</string>
-    <string name="restartDownload">重启到下载模式</string>
     <string name="sideKeySettings">侧面按钮设置</string>
     <string name="allowAllRotation_title">允许所有旋转角度</string>
     <string name="allowAllRotation_summary">在手机上启用 180° 旋转（通常仅平板可用）</string>
