@@ -92,7 +92,7 @@ dependencies {
     runtimeOnly(project(":hook"))
 
     // R8 needs the host-provided types when shrinking the final APK.
-    compileOnly(libs.xposed.api)
+    compileOnly(libs.libxposed.api)
     compileOnly(project(":stub"))
 
     implementation(libs.androidx.core.ktx)
