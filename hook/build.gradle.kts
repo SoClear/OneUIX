@@ -26,6 +26,6 @@ dependencies {
     implementation(libs.dexkit)
     implementation(libs.kotlinx.serialization.json)
 
-    compileOnly(libs.xposed.api)
+    compileOnly(libs.libxposed.api)
     compileOnly(project(":stub"))
 }
