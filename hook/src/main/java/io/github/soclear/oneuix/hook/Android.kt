@@ -1,106 +1,140 @@
 package io.github.soclear.oneuix.hook
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.os.Bundle
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XC_MethodReplacement.DO_NOTHING
-import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XposedBridge.hookAllConstructors
-import de.robv.android.xposed.XposedBridge.hookAllMethods
-import de.robv.android.xposed.XposedHelpers.findAndHookMethod
-import de.robv.android.xposed.XposedHelpers.findClass
-import de.robv.android.xposed.XposedHelpers.findClassIfExists
-import de.robv.android.xposed.XposedHelpers.setBooleanField
-import de.robv.android.xposed.XposedHelpers.setStaticIntField
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import android.util.Log
+import io.github.libxposed.api.XposedModule
+import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.set
+import java.lang.reflect.Executable
 
-
+@SuppressLint("PrivateApi")
 object Android {
-    fun disableWritingToolkitGlobally(loadPackageParam: LoadPackageParam) {
-        if (loadPackageParam.packageName != Package.ANDROID) return
+    private const val TAG = "Android"
+
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun disableWritingToolkitGlobally() {
+        if (param.packageName != Package.ANDROID) return
 
         val galaxyAiRestrictionsPackage = "com.samsung.android.knox.galaxyai"
         val writingToolkitKey = "key_writing_toolkit"
         val grayoutKey = "grayout"
 
+        val classLoader = param.classLoader
+
         try {
-            val proxyClass = findClassIfExists(
-                "com.android.server.enterprise.EDMProxyService",
-                loadPackageParam.classLoader
-            ) ?: return
-
-            hookAllMethods(
-                proxyClass,
-                "getApplicationRestrictions",
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        if (param.hasThrowable()) return
-                        if (param.args.getOrNull(0) != galaxyAiRestrictionsPackage) return
-
-                        val restrictions = Bundle(param.result as? Bundle ?: Bundle.EMPTY)
-                        val writingToolkit = Bundle(
-                            restrictions.getBundle(writingToolkitKey) ?: Bundle.EMPTY
-                        )
+            val proxyClass = classLoader.loadClass("com.android.server.enterprise.EDMProxyService")
+            proxyClass.declaredMethods.filter {
+                it.name == "getApplicationRestrictions"
+            }.forEach {
+                xposedModule.hook(it).intercept { chain ->
+                    val result = chain.proceed()
+                    if (chain.args.getOrNull(0) != galaxyAiRestrictionsPackage) {
+                        result
+                    } else {
+                        val restrictions = Bundle(result as? Bundle ?: Bundle.EMPTY)
+                        val writingToolkit = Bundle(restrictions.getBundle(writingToolkitKey) ?: Bundle.EMPTY)
                         writingToolkit.putBoolean(grayoutKey, true)
                         restrictions.putBundle(writingToolkitKey, writingToolkit)
-                        param.result = restrictions
+                        restrictions
                     }
                 }
-            )
+            }
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xposedModule.log(Log.ERROR, TAG, "disableWritingToolkitGlobally", t)
         }
     }
 
+    @SuppressLint("BlockedPrivateApi")
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun setBlockableNotificationChannel() {
         try {
             val notificationChannelClass = NotificationChannel::class.java
 
-            hookAllConstructors(notificationChannelClass, object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    setBooleanField(param.thisObject, "mBlockableSystem", true)
-                    setBooleanField(param.thisObject, "mImportanceLockedByOEM", false)
-                    setBooleanField(param.thisObject, "mImportanceLockedDefaultApp", false)
-                }
-            })
-
-            findAndHookMethod(
-                notificationChannelClass,
-                "setBlockable",
-                Boolean::class.javaPrimitiveType,
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        param.args[0] = true
-                    }
-                }
-            )
-
-            val unlockHook = object : XC_MethodHook() {
-                override fun beforeHookedMethod(param: MethodHookParam) {
-                    param.args[0] = false
+            notificationChannelClass.declaredConstructors.forEach {
+                xposedModule.hook(it).intercept { chain ->
+                    val result = chain.proceed()
+                    chain.thisObject["mBlockableSystem"] = true
+                    chain.thisObject["mImportanceLockedByOEM"] = false
+                    chain.thisObject["mImportanceLockedDefaultApp"] = false
+                    result
                 }
             }
 
-            findAndHookMethod(
-                notificationChannelClass,
-                "setImportanceLockedByOEM",
-                Boolean::class.javaPrimitiveType,
-                unlockHook
-            )
+            notificationChannelClass
+                .getDeclaredMethod("setBlockable", Boolean::class.javaPrimitiveType)
+                .let { xposedModule.hook(it) }
+                .intercept { chain ->
+                    chain.args[0] = true
+                    chain.proceed()
+                }
 
-            findAndHookMethod(
-                notificationChannelClass,
-                "setImportanceLockedByCriticalDeviceFunction",
-                Boolean::class.javaPrimitiveType,
-                unlockHook
-            )
+            notificationChannelClass
+                .getDeclaredMethod("setImportanceLockedByOEM", Boolean::class.javaPrimitiveType)
+                .let { xposedModule.hook(it) }
+                .intercept { chain ->
+                    chain.args[0] = false
+                    chain.proceed()
+                }
+
+            notificationChannelClass
+                .getDeclaredMethod("setImportanceLockedByCriticalDeviceFunction", Boolean::class.javaPrimitiveType)
+                .let { xposedModule.hook(it) }
+                .intercept { chain ->
+                    chain.args[0] = false
+                    chain.proceed()
+                }
+
+
+
+
+//            hookAllConstructors(notificationChannelClass, object : XC_MethodHook() {
+//                override fun afterHookedMethod(param: MethodHookParam) {
+//                    setBooleanField(param.thisObject, "mBlockableSystem", true)
+//                    setBooleanField(param.thisObject, "mImportanceLockedByOEM", false)
+//                    setBooleanField(param.thisObject, "mImportanceLockedDefaultApp", false)
+//                }
+//            })
+//
+//            findAndHookMethod(
+//                notificationChannelClass,
+//                "setBlockable",
+//                Boolean::class.javaPrimitiveType,
+//                object : XC_MethodHook() {
+//                    override fun beforeHookedMethod(param: MethodHookParam) {
+//                        param.args[0] = true
+//                    }
+//                }
+//            )
+//
+//            val unlockHook = object : XC_MethodHook() {
+//                override fun beforeHookedMethod(param: MethodHookParam) {
+//                    param.args[0] = false
+//                }
+//            }
+//
+//            findAndHookMethod(
+//                notificationChannelClass,
+//                "setImportanceLockedByOEM",
+//                Boolean::class.javaPrimitiveType,
+//                unlockHook
+//            )
+//
+//            findAndHookMethod(
+//                notificationChannelClass,
+//                "setImportanceLockedByCriticalDeviceFunction",
+//                Boolean::class.javaPrimitiveType,
+//                unlockHook
+//            )
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xposedModule.log(Log.ERROR, TAG, "setBlockableNotificationChannel", t)
         }
     }
 
 
+    /*
     fun setMaxNeverKilledAppNum(loadPackageParam: LoadPackageParam, num: Int) {
         if (loadPackageParam.packageName != Package.ANDROID) return
         try {
@@ -176,4 +210,5 @@ object Android {
             XposedBridge.log(t)
         }
     }
+     */
 }

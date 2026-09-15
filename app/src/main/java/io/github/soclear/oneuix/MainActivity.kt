@@ -40,11 +40,12 @@ class MainActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3AdaptiveApi::class)
     private fun setScreen() {
-        if (preferenceFile.name == Preference.FILE_NAME) {
-            setSettingScreen()
-        } else {
-            setModuleDisabledScreen()
-        }
+//        if (preferenceFile.name == Preference.FILE_NAME) {
+//            setSettingScreen()
+//        } else {
+//            setModuleDisabledScreen()
+//        }
+        setSettingScreen()
     }
 
     @SuppressLint("SetWorldReadable")
