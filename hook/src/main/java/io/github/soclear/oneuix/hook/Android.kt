@@ -3,17 +3,14 @@ package io.github.soclear.oneuix.hook
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.os.Bundle
-import android.util.Log
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.set
-import java.lang.reflect.Executable
+import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Android {
-    private const val TAG = "Android"
-
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun disableWritingToolkitGlobally() {
         if (param.packageName != Package.ANDROID) return
@@ -43,13 +40,14 @@ object Android {
                 }
             }
         } catch (t: Throwable) {
-            xposedModule.log(Log.ERROR, TAG, "disableWritingToolkitGlobally", t)
+            xlog(t)
         }
     }
 
     @SuppressLint("BlockedPrivateApi")
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun setBlockableNotificationChannel() {
+        if (param.packageName != Package.ANDROID) return
         try {
             val notificationChannelClass = NotificationChannel::class.java
 
@@ -86,101 +84,56 @@ object Android {
                     chain.args[0] = false
                     chain.proceed()
                 }
-
-
-
-
-//            hookAllConstructors(notificationChannelClass, object : XC_MethodHook() {
-//                override fun afterHookedMethod(param: MethodHookParam) {
-//                    setBooleanField(param.thisObject, "mBlockableSystem", true)
-//                    setBooleanField(param.thisObject, "mImportanceLockedByOEM", false)
-//                    setBooleanField(param.thisObject, "mImportanceLockedDefaultApp", false)
-//                }
-//            })
-//
-//            findAndHookMethod(
-//                notificationChannelClass,
-//                "setBlockable",
-//                Boolean::class.javaPrimitiveType,
-//                object : XC_MethodHook() {
-//                    override fun beforeHookedMethod(param: MethodHookParam) {
-//                        param.args[0] = true
-//                    }
-//                }
-//            )
-//
-//            val unlockHook = object : XC_MethodHook() {
-//                override fun beforeHookedMethod(param: MethodHookParam) {
-//                    param.args[0] = false
-//                }
-//            }
-//
-//            findAndHookMethod(
-//                notificationChannelClass,
-//                "setImportanceLockedByOEM",
-//                Boolean::class.javaPrimitiveType,
-//                unlockHook
-//            )
-//
-//            findAndHookMethod(
-//                notificationChannelClass,
-//                "setImportanceLockedByCriticalDeviceFunction",
-//                Boolean::class.javaPrimitiveType,
-//                unlockHook
-//            )
         } catch (t: Throwable) {
-            xposedModule.log(Log.ERROR, TAG, "setBlockableNotificationChannel", t)
+            xlog(t)
         }
     }
 
 
-    /*
-    fun setMaxNeverKilledAppNum(loadPackageParam: LoadPackageParam, num: Int) {
-        if (loadPackageParam.packageName != Package.ANDROID) return
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun setMaxNeverKilledAppNum(num: Int) {
+        if (param.packageName != Package.ANDROID) return
         try {
-            val clazz = findClass(
-                "com.android.server.am.DynamicHiddenApp",
-                loadPackageParam.classLoader
-            )
-            setStaticIntField(clazz, "MAX_NEVERKILLEDAPP_NUM", num)
+            param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp")["MAX_NEVERKILLEDAPP_NUM"] = num
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xlog(t)
         }
     }
+
 
     // 解除国行/港版对 GMS（含 FCM 推送）的网络限制
-    fun liftFcmNetworkLimit(loadPackageParam: LoadPackageParam) {
-        if (loadPackageParam.packageName != Package.ANDROID) return
-        val clazz = findClassIfExists(
-            "com.android.server.alarm.GmsAlarmManager",
-            loadPackageParam.classLoader
-        ) ?: return
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun liftFcmNetworkLimit() {
+        if (param.packageName != Package.ANDROID) return
         try {
-            hookAllConstructors(clazz, object : XC_MethodHook() {
-                override fun afterHookedMethod(param: MethodHookParam) {
-                    setBooleanField(param.thisObject, "isChinaMode", false)
-                    setBooleanField(param.thisObject, "isHongKongMode", false)
+            param.classLoader
+                .loadClass("com.android.server.alarm.GmsAlarmManager")
+                .constructors
+                .forEach {
+                    xposedModule.hook(it).intercept { chain ->
+                        chain.thisObject["isChinaMode"] = false
+                        chain.thisObject["isHongKongMode"] = false
+                    }
                 }
-            })
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xlog(t)
         }
     }
 
     // 禁用每 72 小时验证锁屏密码
-    fun disablePinVerifyPer72h(loadPackageParam: LoadPackageParam) {
-        if (loadPackageParam.packageName != Package.ANDROID) return
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun disablePinVerifyPer72h() {
+        if (param.packageName != Package.ANDROID) return
         try {
-            hookAllMethods(
-                findClass(
-                    "com.android.server.locksettings.LockSettingsStrongAuth",
-                    loadPackageParam.classLoader
-                ),
-                "rescheduleStrongAuthTimeoutAlarm",
-                DO_NOTHING
-            )
+            param.classLoader
+                .loadClass("com.android.server.locksettings.LockSettingsStrongAuth")
+                .declaredMethods
+                .filter { it.name == "rescheduleStrongAuthTimeoutAlarm" }
+                .forEach {
+                    xposedModule.hook(it).intercept { null }
+                }
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xlog(t)
         }
     }
 
@@ -188,27 +141,25 @@ object Android {
     // PowerManagerService.updateIsPoweredLocked 在插拔充电器时会调用 wakePowerGroupLocked 点亮屏幕，
     // 唤醒理由字符串为 "android.server.power:PLUGGED:" + mIsPowered。
     // 拔出充电器时 mIsPowered 为 false，拦截该次唤醒即可（插入仍正常亮屏）。
-    fun disableScreenWakeOnPowerUnplugged(loadPackageParam: LoadPackageParam) {
-        if (loadPackageParam.packageName != Package.ANDROID) return
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun disableScreenWakeOnPowerUnplugged() {
+        if (param.packageName != Package.ANDROID) return
         try {
-            hookAllMethods(
-                findClass(
-                    "com.android.server.power.PowerManagerService",
-                    loadPackageParam.classLoader
-                ),
-                "wakePowerGroupLocked",
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        val details = param.args.getOrNull(3) as? String ?: return
-                        if (details == "android.server.power:PLUGGED:false") {
-                            param.result = null
+            param.classLoader
+                .loadClass("com.android.server.power.PowerManagerService")
+                .declaredMethods
+                .filter { it.name == "wakePowerGroupLocked" }
+                .forEach {
+                    xposedModule.hook(it).intercept { chain ->
+                        if (chain.args.getOrNull(3) == "android.server.power:PLUGGED:false") {
+                            null
+                        } else {
+                            chain.proceed()
                         }
                     }
                 }
-            )
         } catch (t: Throwable) {
-            XposedBridge.log(t)
+            xlog(t)
         }
     }
-     */
 }
