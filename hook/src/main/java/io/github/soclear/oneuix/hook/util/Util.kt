@@ -12,6 +12,7 @@ import android.util.Log
 import io.github.libxposed.api.XposedModule
 import java.io.File
 import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 import java.util.concurrent.ConcurrentHashMap
 
 // 简单的 Field 缓存池，避免高频调用导致的反射性能开销
@@ -34,8 +35,23 @@ fun Any.findField(name: String): Field {
 }
 
 // 语法糖：支持 obj["fieldName"] = value 访问！
-operator fun Any.set(name: String, value: Any?) =  findField(name).set(this, value)
-operator fun Any.get(name: String): Any? = findField(name).get(this)
+// 语法糖：支持 clazz["fieldName"] = value 访问！
+// 语法糖：获取字段值
+operator fun Any.get(name: String): Any? {
+    val field = findField(name)
+    val isStatic = Modifier.isStatic(field.modifiers)
+    // 静态字段 target 必须为 null；实例字段不能直接在 Class 对象上 get
+    val target = if (isStatic) null else this
+    return field.get(target)
+}
+
+// 语法糖：设置字段值
+operator fun Any.set(name: String, value: Any?) {
+    val field = findField(name)
+    val isStatic = Modifier.isStatic(field.modifiers)
+    val target = if (isStatic) null else this
+    field.set(target, value)
+}
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getSystemContext(): Context {
@@ -94,11 +110,77 @@ fun addAssetPath(modulePath: String) {
     }
 }
 
+/*
+三星 ROM 的 persist.log.semlevel = 0xFFFFFF00 会屏蔽进程名包含 .sec 、.samsung 的 VERBOSE/DEBUG
+所以请使用 ASSERT/ERROR/INFO/WARN
+
+tag 传入 null，框架会自动赋予默认 Tag（Vector 为 "VectorContext"，LSPosed 为 "LSPosedContext"）
+这样才能命中 Vector/LSPosed 守护进程的 Tag 白名单，同时避免自定义 Tag 被过滤
+ */
 context(xposedModule: XposedModule)
-fun xlog(string: String) {
-    val result = "\n\n////////////////\n\n////////////////\n\n$string\n\n////////////////\n\n"
-    // 三星 ROM 的 persist.log.semlevel 可能按宿主进程名屏蔽 VERBOSE/DEBUG，使用 INFO。
-    Log.println(Log.INFO, "xlog", result)
-    // 框架也可能复用宿主的 Log.println，同样需要使用 INFO；收集方式由框架决定。
-    xposedModule.log(Log.INFO, "xlog", result)
+fun xlog(
+    message: Any?,
+    throwable: Throwable? = null,
+    priority: Int = Log.ERROR
+) {
+    val moduleTag = "[OneUIX]"
+    val topBorder    = "┌────────────────────────────────────────────────────────"
+    val linePrefix   = "│ "
+    val bottomBorder = "└────────────────────────────────────────────────────────"
+
+    // 过滤掉 UtilKt 自身的调用帧（包含默认参数生成的 synthetic $default 方法），定位到真正的调用方
+    val caller = Throwable().stackTrace.firstOrNull { frame ->
+        val name = frame.className
+        name != "io.github.soclear.oneuix.hook.util.UtilKt" && !name.startsWith("io.github.soclear.oneuix.hook.util.UtilKt$")
+    }?.let {
+        "[${it.fileName}:${it.lineNumber}] "
+    }.orEmpty()
+
+    // 巧妙兼容：如果第一个参数传的是 Throwable，且没额外传第二个 throwable 参数，自动归位
+    val actualThrowable = when {
+        throwable != null -> throwable
+        message is Throwable -> message
+        else -> null
+    }
+
+    val sb = StringBuilder().apply {
+        append("\n").append(moduleTag).append(" ").append(topBorder).append("\n")
+
+        if (message is Throwable && throwable == null) {
+            // 当只传了一个 Throwable 时：第一行展示代码位置以及异常信息
+            val exceptionSummary = "${message.javaClass.name}${message.message?.let { ": $it" }.orEmpty()}"
+            append(moduleTag).append(" ").append(linePrefix).append(caller).append(exceptionSummary).append("\n")
+        } else {
+            // 传普通内容（或 message + throwable）时：逐行展示文本
+            val lines = (message?.toString() ?: "null").lines()
+            append(moduleTag).append(" ").append(linePrefix).append(caller).append(lines.firstOrNull().orEmpty())
+                .append("\n")
+            for (i in 1 until lines.size) {
+                append(moduleTag).append(" ").append(linePrefix).append(lines[i]).append("\n")
+            }
+            if (actualThrowable != null) {
+                append(moduleTag).append(" ").append(linePrefix).append("Exception: ")
+                    .append(actualThrowable.javaClass.name).append(": ").append(actualThrowable.message).append("\n")
+            }
+        }
+
+        // 打印堆栈
+        if (actualThrowable != null) {
+            actualThrowable.stackTrace.take(15).forEach { frame ->
+                append(moduleTag).append(" ").append(linePrefix).append("    at ").append(frame).append("\n")
+            }
+            if (actualThrowable.stackTrace.size > 15) {
+                append(moduleTag).append(" ").append(linePrefix)
+                    .append("    ... and ${actualThrowable.stackTrace.size - 15} more frames\n")
+            }
+        }
+        append(moduleTag).append(" ").append(bottomBorder)
+    }
+
+    // tag 必须为 null，确保 Vector/LSPosed 守护进程的白名单能正常收集到 modules 日志
+    if (actualThrowable != null) {
+        xposedModule.log(priority, null, sb.toString(), actualThrowable)
+    } else {
+        xposedModule.log(priority, null, sb.toString())
+    }
 }
