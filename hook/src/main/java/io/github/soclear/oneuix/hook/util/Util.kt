@@ -97,9 +97,8 @@ fun addAssetPath(modulePath: String) {
 context(xposedModule: XposedModule)
 fun xlog(string: String) {
     val result = "\n\n////////////////\n\n////////////////\n\n$string\n\n////////////////\n\n"
-    // 直接在当前宿主进程打印：保证 adb logcat 按目标进程过滤时可见，且在注入极早期
-    // （onModuleLoaded / Application.attach 回调）也可用，不依赖框架的跨进程日志 Binder。
-    Log.println(Log.DEBUG, "xlog", result)
-    // 同时交给框架，方便在 Xposed 管理器的模块日志里查看。
-    xposedModule.log(Log.DEBUG, "xlog", result)
+    // 三星 ROM 的 persist.log.semlevel 可能按宿主进程名屏蔽 VERBOSE/DEBUG，使用 INFO。
+    Log.println(Log.INFO, "xlog", result)
+    // 框架也可能复用宿主的 Log.println，同样需要使用 INFO；收集方式由框架决定。
+    xposedModule.log(Log.INFO, "xlog", result)
 }
