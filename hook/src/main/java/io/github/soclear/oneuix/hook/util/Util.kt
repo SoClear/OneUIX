@@ -53,6 +53,78 @@ operator fun Any.set(name: String, value: Any?) {
     field.set(target, value)
 }
 
+// 基本类型与其包装类的映射，用于反射参数匹配
+private val boxedTypes: Map<Class<*>, Class<*>> = mapOf(
+    java.lang.Boolean.TYPE to java.lang.Boolean::class.java,
+    java.lang.Byte.TYPE to java.lang.Byte::class.java,
+    java.lang.Character.TYPE to java.lang.Character::class.java,
+    java.lang.Short.TYPE to java.lang.Short::class.java,
+    java.lang.Integer.TYPE to java.lang.Integer::class.java,
+    java.lang.Long.TYPE to java.lang.Long::class.java,
+    java.lang.Float.TYPE to java.lang.Float::class.java,
+    java.lang.Double.TYPE to java.lang.Double::class.java,
+)
+
+private fun Class<*>.boxed(): Class<*> = boxedTypes[this] ?: this
+
+private fun isCompatible(parameterType: Class<*>, argument: Any?): Boolean = when {
+    argument == null -> !parameterType.isPrimitive
+    else -> parameterType.boxed().isInstance(argument)
+}
+
+// 按方法名和参数运行时类型匹配，在自身及父类中查找并调用实例方法
+fun Any.callMethod(name: String, vararg args: Any?): Any? {
+    var current: Class<*>? = this.javaClass
+    while (current != null && current != Any::class.java) {
+        current.declaredMethods
+            .filter { it.name == name && it.parameterTypes.size == args.size }
+            .forEach { method ->
+                if (method.parameterTypes.withIndex().all { (index, type) ->
+                        isCompatible(type, args[index])
+                    }
+                ) {
+                    return method.apply { isAccessible = true }.invoke(this, *args)
+                }
+            }
+        current = current.superclass
+    }
+    throw NoSuchMethodException("Method '$name'(${args.size} args) not found in ${this.javaClass.name}")
+}
+
+// 按方法名和参数运行时类型匹配，在自身及父类中查找并调用静态方法
+fun Class<*>.callStaticMethod(name: String, vararg args: Any?): Any? {
+    var current: Class<*>? = this
+    while (current != null && current != Any::class.java) {
+        current.declaredMethods
+            .filter { it.name == name && Modifier.isStatic(it.modifiers) && it.parameterTypes.size == args.size }
+            .forEach { method ->
+                if (method.parameterTypes.withIndex().all { (index, type) ->
+                        isCompatible(type, args[index])
+                    }
+                ) {
+                    return method.apply { isAccessible = true }.invoke(null, *args)
+                }
+            }
+        current = current.superclass
+    }
+    throw NoSuchMethodException("Static method '$name'(${args.size} args) not found in ${this.name}")
+}
+
+// 按构造函数参数运行时类型匹配，创建实例
+fun Class<*>.newInstance(vararg args: Any?): Any {
+    declaredConstructors
+        .filter { it.parameterTypes.size == args.size }
+        .forEach { constructor ->
+            if (constructor.parameterTypes.withIndex().all { (index, type) ->
+                    isCompatible(type, args[index])
+                }
+            ) {
+                return constructor.apply { isAccessible = true }.newInstance(*args)
+            }
+        }
+    throw NoSuchMethodException("Constructor(${args.size} args) not found in $name")
+}
+
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getSystemContext(): Context {
     val activityThreadClass = Class.forName("android.app.ActivityThread")
