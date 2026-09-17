@@ -55,14 +55,14 @@ operator fun Any.set(name: String, value: Any?) {
 
 // 基本类型与其包装类的映射，用于反射参数匹配
 private val boxedTypes: Map<Class<*>, Class<*>> = mapOf(
-    java.lang.Boolean.TYPE to java.lang.Boolean::class.java,
-    java.lang.Byte.TYPE to java.lang.Byte::class.java,
-    java.lang.Character.TYPE to java.lang.Character::class.java,
-    java.lang.Short.TYPE to java.lang.Short::class.java,
-    java.lang.Integer.TYPE to java.lang.Integer::class.java,
-    java.lang.Long.TYPE to java.lang.Long::class.java,
-    java.lang.Float.TYPE to java.lang.Float::class.java,
-    java.lang.Double.TYPE to java.lang.Double::class.java,
+    Boolean::class.java to Boolean::class.javaObjectType,
+    Byte::class.java to Byte::class.javaObjectType,
+    Char::class.java to Char::class.javaObjectType,
+    Short::class.java to Short::class.javaObjectType,
+    Int::class.java to Int::class.javaObjectType,
+    Long::class.java to Long::class.javaObjectType,
+    Float::class.java to Float::class.javaObjectType,
+    Double::class.java to Double::class.javaObjectType,
 )
 
 private fun Class<*>.boxed(): Class<*> = boxedTypes[this] ?: this
