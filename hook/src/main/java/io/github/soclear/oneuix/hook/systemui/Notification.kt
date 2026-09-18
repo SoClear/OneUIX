@@ -6,6 +6,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.callMethod
 import io.github.soclear.oneuix.hook.util.get
 import io.github.soclear.oneuix.hook.util.set
@@ -14,11 +15,11 @@ import io.github.soclear.oneuix.hook.util.xlog
 @SuppressLint("PrivateApi")
 object Notification {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun setStatusBarMaxNotificationIcons(max: Int) {
+    fun setStatusBarMaxNotificationIcons(max: Int)= afterAttach {
         if (param.packageName != Package.SYSTEMUI ||
             max < 0 ||
             Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
-        ) return
+        ) return@afterAttach
 
         if (ONE_UI_VERSION >= 80500) {
             try {
@@ -53,7 +54,7 @@ object Notification {
             } catch (t: Throwable) {
                 xlog(t)
             }
-            return
+            return@afterAttach
         }
         try {
             val notificationIconContainerClass = param.classLoader

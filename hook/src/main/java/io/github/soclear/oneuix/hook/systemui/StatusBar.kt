@@ -28,7 +28,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
-@SuppressLint("PrivateApi")object StatusBar {
+@SuppressLint("PrivateApi")
+object StatusBar {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun setStatusBarPaddingDp(left: Float?, right: Float?) {
         if (param.packageName != Package.SYSTEMUI ||
@@ -37,23 +38,24 @@ import kotlin.math.roundToInt
             return
         }
         try {
-            val clazz = param.classLoader.loadClass(
-                "com.android.systemui.statusbar.phone.IndicatorGardenAlgorithmCenterCutout"
-            )
-            if (left != null) {
-                val method = clazz.getDeclaredMethod("calculateLeftPadding")
-                xposedModule.hook(method).intercept { chain ->
-                    val inputProperties = chain.thisObject["inputProperties"]
-                    val density = inputProperties?.get("density") as? Float ?: 1f
-                    (left * density).roundToInt()
+            afterAttach {
+                val clazz =
+                    classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorGardenAlgorithmCenterCutout")
+                if (left != null) {
+                    val method = clazz.getDeclaredMethod("calculateLeftPadding")
+                    xposedModule.hook(method).intercept { chain ->
+                        val inputProperties = chain.thisObject["inputProperties"]
+                        val density = inputProperties?.get("density") as? Float ?: 1f
+                        (left * density).roundToInt()
+                    }
                 }
-            }
-            if (right != null) {
-                val method = clazz.getDeclaredMethod("calculateRightPadding")
-                xposedModule.hook(method).intercept { chain ->
-                    val inputProperties = chain.thisObject["inputProperties"]
-                    val density = inputProperties?.get("density") as? Float ?: 1f
-                    (right * density).roundToInt()
+                if (right != null) {
+                    val method = clazz.getDeclaredMethod("calculateRightPadding")
+                    xposedModule.hook(method).intercept { chain ->
+                        val inputProperties = chain.thisObject["inputProperties"]
+                        val density = inputProperties?.get("density") as? Float ?: 1f
+                        (right * density).roundToInt()
+                    }
                 }
             }
         } catch (t: Throwable) {
@@ -108,6 +110,7 @@ import kotlin.math.roundToInt
                     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) "uniform_"
                     else ""
                 }battery_meter_format"
+
                 @SuppressLint("DiscouragedApi")
                 val targetId = resources.getIdentifier(batterMeterFormat, "string", Package.SYSTEMUI)
                 if (targetId != 0) {
@@ -217,8 +220,8 @@ import kotlin.math.roundToInt
     }
 
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    private fun setStatusBarClockText(block: () -> String) {
-        if (param.packageName != Package.SYSTEMUI) return
+    private fun setStatusBarClockText(block: () -> String) = afterAttach {
+        if (param.packageName != Package.SYSTEMUI) return@afterAttach
         try {
             val clockClass = param.classLoader.loadClass(
                 "com.android.systemui.statusbar.policy.QSClockIndicatorView"
@@ -316,7 +319,7 @@ import kotlin.math.roundToInt
     }
 
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun doubleTapStatusBarToSleep() {
+    fun doubleTapStatusBarToSleep() = afterAttach {
         var lastTapTime = 0L
 
         fun lockScreen(context: Context) {

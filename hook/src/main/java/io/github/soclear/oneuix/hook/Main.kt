@@ -15,46 +15,16 @@ import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
 
 class Main : XposedModule() {
+    private var processName = ""
+
+    override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
+        processName = param.processName
+    }
+
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = with(param) {
         val preference = PreferenceProvider.loadPreference() ?: return@with
 
         when (packageName) {
-            Package.ANDROID -> {
-                if (preference.android.disableWritingToolkitGlobally) {
-                    Android.disableWritingToolkitGlobally()
-                }
-
-                if (preference.android.disablePinVerifyPer72h) {
-                    Android.disablePinVerifyPer72h()
-                }
-
-                if (preference.android.modifyMaxNeverKilledAppNum) {
-                    Android.setMaxNeverKilledAppNum(
-                        preference.android.maxNeverKilledAppNum
-                    )
-                }
-
-                if (preference.android.setBlockableNotificationChannel) {
-                    Android.setBlockableNotificationChannel()
-                }
-
-                if (preference.android.supportAppJumpBlock) {
-                    CoreRune.supportAppJumpBlock()
-                }
-
-                if (preference.android.allowAllRotation) {
-                    CoreRune.allowAllRotation()
-                }
-
-                if (preference.android.liftFcmNetworkLimit) {
-                    Android.liftFcmNetworkLimit()
-                }
-
-                if (preference.android.disableScreenWakeOnPowerUnplugged) {
-                    Android.disableScreenWakeOnPowerUnplugged()
-                }
-            }
-
             Package.BROWSER -> {
                 if (preference.other.showMorePlaybackSpeeds) {
                     Browser.showMorePlaybackSpeeds()
@@ -204,7 +174,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.android.supportAppJumpBlock) {
-                    CoreRune.supportAppJumpBlock()
+                    CoreRune.supportAppJumpBlockSettings()
                 }
 
                 if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
@@ -238,7 +208,7 @@ class Main : XposedModule() {
                 }
             }
 
-            Package.SYSTEMUI -> {
+            Package.SYSTEMUI if (processName == Package.SYSTEMUI) -> {
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }
@@ -480,6 +450,44 @@ class Main : XposedModule() {
                     SPen.switchTranslateSource(useGoogle = true)
                 }
             }
+        }
+    }
+
+    override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = with(param) {
+        val preference = PreferenceProvider.loadPreference() ?: return@with
+
+        if (preference.android.disableWritingToolkitGlobally) {
+            Android.disableWritingToolkitGlobally()
+        }
+
+        if (preference.android.disablePinVerifyPer72h) {
+            Android.disablePinVerifyPer72h()
+        }
+
+        if (preference.android.modifyMaxNeverKilledAppNum) {
+            Android.setMaxNeverKilledAppNum(
+                preference.android.maxNeverKilledAppNum
+            )
+        }
+
+        if (preference.android.setBlockableNotificationChannel) {
+            Android.setBlockableNotificationChannel()
+        }
+
+        if (preference.android.supportAppJumpBlock) {
+            CoreRune.supportAppJumpBlockAndroid()
+        }
+
+        if (preference.android.allowAllRotation) {
+            CoreRune.allowAllRotation()
+        }
+
+        if (preference.android.liftFcmNetworkLimit) {
+            Android.liftFcmNetworkLimit()
+        }
+
+        if (preference.android.disableScreenWakeOnPowerUnplugged) {
+            Android.disableScreenWakeOnPowerUnplugged()
         }
     }
 }

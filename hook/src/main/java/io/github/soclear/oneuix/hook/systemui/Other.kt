@@ -4,12 +4,13 @@ import android.os.Build
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.xlog
 
 object Other {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun disableScreenshotCaptureSound() {
-        if (param.packageName != Package.SYSTEMUI) return
+    fun disableScreenshotCaptureSound() = afterAttach {
+        if (param.packageName != Package.SYSTEMUI) return@afterAttach
         try {
             param.classLoader
                 .loadClass(

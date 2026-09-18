@@ -5,16 +5,13 @@ import android.app.NotificationChannel
 import android.os.Bundle
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
-import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.set
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Android {
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun disableWritingToolkitGlobally() {
-        if (param.packageName != Package.ANDROID) return
-
         val galaxyAiRestrictionsPackage = "com.samsung.android.knox.galaxyai"
         val writingToolkitKey = "key_writing_toolkit"
         val grayoutKey = "grayout"
@@ -45,9 +42,8 @@ object Android {
     }
 
     @SuppressLint("BlockedPrivateApi")
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule)
     fun setBlockableNotificationChannel() {
-        if (param.packageName != Package.ANDROID) return
         try {
             val notificationChannelClass = NotificationChannel::class.java
 
@@ -90,9 +86,8 @@ object Android {
     }
 
 
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun setMaxNeverKilledAppNum(num: Int) {
-        if (param.packageName != Package.ANDROID) return
         try {
             param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp")["MAX_NEVERKILLEDAPP_NUM"] = num
         } catch (t: Throwable) {
@@ -102,17 +97,18 @@ object Android {
 
 
     // 解除国行/港版对 GMS（含 FCM 推送）的网络限制
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun liftFcmNetworkLimit() {
-        if (param.packageName != Package.ANDROID) return
         try {
             param.classLoader
                 .loadClass("com.android.server.alarm.GmsAlarmManager")
                 .constructors
                 .forEach {
                     xposedModule.hook(it).intercept { chain ->
+                        val result = chain.proceed()
                         chain.thisObject["isChinaMode"] = false
                         chain.thisObject["isHongKongMode"] = false
+                        result
                     }
                 }
         } catch (t: Throwable) {
@@ -121,9 +117,8 @@ object Android {
     }
 
     // 禁用每 72 小时验证锁屏密码
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun disablePinVerifyPer72h() {
-        if (param.packageName != Package.ANDROID) return
         try {
             param.classLoader
                 .loadClass("com.android.server.locksettings.LockSettingsStrongAuth")
@@ -141,9 +136,8 @@ object Android {
     // PowerManagerService.updateIsPoweredLocked 在插拔充电器时会调用 wakePowerGroupLocked 点亮屏幕，
     // 唤醒理由字符串为 "android.server.power:PLUGGED:" + mIsPowered。
     // 拔出充电器时 mIsPowered 为 false，拦截该次唤醒即可（插入仍正常亮屏）。
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun disableScreenWakeOnPowerUnplugged() {
-        if (param.packageName != Package.ANDROID) return
         try {
             param.classLoader
                 .loadClass("com.android.server.power.PowerManagerService")

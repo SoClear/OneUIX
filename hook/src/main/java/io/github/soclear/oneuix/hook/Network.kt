@@ -14,6 +14,7 @@ import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.callMethod
 import io.github.soclear.oneuix.hook.util.get
 import io.github.soclear.oneuix.hook.util.xlog
@@ -51,9 +52,9 @@ object Network {
     @SuppressLint("PrivateApi")
     @Suppress("DEPRECATION")
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun showSeparateUpDownNetworkSpeeds(intervalMillisecond: Long = 3000L) {
+    fun showSeparateUpDownNetworkSpeeds(intervalMillisecond: Long = 3000L) = afterAttach {
         if (param.packageName != Package.SYSTEMUI || intervalMillisecond <= 0L) {
-            return
+            return@afterAttach
         }
         val netSpeedViewString = "${Package.SYSTEMUI}.statusbar.policy.NetspeedView"
         val controllerString = "${netSpeedViewString}Controller"
