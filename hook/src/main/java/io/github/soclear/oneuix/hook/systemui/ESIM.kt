@@ -18,7 +18,7 @@ import java.lang.reflect.Field
 import java.util.Collections
 import java.util.WeakHashMap
 
-@SuppressLint("StaticFieldLeak")
+@SuppressLint("StaticFieldLeak", "PrivateApi")
 object ESIM {
     private const val PHYSICAL_ESIM_ADAPTER_SIM_1 = 0
     private const val PHYSICAL_ESIM_ADAPTER_SIM_2 = 1
@@ -64,8 +64,8 @@ object ESIM {
                 .loadClass("com.android.systemui.statusbar.pipeline.mobile.ui.view.ModernStatusBarMobileView")
                 .declaredMethods
                 .filter { it.name == "constructAndBind" }
-                .forEach {
-                    xposedModule.hook(it).intercept { chain ->
+                .forEach { method ->
+                    xposedModule.hook(method).intercept { chain ->
                         val result = chain.proceed()
                         val context = chain.args[0] as? Context
                         updatePhysicalEsimAdapterContext(context)
@@ -141,7 +141,7 @@ object ESIM {
             }.getOrNull()
             if (legacyStatusBarMobileView != null) {
                 val mobileIconStateClass = classLoader.loadClass(
-                    "com.android.systemui.statusbar.phone.StatusBarSignalPolicy\$MobileIconState"
+                    $$"com.android.systemui.statusbar.phone.StatusBarSignalPolicy$MobileIconState"
                 )
                 val applyMobileStateMethod = legacyStatusBarMobileView.getDeclaredMethod(
                     "applyMobileState",
@@ -191,7 +191,7 @@ object ESIM {
         try {
             val carrierTextManagerClass = classLoader.loadClass("com.android.keyguard.CarrierTextManager")
             val carrierTextCallbackInfoClass = classLoader.loadClass(
-                "com.android.keyguard.CarrierTextManager\$CarrierTextCallbackInfo"
+                $$"com.android.keyguard.CarrierTextManager$CarrierTextCallbackInfo"
             )
             val postToCallbackMethod = carrierTextManagerClass.getDeclaredMethod(
                 "postToCallback",

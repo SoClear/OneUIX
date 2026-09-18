@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.hook.systemui
 
+import android.annotation.SuppressLint
 import android.os.Build
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
@@ -10,6 +11,7 @@ import io.github.soclear.oneuix.hook.util.get
 import io.github.soclear.oneuix.hook.util.set
 import io.github.soclear.oneuix.hook.util.xlog
 
+@SuppressLint("PrivateApi")
 object Notification {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun setStatusBarMaxNotificationIcons(max: Int) {

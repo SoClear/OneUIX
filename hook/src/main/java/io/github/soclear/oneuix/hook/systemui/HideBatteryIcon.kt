@@ -16,6 +16,7 @@ import java.lang.reflect.Field
 import java.util.Collections
 import java.util.WeakHashMap
 
+@SuppressLint("PrivateApi")
 internal object HideBatteryIcon {
     private const val STATUS_BAR_CHARGING_ICON = "stat_sys_battery_charging"
     private const val FALLBACK_CHARGING_ICON = "ic_icon_charging"

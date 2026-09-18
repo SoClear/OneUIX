@@ -2,7 +2,6 @@
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Расширение One UI для Samsung</string>
     <string name="module_disabled_tip">Пожалуйста, включите этот модуль в LSPosed</string>
-    <string name="close">Закрыть</string>
     <string name="confirm">Подтвердить</string>
     <string name="other">Другое</string>
     <string name="notification">Уведомления</string>

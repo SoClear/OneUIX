@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.hook
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import io.github.libxposed.api.XposedModule
@@ -8,6 +9,7 @@ import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.set
 import io.github.soclear.oneuix.hook.util.xlog
 
+@SuppressLint("PrivateApi")
 object CoreRune {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun supportAppJumpBlock() {
@@ -56,6 +58,7 @@ object CoreRune {
         }
     }
 
+    @SuppressLint("BlockedPrivateApi")
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun allowAllRotation() {
         if (param.packageName != Package.ANDROID) {

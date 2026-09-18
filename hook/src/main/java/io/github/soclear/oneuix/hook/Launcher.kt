@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor
 import kotlin.math.roundToInt
 
 
+@SuppressLint("PrivateApi")
 object Launcher {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun showMemoryUsageInRecents() {

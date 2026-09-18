@@ -190,9 +190,7 @@ object GalaxyStore {
 
         // 去除年龄验证
         xposedModule.hook(DexMethod(hookConfig.checkAge).getMethodInstance(classLoader)).intercept { chain ->
-            chain.args.last()?.let {
-                it.callMethod("onResult", true)
-            }
+            chain.args.last()?.callMethod("onResult", true)
             null
         }
     }

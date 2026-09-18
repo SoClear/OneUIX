@@ -300,7 +300,7 @@
 
 or
 
-`/data/misc//apexdata/[UUID]/prefs/io.github.soclear.oneuix/preference.json`
+`/data/misc/apexdata/[UUID]/prefs/io.github.soclear.oneuix/preference.json`
 
 ### 🤝 Contributing
 
