@@ -135,6 +135,14 @@ fun getSystemContext(): Context {
 }
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
+fun currentApplication(): Application {
+    val activityThreadClass = Class.forName("android.app.ActivityThread")
+    val currentApplicationMethod = activityThreadClass.getDeclaredMethod("currentApplication")
+    return (currentApplicationMethod.invoke(null) as? Application)
+        ?: (getSystemContext() as Application)
+}
+
+@SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getCurrentPackageName(): String {
     val activityThreadClass = Class.forName("android.app.ActivityThread")
     val currentPackageNameMethod = activityThreadClass.getDeclaredMethod("currentPackageName")
