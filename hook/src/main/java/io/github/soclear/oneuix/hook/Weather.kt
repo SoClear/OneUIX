@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.hook
 
 import android.os.Build
+import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
@@ -19,8 +20,9 @@ object Weather {
                 param.classLoader.loadClass("com.samsung.android.weather.domain.entity.forecast.ForecastProvider")
                     .getDeclaredMethod("dispatchByCountryCode", String::class.java)
             ).intercept { chain ->
-                chain.args[0] = "CN"
-                chain.proceed()
+                val newArgs = chain.args.toTypedArray()
+                newArgs[0] = "CN"
+                chain.proceed(newArgs)
             }
         } catch (t: Throwable) {
             xlog(t)
@@ -46,39 +48,20 @@ object Weather {
         val weatherRegionClass =
             param.classLoader.loadClass("com.samsung.android.weather.domain.WeatherRegion")
 
-        xposedModule.hook(
-            weatherRegionClass.getDeclaredMethod("getActiveCp", String::class.java, Int::class.javaPrimitiveType)
-        ).intercept { chain ->
-            chain.args[0] = countryCode
-            chain.proceed()
+        val hooker = XposedInterface.Hooker { chain ->
+            val newArgs = chain.args.toTypedArray()
+            newArgs[0] = countryCode
+            chain.proceed(newArgs)
         }
 
-        xposedModule.hook(
-            weatherRegionClass.getDeclaredMethod("isChina", String::class.java)
-        ).intercept { chain ->
-            chain.args[0] = countryCode
-            chain.proceed()
-        }
-
-        xposedModule.hook(
-            weatherRegionClass.getDeclaredMethod("isGlobal", String::class.java, Int::class.javaPrimitiveType)
-        ).intercept { chain ->
-            chain.args[0] = countryCode
-            chain.proceed()
-        }
-
-        xposedModule.hook(
-            weatherRegionClass.getDeclaredMethod("isJapan", String::class.java)
-        ).intercept { chain ->
-            chain.args[0] = countryCode
-            chain.proceed()
-        }
-
-        xposedModule.hook(
+        listOf(
+            weatherRegionClass.getDeclaredMethod("getActiveCp", String::class.java, Int::class.javaPrimitiveType),
+            weatherRegionClass.getDeclaredMethod("isChina", String::class.java),
+            weatherRegionClass.getDeclaredMethod("isGlobal", String::class.java, Int::class.javaPrimitiveType),
+            weatherRegionClass.getDeclaredMethod("isJapan", String::class.java),
             weatherRegionClass.getDeclaredMethod("isKorea", String::class.java)
-        ).intercept { chain ->
-            chain.args[0] = countryCode
-            chain.proceed()
+        ).forEach { method ->
+            xposedModule.hook(method).intercept(hooker)
         }
     }
 }

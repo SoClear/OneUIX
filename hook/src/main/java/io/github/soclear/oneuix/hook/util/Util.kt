@@ -11,7 +11,6 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import io.github.libxposed.api.XposedModule
 import java.io.File
-import java.lang.reflect.Method
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getSystemContext(): Context {
@@ -93,8 +92,8 @@ fun xlog(
     priority: Int = Log.ERROR
 ) {
     val moduleTag = "[OneUIX]"
-    val topBorder    = "┌────────────────────────────────────────────────────────"
-    val linePrefix   = "│ "
+    val topBorder = "┌────────────────────────────────────────────────────────"
+    val linePrefix = "│ "
     val bottomBorder = "└────────────────────────────────────────────────────────"
 
     // 过滤掉 UtilKt 自身的调用帧（包含默认参数生成的 synthetic $default 方法），定位到真正的调用方

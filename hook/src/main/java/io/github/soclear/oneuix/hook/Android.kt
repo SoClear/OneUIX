@@ -61,24 +61,27 @@ object Android {
                 .getDeclaredMethod("setBlockable", Boolean::class.javaPrimitiveType)
                 .let { xposedModule.hook(it) }
                 .intercept { chain ->
-                    chain.args[0] = true
-                    chain.proceed()
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[0] = true
+                    chain.proceed(newArgs)
                 }
 
             notificationChannelClass
                 .getDeclaredMethod("setImportanceLockedByOEM", Boolean::class.javaPrimitiveType)
                 .let { xposedModule.hook(it) }
                 .intercept { chain ->
-                    chain.args[0] = false
-                    chain.proceed()
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[0] = false
+                    chain.proceed(newArgs)
                 }
 
             notificationChannelClass
                 .getDeclaredMethod("setImportanceLockedByCriticalDeviceFunction", Boolean::class.javaPrimitiveType)
                 .let { xposedModule.hook(it) }
                 .intercept { chain ->
-                    chain.args[0] = false
-                    chain.proceed()
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[0] = false
+                    chain.proceed(newArgs)
                 }
         } catch (t: Throwable) {
             xlog(t)
@@ -89,7 +92,8 @@ object Android {
     context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun setMaxNeverKilledAppNum(num: Int) {
         try {
-            param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp").reflect["MAX_NEVERKILLEDAPP_NUM"] = num
+            param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp").reflect["MAX_NEVERKILLEDAPP_NUM"] =
+                num
         } catch (t: Throwable) {
             xlog(t)
         }

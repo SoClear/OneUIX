@@ -103,10 +103,13 @@ object ESIM {
             )
             xposedModule.hook(setVisibleStateMethod).intercept { chain ->
                 val slot = trackedMobileViewSlots[chain.thisObject as? View]
-                if (slot != null && slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
-                    chain.args[0] = 2
+                val result = if (slot != null && slot in selectedSlots && isUnavailableCarrierSlot(slot)) {
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[0] = 2
+                    chain.proceed(newArgs)
+                } else {
+                    chain.proceed()
                 }
-                val result = chain.proceed()
                 val view = chain.thisObject as? View ?: return@intercept result
                 val viewSlot = trackedMobileViewSlots[view] ?: return@intercept result
                 applyMobileViewVisibility(view, viewSlot, selectedSlots)

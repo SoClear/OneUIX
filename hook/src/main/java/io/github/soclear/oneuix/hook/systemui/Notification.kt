@@ -13,7 +13,7 @@ import io.github.soclear.oneuix.hook.util.xlog
 @SuppressLint("PrivateApi")
 object Notification {
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun setStatusBarMaxNotificationIcons(max: Int)= afterAttach {
+    fun setStatusBarMaxNotificationIcons(max: Int) = afterAttach {
         if (param.packageName != Package.SYSTEMUI ||
             max < 0 ||
             Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
@@ -31,8 +31,9 @@ object Notification {
                         Int::class.javaPrimitiveType
                     )
                 ).intercept { chain ->
-                    chain.args[2] = max
-                    chain.proceed()
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[2] = max
+                    chain.proceed(newArgs)
                 }
             } catch (t: Throwable) {
                 xlog(t)
@@ -66,8 +67,9 @@ object Notification {
                     Int::class.javaPrimitiveType
                 )
             ).intercept { chain ->
-                chain.args[3] = max
-                chain.proceed()
+                val newArgs = chain.args.toTypedArray()
+                newArgs[3] = max
+                chain.proceed(newArgs)
             }
 
             xposedModule.hook(

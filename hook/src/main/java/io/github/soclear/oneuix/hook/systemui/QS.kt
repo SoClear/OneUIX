@@ -153,9 +153,12 @@ object QS {
                         ?.forEach { method ->
                             xposedModule.hook(method).intercept { chain ->
                                 if (chain.args.getOrNull(1) is Boolean) {
-                                    chain.args[1] = false
+                                    val newArgs = chain.args.toTypedArray()
+                                    newArgs[1] = false
+                                    chain.proceed(newArgs)
+                                } else {
+                                    chain.proceed()
                                 }
-                                chain.proceed()
                             }
                         }
                 } else if (param.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
@@ -169,9 +172,12 @@ object QS {
                     xposedModule.hook(showBarMethod).intercept { chain ->
                         val tag = chain.thisObject.reflect["TAG"]
                         if (tag == "SecurityFooterBar") {
-                            chain.args[0] = false
+                            val newArgs = chain.args.toTypedArray()
+                            newArgs[0] = false
+                            chain.proceed(newArgs)
+                        } else {
+                            chain.proceed()
                         }
-                        chain.proceed()
                     }
                 } else {
                     val securityFooterBarClass = param.classLoader.loadClass(
@@ -201,9 +207,12 @@ object QS {
                         ?.forEach { method ->
                             xposedModule.hook(method).intercept { chain ->
                                 if (chain.args.getOrNull(2) is Boolean) {
-                                    chain.args[2] = false
+                                    val newArgs = chain.args.toTypedArray()
+                                    newArgs[2] = false
+                                    chain.proceed(newArgs)
+                                } else {
+                                    chain.proceed()
                                 }
-                                chain.proceed()
                             }
                         }
                 } else {
@@ -230,9 +239,12 @@ object QS {
                 xposedModule.hook(showBarMethod).intercept { chain ->
                     val tag = chain.thisObject.reflect["TAG"]
                     if (tag == "SmartViewLargeTileBar") {
-                        chain.args[0] = false
+                        val newArgs = chain.args.toTypedArray()
+                        newArgs[0] = false
+                        chain.proceed(newArgs)
+                    } else {
+                        chain.proceed()
                     }
-                    chain.proceed()
                 }
             } catch (t: Throwable) {
                 xlog(t)
@@ -292,9 +304,12 @@ object QS {
             xposedModule.hook(setContainerHeightMethod).intercept { chain ->
                 val expandedHeight = chain.thisObject.reflect["mContainerExpandedHeight"] as? Int
                 if (expandedHeight != null) {
-                    chain.args[0] = expandedHeight
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[0] = expandedHeight
+                    chain.proceed(newArgs)
+                } else {
+                    chain.proceed()
                 }
-                chain.proceed()
             }
 
             val inflateViewsMethod = tileChunkLayoutBarClass.getDeclaredMethod(

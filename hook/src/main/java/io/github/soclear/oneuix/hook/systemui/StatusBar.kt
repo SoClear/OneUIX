@@ -362,8 +362,9 @@ object StatusBar {
             )
             val method = viewClass.getDeclaredMethod("setVisibility", Int::class.javaPrimitiveType)
             xposedModule.hook(method).intercept { chain ->
-                chain.args[0] = View.GONE
-                chain.proceed()
+                val newArgs = chain.args.toTypedArray()
+                newArgs[0] = View.GONE
+                chain.proceed(newArgs)
             }
         } catch (t: Throwable) {
             xlog(t)

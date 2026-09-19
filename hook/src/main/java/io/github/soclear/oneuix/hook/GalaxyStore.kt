@@ -151,8 +151,9 @@ object GalaxyStore {
 
                     // 禁止加载广告
                     "adInfoList" -> {
-                        chain.args[1] = "N"
-                        chain.proceed()
+                        val newArgs = chain.args.toTypedArray()
+                        newArgs[1] = "N"
+                        chain.proceed(newArgs)
                     }
 
                     else -> chain.proceed()
@@ -160,7 +161,8 @@ object GalaxyStore {
             }
 
         // 拦截广告加载完成回调
-        val platformClass = classLoader.loadClass($$"com.sec.android.app.samsungapps.curate.ad.AdInventoryManager$PLATFORM")
+        val platformClass =
+            classLoader.loadClass($$"com.sec.android.app.samsungapps.curate.ad.AdInventoryManager$PLATFORM")
         xposedModule.hook(
             classLoader.loadClass("com.sec.android.app.samsungapps.slotpage.GalaxyAppsMainActivity")
                 .getDeclaredMethod("onAdAvailable", platformClass)
@@ -181,7 +183,8 @@ object GalaxyStore {
         // 替换为空的广告组
         xposedModule.hook(DexMethod(hookConfig.getAdDataGroupParentMethod).getMethodInstance(classLoader))
             .intercept {
-                val adDataGroupParentClass = classLoader.loadClass("com.sec.android.app.samsungapps.curate.ad.AdDataGroupParent")
+                val adDataGroupParentClass =
+                    classLoader.loadClass("com.sec.android.app.samsungapps.curate.ad.AdDataGroupParent")
                 adDataGroupParentClass.constructors.first {
                     it.parameterCount == 0
                 }.newInstance()
