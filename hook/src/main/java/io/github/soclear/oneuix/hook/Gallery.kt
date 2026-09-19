@@ -132,9 +132,9 @@ object Gallery {
                 runCatching { mediaItemMdeClass.reflect.callAs<String>("getSpaceId", item) }.getOrNull()
 
             fun getSpacesFromChildDataMap(childDataMap: Any?): MutableList<Any>? {
-                val map = childDataMap as? java.util.Map<*, *> ?: return null
+                val map = childDataMap as? Map<*, *> ?: return null
                 @Suppress("UNCHECKED_CAST")
-                return (map as java.util.Map<Any, Any>).get(sharedAlbumsLocation) as? MutableList<Any>
+                return (map as Map<Any, Any>)[sharedAlbumsLocation] as? MutableList<Any>
             }
 
             fun refreshSharingData() {
