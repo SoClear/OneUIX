@@ -11,9 +11,7 @@ import android.widget.RadioGroup
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 object Browser {
@@ -50,7 +48,7 @@ object Browser {
                 playbackRateViewClass.getDeclaredMethod("init", LinearLayout::class.java)
             ).intercept { chain ->
                 fun setPlaybackRates() {
-                    playbackRateViewClass["sPlaybackRates"] = sPlaybackRates
+                    playbackRateViewClass.reflect["sPlaybackRates"] = sPlaybackRates
                 }
 
                 fun createRadioButton(text: String, template: RadioButton): RadioButton {
@@ -72,14 +70,14 @@ object Browser {
 
                 fun addMoreSpeeds() {
                     val radioGroup =
-                        chain.thisObject["mPlaybackSpeedRadioGroup"] as? RadioGroup ?: return
+                        chain.thisObject.reflect["mPlaybackSpeedRadioGroup"] as? RadioGroup ?: return
                     val radioButton = radioGroup.getChildAt(0) as? RadioButton ?: return
                     radioGroup.addView(createRadioButton("3.0", radioButton))
                     radioGroup.addView(createRadioButton("4.0", radioButton))
                 }
 
                 fun setPlaybackRateViewWidth() {
-                    val view = chain.thisObject["mPlaybackRateView"] as? View ?: return
+                    val view = chain.thisObject.reflect["mPlaybackRateView"] as? View ?: return
 
                     val density = view.resources.displayMetrics.density
                     view.layoutParams = view.layoutParams.apply {
@@ -103,21 +101,21 @@ object Browser {
                 playbackRateViewClass.getDeclaredMethod("setInitialSpeed")
             ).intercept { chain ->
                 try {
-                    val mController = chain.thisObject["mController"] ?: throw Exception("mController is null")
-                    val speed = mController.callMethod("getPlaybackRate") as Double
+                    val mController = chain.thisObject.reflect["mController"] ?: throw Exception("mController is null")
+                    val speed = mController.reflect.call("getPlaybackRate") as Double
                     var index = sPlaybackRates.indexOfFirst { it == speed }
                     // Default to 1.0x
                     if (index == -1) index = 3
 
                     val radioGroup =
-                        chain.thisObject["mPlaybackSpeedRadioGroup"] as? RadioGroup ?: return@intercept null
+                        chain.thisObject.reflect["mPlaybackSpeedRadioGroup"] as? RadioGroup ?: return@intercept null
                     val radioButton =
                         radioGroup.getChildAt(index) as? RadioButton ?: return@intercept null
 
-                    mController.callMethod("setPlaybackRate", speed)
-                    chain.thisObject["mCurrentSpeed"] = radioButton
+                    mController.reflect.call("setPlaybackRate", speed)
+                    chain.thisObject.reflect["mCurrentSpeed"] = radioButton
                     radioButton.isChecked = true
-                    chain.thisObject.callMethod("highlightSelectedSpeedButton", radioButton)
+                    chain.thisObject.reflect.call("highlightSelectedSpeedButton", radioButton)
                 } catch (t: Throwable) {
                     xlog(t)
                 }

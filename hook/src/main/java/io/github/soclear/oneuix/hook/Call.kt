@@ -8,7 +8,7 @@ import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.getHookConfig
 import io.github.soclear.oneuix.hook.util.longVersionCode
-import io.github.soclear.oneuix.hook.util.newInstance
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import kotlinx.serialization.Serializable
 import org.luckypray.dexkit.DexKitBridge
@@ -179,10 +179,10 @@ object Call {
             }.singleOrNull() ?: return null
 
             val callLogGroupClass = callLogGroupClassData.getInstance(classLoader)
-            val callLogGroup = callLogGroupClass.newInstance(true, true)
+            val callLogGroup = callLogGroupClass.reflect.new(true, true)
 
             val callLogViewItemClass = callLogViewItemClassData.getInstance(classLoader)
-            val callLogViewItem = callLogViewItemClass.newInstance(callLogGroup)
+            val callLogViewItem = callLogViewItemClass.reflect.new(callLogGroup)
 
             val tokenToField = mutableMapOf<String, Field>()
 

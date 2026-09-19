@@ -6,7 +6,7 @@ import android.os.Build
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
@@ -21,7 +21,7 @@ object CoreRune {
             ).intercept { chain ->
                 try {
                     param.classLoader
-                        .loadClass("com.samsung.android.rune.CoreRune")["SUPPORT_APP_JUMP_BLOCK"] = true
+                        .loadClass("com.samsung.android.rune.CoreRune").reflect["SUPPORT_APP_JUMP_BLOCK"] = true
                 } catch (t: Throwable) {
                     xlog(t)
                 }
@@ -53,7 +53,7 @@ object CoreRune {
             ).intercept { chain ->
                 try {
                     param.classLoader
-                        .loadClass("com.samsung.android.rune.CoreRune")["SUPPORT_APP_JUMP_BLOCK"] = true
+                        .loadClass("com.samsung.android.rune.CoreRune").reflect["SUPPORT_APP_JUMP_BLOCK"] = true
                 } catch (t: Throwable) {
                     xlog(t)
                 }
@@ -69,8 +69,8 @@ object CoreRune {
     fun allowAllRotation() {
         try {
             val coreRuneClass = param.classLoader.loadClass("com.samsung.android.rune.CoreRune")
-            coreRuneClass["FW_ALLOW_ALL_ROTATION"] = true
-            coreRuneClass["FW_ORIENTATION_CONTROL"] = true
+            coreRuneClass.reflect["FW_ALLOW_ALL_ROTATION"] = true
+            coreRuneClass.reflect["FW_ORIENTATION_CONTROL"] = true
             xposedModule.hook(
                 param.classLoader.loadClass("com.android.internal.view.RotationPolicy")
                     .getDeclaredMethod("areAllRotationsAllowed", Context::class.java)

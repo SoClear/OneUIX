@@ -10,7 +10,7 @@ import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.findField
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.lang.reflect.Field
 import java.util.Collections
@@ -408,7 +408,7 @@ internal object HideBatteryIcon {
 
     private fun findField(instance: Any, names: List<String>): Field? {
         names.forEach { name ->
-            runCatching { instance.findField(name) }.getOrNull()?.let { return it }
+            runCatching { instance.reflect.findField(name) }.getOrNull()?.let { return it }
         }
         return null
     }

@@ -19,10 +19,7 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.callStaticMethod
-import io.github.soclear.oneuix.hook.util.get
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import kotlin.math.roundToInt
 
@@ -89,7 +86,7 @@ object QS {
 
         val hideBarCallback = XposedInterface.Hooker { chain ->
             val result = chain.proceed()
-            val view = chain.thisObject["mBarRootView"] as? View
+            val view = chain.thisObject.reflect["mBarRootView"] as? View
             view?.visibility = View.GONE
             result
         }
@@ -115,9 +112,9 @@ object QS {
                     )
                     xposedModule.hook(updateLayoutMethod).intercept { chain ->
                         val result = chain.proceed()
-                        val string = chain.thisObject["TAG"] as? String
+                        val string = chain.thisObject.reflect["TAG"] as? String
                         if (string == "BottomLargeTileBar") {
-                            val view = chain.thisObject["mBarRootView"] as? View
+                            val view = chain.thisObject.reflect["mBarRootView"] as? View
                             view?.visibility = View.GONE
                         }
                         result
@@ -170,7 +167,7 @@ object QS {
                         Boolean::class.javaPrimitiveType
                     )
                     xposedModule.hook(showBarMethod).intercept { chain ->
-                        val tag = chain.thisObject["TAG"]
+                        val tag = chain.thisObject.reflect["TAG"]
                         if (tag == "SecurityFooterBar") {
                             chain.args[0] = false
                         }
@@ -231,7 +228,7 @@ object QS {
                     Boolean::class.javaPrimitiveType
                 )
                 xposedModule.hook(showBarMethod).intercept { chain ->
-                    val tag = chain.thisObject["TAG"]
+                    val tag = chain.thisObject.reflect["TAG"]
                     if (tag == "SmartViewLargeTileBar") {
                         chain.args[0] = false
                     }
@@ -258,8 +255,8 @@ object QS {
             )
             val addTileMethod = topLargeTileBarClass.getDeclaredMethod("addTile", tileRecordClass)
             xposedModule.hook(addTileMethod).intercept { chain ->
-                val tile = chain.args[0]?.get("tile")
-                val tileSpec = tile?.callMethod("getTileSpec")
+                val tile = chain.args[0]?.reflect?.get("tile")
+                val tileSpec = tile?.reflect?.call("getTileSpec")
                 val flag = when (tileSpec) {
                     "DeviceControl" if nearbyDevicesAndDeviceControl -> true
                     "custom(com.samsung.android.mydevice/.quicksettings.MyDeviceTileService)" if nearbyDevicesAndDeviceControl -> true
@@ -293,7 +290,7 @@ object QS {
                 Int::class.javaPrimitiveType
             )
             xposedModule.hook(setContainerHeightMethod).intercept { chain ->
-                val expandedHeight = chain.thisObject["mContainerExpandedHeight"] as? Int
+                val expandedHeight = chain.thisObject.reflect["mContainerExpandedHeight"] as? Int
                 if (expandedHeight != null) {
                     chain.args[0] = expandedHeight
                 }
@@ -306,7 +303,7 @@ object QS {
             )
             xposedModule.hook(inflateViewsMethod).intercept { chain ->
                 val result = chain.proceed()
-                val scrollIndicator = chain.thisObject["mScrollIndicatorClickContainer"] as? View
+                val scrollIndicator = chain.thisObject.reflect["mScrollIndicatorClickContainer"] as? View
                 scrollIndicator?.visibility = View.GONE
                 result
             }
@@ -330,11 +327,11 @@ object QS {
             xposedModule.hook(setQsMethod).intercept { chain ->
                 val result = chain.proceed()
                 if (param.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
-                    chain.thisObject["clockDateContainer"] = null
+                    chain.thisObject.reflect["clockDateContainer"] = null
                 } else {
-                    val context = chain.thisObject["context"] as? Context
+                    val context = chain.thisObject.reflect["context"] as? Context
                     if (context != null) {
-                        chain.thisObject["clockDateContainer"] = View(context)
+                        chain.thisObject.reflect["clockDateContainer"] = View(context)
                     }
                 }
                 result
@@ -346,9 +343,9 @@ object QS {
         try {
             val callback = XposedInterface.Hooker { chain ->
                 val result = chain.proceed()
-                val mContext = chain.thisObject["mContext"] as? Context
+                val mContext = chain.thisObject.reflect["mContext"] as? Context
                 if (mContext != null) {
-                    chain.thisObject["mClockDateContainer"] = View(mContext)
+                    chain.thisObject.reflect["mClockDateContainer"] = View(mContext)
                 }
                 result
             }
@@ -388,7 +385,7 @@ object QS {
             xposedModule.hook(onFinishInflateMethod).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val clockView = chain.thisObject["mClockView"] as? TextView
+                    val clockView = chain.thisObject.reflect["mClockView"] as? TextView
                     if (clockView != null) {
                         // 启用 tabular (等宽) 数字: 'tnum' 1
                         // 禁用 proportional (不等宽) 数字: 'pnum' 0
@@ -427,7 +424,7 @@ object QS {
         fun outdoorModeRowTag() = "io.github.soclear.oneuix.outdoor_mode_row"
 
         fun isOutdoorModeEnabled(context: Context): Boolean {
-            return (android.provider.Settings.System::class.java.callStaticMethod(
+            return (android.provider.Settings.System::class.java.reflect.call(
                 "getIntForUser",
                 context.contentResolver,
                 "display_outdoor_mode",
@@ -437,7 +434,7 @@ object QS {
         }
 
         fun setOutdoorModeEnabled(context: Context, enabled: Boolean) {
-            android.provider.Settings.System::class.java.callStaticMethod(
+            android.provider.Settings.System::class.java.reflect.call(
                 "putIntForUser",
                 context.contentResolver,
                 "display_outdoor_mode",
@@ -453,7 +450,7 @@ object QS {
             switchPreferenceClass: Class<*>
         ) {
             try {
-                val outdoorContainer = switchPreferenceClass.callStaticMethod(
+                val outdoorContainer = switchPreferenceClass.reflect.call(
                     "inflateSwitch",
                     context,
                     detailView
@@ -570,7 +567,7 @@ object QS {
             var previousDate = ""
             var result = ""
             xposedModule.hook(notifyTimeChangedMethod).intercept { chain ->
-                val shortDateText = chain.args[0]?.get("ShortDateText") as? String ?: ""
+                val shortDateText = chain.args[0]?.reflect?.get("ShortDateText") as? String ?: ""
                 if (shortDateText != previousDate) {
                     previousDate = shortDateText
                     result = "$shortDateText\n${TraditionalChineseCalendar.getMonthAndDay()}"
@@ -600,11 +597,11 @@ object QS {
             xposedModule.hook(inflateViewsMethod).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val slider = chain.thisObject["mSlider"] as? View
+                    val slider = chain.thisObject.reflect["mSlider"] as? View
                     val sliderParent = slider?.parent as? FrameLayout
                     if (sliderParent != null) {
-                        val volumeSeekBar = chain.thisObject["mVolumeSeekBar"]
-                        val progress = volumeSeekBar?.get("progress") as? Int ?: 0
+                        val volumeSeekBar = chain.thisObject.reflect["mVolumeSeekBar"]
+                        val progress = volumeSeekBar?.reflect?.get("progress") as? Int ?: 0
                         textView = TextView(sliderParent.context).apply {
                             setTextColor(Color.WHITE)
                             text = progress.toString()
@@ -663,8 +660,8 @@ object QS {
             xposedModule.hook(onViewAttachedMethod).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val view = chain.thisObject["mView"]
-                    val slider = view?.get("mSlider") as? View
+                    val view = chain.thisObject.reflect["mView"]
+                    val slider = view?.reflect?.get("mSlider") as? View
                     val frameLayout = slider?.parent as? FrameLayout
                     if (frameLayout != null) {
                         val textView = TextView(frameLayout.context).apply {

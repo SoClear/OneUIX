@@ -15,11 +15,12 @@ object PreferenceProvider {
     fun loadPreference(): Preference? = try {
         val parcelFileDescriptor = xposedModule.openRemoteFile(Preference.FILE_NAME)
         ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor).use { inputStream ->
-            if (inputStream.channel.size() == 0L) return null
+            if (inputStream.channel.size() == 0L) {
+                return null
+            }
             IgnoreUnknownKeysJson.decodeFromStream<Preference>(inputStream)
         }
     } catch (_: java.io.FileNotFoundException) {
-        // 模块 App 尚未推送配置文件（或用户未设置过偏好）时不启用任何 hook
         null
     } catch (t: Throwable) {
         xlog(t)

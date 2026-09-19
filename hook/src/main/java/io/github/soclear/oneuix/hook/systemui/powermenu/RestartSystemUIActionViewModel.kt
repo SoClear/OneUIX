@@ -9,14 +9,14 @@ import com.samsung.android.globalactions.presentation.viewmodel.ActionViewModel
 import com.samsung.android.globalactions.presentation.viewmodel.ViewType
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.hook.R
-import io.github.soclear.oneuix.hook.util.currentApplication
+import io.github.soclear.oneuix.hook.util.currentContext
 import io.github.soclear.oneuix.common.R as CommonR
 
 class RestartSystemUIActionViewModel(
     private val globalActions: SamsungGlobalActions,
 ) : ActionViewModel {
     private val actionInfo = ActionInfo().apply {
-        val context = currentApplication()
+        val context = currentContext()
         name = PowerMenuAction.RESTART_SYSTEMUI
         viewType = ViewType.CENTER_ICON_3P_VIEW
         icon = R.drawable.ic_restart_system_ui

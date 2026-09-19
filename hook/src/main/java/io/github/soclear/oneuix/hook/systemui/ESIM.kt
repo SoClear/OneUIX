@@ -10,9 +10,7 @@ import android.view.View
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.findField
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.lang.reflect.Field
 import java.util.Collections
@@ -150,7 +148,7 @@ object ESIM {
                 xposedModule.hook(applyMobileStateMethod).intercept { chain ->
                     val result = chain.proceed()
                     val state = chain.args[0] ?: return@intercept result
-                    val slot = SubscriptionManager.getSlotIndex(state["subId"] as Int)
+                    val slot = SubscriptionManager.getSlotIndex(state.reflect["subId"] as Int)
                     if (slot in selectedSlots) {
                         val view = chain.thisObject as? View
                         updateCarrierSlotAvailabilityFromMobileState(
@@ -214,13 +212,13 @@ object ESIM {
 
     private fun getMobileViewModelSlot(viewModel: Any): Int? {
         runCatching {
-            val commonImpl = viewModel["commonImpl"]!!
-            val slot = commonImpl["slotId"] as Int
+            val commonImpl = viewModel.reflect["commonImpl"]!!
+            val slot = commonImpl.reflect["slotId"] as Int
             if (slot >= 0) return slot
         }
 
         runCatching {
-            val subId = viewModel.callMethod("getSubscriptionId") as Int
+            val subId = viewModel.reflect.call("getSubscriptionId") as Int
             val slot = SubscriptionManager.getSlotIndex(subId)
             if (slot >= 0) return slot
         }
@@ -229,7 +227,7 @@ object ESIM {
     }
 
     private fun getMobileViewModelSubId(viewModel: Any): Int? =
-        runCatching { viewModel.callMethod("getSubscriptionId") as Int }
+        runCatching { viewModel.reflect.call("getSubscriptionId") as Int }
             .getOrNull()
             ?.takeIf(SubscriptionManager::isValidSubscriptionId)
 
@@ -274,7 +272,7 @@ object ESIM {
         synchronized(unavailableCarrierSlots) { slot in unavailableCarrierSlots }
 
     private fun updateCarrierSlotAvailabilityFromMobileState(state: Any, slot: Int, context: Context?) {
-        val unavailable = getUnavailableServiceState(context, state["subId"] as Int)
+        val unavailable = getUnavailableServiceState(context, state.reflect["subId"] as Int)
             ?: isUnavailableMobileStateText(state)
 
         synchronized(unavailableCarrierSlots) {
@@ -598,7 +596,7 @@ object ESIM {
 
     private fun findField(instance: Any, names: List<String>): Field? {
         names.forEach { name ->
-            runCatching { instance.findField(name) }.getOrNull()?.let { return it }
+            runCatching { instance.reflect.findField(name) }.getOrNull()?.let { return it }
         }
         return null
     }

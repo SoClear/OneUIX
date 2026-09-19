@@ -15,8 +15,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.net.NetworkInterface
 import kotlin.math.roundToInt
@@ -139,8 +138,7 @@ object Network {
                 try {
                     val message = chain.args[0] as Message
                     val handler = chain.thisObject as Handler
-                    @Suppress("DEPRECATION")
-                    val observable = chain.thisObject["this$0"] as? java.util.Observable
+                    val observable = chain.thisObject.reflect["this$0"] as? java.util.Observable
                     if (observable != null && observable.countObservers() > 0) {
                         when (message.what) {
                             messageInitial -> {
@@ -164,7 +162,7 @@ object Network {
                                         actualIntervalSeconds
                                     )
 
-                                    observable.callMethod("setChanged")
+                                    observable.reflect.call("setChanged")
                                     observable.notifyObservers(speedString)
                                 }
 
@@ -185,7 +183,7 @@ object Network {
             xposedModule.hook(onFinishInflateMethod).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    (chain.thisObject["mContentView"] as? TextView)?.apply {
+                    (chain.thisObject.reflect["mContentView"] as? TextView)?.apply {
                         setLines(2)
                         gravity = Gravity.END
                         textAlignment = View.TEXT_ALIGNMENT_VIEW_END
@@ -266,9 +264,9 @@ object Network {
             )
 
             fun getLinkSpeed(thisObject: Any, position: Int): String? {
-                val wifiEntries = thisObject["mWifiEntries"] as? List<*> ?: return null
+                val wifiEntries = thisObject.reflect["mWifiEntries"] as? List<*> ?: return null
                 val wifiEntry = wifiEntries.getOrNull(position) ?: return null
-                val wifiInfo = wifiEntry["mWifiInfo"] as? WifiInfo ?: return null
+                val wifiInfo = wifiEntry.reflect["mWifiInfo"] as? WifiInfo ?: return null
                 return "${wifiInfo.txLinkSpeedMbps},${wifiInfo.rxLinkSpeedMbps}"
             }
 
@@ -283,7 +281,7 @@ object Network {
                     val position = chain.args[1] as Int
                     val linkSpeed = getLinkSpeed(chain.thisObject, position)
                     if (linkSpeed != null) {
-                        val mSummary = chain.args[0]["mSummary"] as? TextView
+                        val mSummary = chain.args[0].reflect["mSummary"] as? TextView
                         mSummary?.append(" $linkSpeed")
                     }
                 } catch (t: Throwable) {

@@ -8,8 +8,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.common.PowerMenuAction
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 object PowerMenu {
@@ -26,8 +25,8 @@ object PowerMenu {
     )
 
     private fun systemAction(actionName: String): (SamsungGlobalActions) -> ActionViewModel = { globalActions ->
-        val viewModelFactory = globalActions["mViewModelFactory"]
-        viewModelFactory?.callMethod(
+        val viewModelFactory = globalActions.reflect["mViewModelFactory"]
+        viewModelFactory?.reflect?.call(
             "createActionViewModel",
             globalActions,
             actionName

@@ -11,14 +11,14 @@ import io.github.soclear.oneuix.RebootActivity
 import io.github.soclear.oneuix.common.BuildConfig
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.hook.R
-import io.github.soclear.oneuix.hook.util.currentApplication
+import io.github.soclear.oneuix.hook.util.currentContext
 import io.github.soclear.oneuix.common.R as CommonR
 
 class RestartDownloadActionViewModel(
     private val globalActions: SamsungGlobalActions,
 ) : ActionViewModel {
     private val actionInfo = ActionInfo().apply {
-        val context = currentApplication()
+        val context = currentContext()
         name = PowerMenuAction.RESTART_DOWNLOAD
         viewType = ViewType.CENTER_ICON_3P_VIEW
         icon = R.drawable.ic_restart_download
@@ -39,7 +39,7 @@ class RestartDownloadActionViewModel(
                 setClassName(BuildConfig.MODULE_APPLICATION_ID, RebootActivity::class.java.name)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
-            currentApplication().startActivity(intent)
+            currentContext().startActivity(intent)
         }, 100L)
     }
 

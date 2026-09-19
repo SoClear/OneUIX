@@ -7,9 +7,7 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
@@ -47,7 +45,7 @@ object Notification {
                     .forEach {
                         xposedModule.hook(it).intercept { chain ->
                             val result = chain.proceed()
-                            chain.thisObject["maxIcons"] = Int.MAX_VALUE
+                            chain.thisObject.reflect["maxIcons"] = Int.MAX_VALUE
                             result
                         }
                     }
@@ -76,7 +74,7 @@ object Notification {
                 notificationIconContainerClass.getDeclaredMethod("initResources")
             ).intercept { chain ->
                 val result = chain.proceed()
-                chain.thisObject["mMaxStaticIcons"] = Int.MAX_VALUE
+                chain.thisObject.reflect["mMaxStaticIcons"] = Int.MAX_VALUE
                 result
             }
         } catch (t: Throwable) {
@@ -116,9 +114,9 @@ object Notification {
                 val result = chain.proceed()
                 try {
                     val entry = chain.args[0] ?: return@intercept result
-                    val sbn = entry["mSbn"] ?: return@intercept result
-                    val notification = sbn.callMethod("getNotification") ?: return@intercept result
-                    if (notification.callMethod("isGroupSummary") as Boolean) {
+                    val sbn = entry.reflect["mSbn"] ?: return@intercept result
+                    val notification = sbn.reflect.call("getNotification") ?: return@intercept result
+                    if (notification.reflect.call("isGroupSummary") as Boolean) {
                         true
                     } else {
                         result
@@ -150,7 +148,7 @@ object Notification {
             ).intercept { chain ->
                 try {
                     val sbn = chain.args[1] ?: return@intercept chain.proceed()
-                    val packageName = sbn.callMethod("getPackageName") as String
+                    val packageName = sbn.reflect.call("getPackageName") as String
                     if (packageName in packages) {
                         null
                     } else {
@@ -179,21 +177,21 @@ object Notification {
                 try {
                     val row = chain.thisObject
                     // 确保非分组展开开关被打开
-                    row["mEnableNonGroupedNotificationExpand"] = true
+                    row.reflect["mEnableNonGroupedNotificationExpand"] = true
                     // 1. 锁屏敏感隐私校验
-                    val shouldShowPublic = row.callMethod("shouldShowPublic") as Boolean
+                    val shouldShowPublic = row.reflect.call("shouldShowPublic") as Boolean
                     if (shouldShowPublic) {
                         // 锁屏隐藏敏感内容时不展开
                         return@intercept result
                     }
                     // 2. 锁屏状态与 keyguard 约束校验
-                    val onKeyguard = row["mOnKeyguard"] as Boolean
+                    val onKeyguard = row.reflect["mOnKeyguard"] as Boolean
                     val allowOnKeyguard = chain.args[0] as Boolean
                     if (onKeyguard && !allowOnKeyguard) {
                         return@intercept result
                     }
                     // 3. 用户手动折叠校验（若用户手动折叠了该单条通知，则不强制展开）
-                    val hasUserChanged = row["mHasUserChangedExpansion"] as Boolean
+                    val hasUserChanged = row.reflect["mHasUserChangedExpansion"] as Boolean
                     if (!hasUserChanged) {
                         true
                     } else {

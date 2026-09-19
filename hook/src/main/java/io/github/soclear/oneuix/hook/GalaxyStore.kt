@@ -6,8 +6,7 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.getHookConfig
 import kotlinx.serialization.Serializable
 import org.luckypray.dexkit.DexKitBridge
@@ -174,7 +173,7 @@ object GalaxyStore {
                 .getDeclaredConstructor(listClass)
         ).intercept { chain ->
             val result = chain.proceed()
-            val itemList = chain.thisObject["itemList"] as ArrayList<*>
+            val itemList = chain.thisObject.reflect["itemList"] as ArrayList<*>
             itemList.clear()
             result
         }
@@ -190,7 +189,7 @@ object GalaxyStore {
 
         // 去除年龄验证
         xposedModule.hook(DexMethod(hookConfig.checkAge).getMethodInstance(classLoader)).intercept { chain ->
-            chain.args.last()?.callMethod("onResult", true)
+            chain.args.last()?.reflect?.call("onResult", true)
             null
         }
     }

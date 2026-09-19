@@ -18,7 +18,7 @@ import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.callMethod
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.io.File
 import java.lang.ref.WeakReference
@@ -181,10 +181,10 @@ object Launcher {
                 ViewGroup.LayoutParams.WRAP_CONTENT,
             )
 
-            constraintLayout.callMethod("addView", textView, initialParams)
+            constraintLayout.reflect.call("addView", textView, initialParams)
 
             val constraintSet = constraintSetConstructor.newInstance()
-            constraintSet.callMethod("clone", constraintLayout)
+            constraintSet.reflect.call("clone", constraintLayout)
 
             val top = 3
             val bottom = 4
@@ -192,20 +192,20 @@ object Launcher {
             val end = 7
             val parentId = 0
             // 通用垂直约束：顶部和底部与按钮对齐，实现垂直居中
-            constraintSet.callMethod("connect", textView.id, top, clearAllButton.id, top)
-            constraintSet.callMethod("connect", textView.id, bottom, clearAllButton.id, bottom)
+            constraintSet.reflect.call("connect", textView.id, top, clearAllButton.id, top)
+            constraintSet.reflect.call("connect", textView.id, bottom, clearAllButton.id, bottom)
             if (isLeft) {
                 // 左侧 TextView
-                constraintSet.callMethod("connect", textView.id, end, clearAllButton.id, start)
-                constraintSet.callMethod("connect", textView.id, start, parentId, start)
+                constraintSet.reflect.call("connect", textView.id, end, clearAllButton.id, start)
+                constraintSet.reflect.call("connect", textView.id, start, parentId, start)
             } else {
                 // 右侧 TextView
-                constraintSet.callMethod("connect", textView.id, start, clearAllButton.id, end)
-                constraintSet.callMethod("connect", textView.id, end, parentId, end)
+                constraintSet.reflect.call("connect", textView.id, start, clearAllButton.id, end)
+                constraintSet.reflect.call("connect", textView.id, end, parentId, end)
             }
 
             // 应用约束
-            constraintSet.callMethod("applyTo", constraintLayout)
+            constraintSet.reflect.call("applyTo", constraintLayout)
         }
 
         try {
@@ -225,7 +225,7 @@ object Launcher {
             ).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    if (chain.thisObject.callMethod("getTAG") != "TaskListPot") return@intercept result
+                    if (chain.thisObject.reflect.call("getTAG") != "TaskListPot") return@intercept result
                     leftTextView?.let { (it.parent as ViewGroup).removeView(it) }
                     rightTextView?.let { (it.parent as ViewGroup).removeView(it) }
                     val view = result as View

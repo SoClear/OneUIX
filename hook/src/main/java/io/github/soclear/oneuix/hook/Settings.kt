@@ -9,7 +9,7 @@ import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
@@ -32,8 +32,8 @@ object Settings {
             xposedModule.hook(method).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val header = chain.thisObject["mHeader"]
-                    val mRootView = header?.get("mRootView") as? View ?: return@intercept result
+                    val header = chain.thisObject.reflect["mHeader"]
+                    val mRootView = header?.reflect?.get("mRootView") as? View ?: return@intercept result
 
                     @SuppressLint("DiscouragedApi")
                     val identifier = mRootView.resources.getIdentifier(

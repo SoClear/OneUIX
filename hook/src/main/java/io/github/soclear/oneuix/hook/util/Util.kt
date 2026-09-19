@@ -11,119 +11,7 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import io.github.libxposed.api.XposedModule
 import java.io.File
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
-import java.util.concurrent.ConcurrentHashMap
-
-// 简单的 Field 缓存池，避免高频调用导致的反射性能开销
-private val fieldCache = ConcurrentHashMap<Pair<Class<*>, String>, Field>()
-
-fun Any.findField(name: String): Field {
-    val clazz = this as? Class<*> ?: this.javaClass
-    val key = clazz to name
-    return fieldCache.getOrPut(key) {
-        var current: Class<*>? = clazz
-        while (current != null && current != Any::class.java) {
-            try {
-                return@getOrPut current.getDeclaredField(name).apply { isAccessible = true }
-            } catch (_: NoSuchFieldException) {
-                current = current.superclass
-            }
-        }
-        throw NoSuchFieldException("Field '$name' not found in $clazz")
-    }
-}
-
-// 语法糖：支持 obj["fieldName"] = value 访问！
-// 语法糖：支持 clazz["fieldName"] = value 访问！
-// 语法糖：获取字段值
-operator fun Any.get(name: String): Any? {
-    val field = findField(name)
-    val isStatic = Modifier.isStatic(field.modifiers)
-    // 静态字段 target 必须为 null；实例字段不能直接在 Class 对象上 get
-    val target = if (isStatic) null else this
-    return field.get(target)
-}
-
-// 语法糖：设置字段值
-operator fun Any.set(name: String, value: Any?) {
-    val field = findField(name)
-    val isStatic = Modifier.isStatic(field.modifiers)
-    val target = if (isStatic) null else this
-    field.set(target, value)
-}
-
-// 基本类型与其包装类的映射，用于反射参数匹配
-private val boxedTypes: Map<Class<*>, Class<*>> = mapOf(
-    Boolean::class.java to Boolean::class.javaObjectType,
-    Byte::class.java to Byte::class.javaObjectType,
-    Char::class.java to Char::class.javaObjectType,
-    Short::class.java to Short::class.javaObjectType,
-    Int::class.java to Int::class.javaObjectType,
-    Long::class.java to Long::class.javaObjectType,
-    Float::class.java to Float::class.javaObjectType,
-    Double::class.java to Double::class.javaObjectType,
-)
-
-private fun Class<*>.boxed(): Class<*> = boxedTypes[this] ?: this
-
-private fun isCompatible(parameterType: Class<*>, argument: Any?): Boolean = when {
-    argument == null -> !parameterType.isPrimitive
-    else -> parameterType.boxed().isInstance(argument)
-}
-
-// 按方法名和参数运行时类型匹配，在自身及父类中查找并调用实例方法
-fun Any.callMethod(name: String, vararg args: Any?): Any? {
-    var current: Class<*>? = this.javaClass
-    while (current != null && current != Any::class.java) {
-        current.declaredMethods
-            .filter { it.name == name && it.parameterTypes.size == args.size }
-            .forEach { method ->
-                if (method.parameterTypes.withIndex().all { (index, type) ->
-                        isCompatible(type, args[index])
-                    }
-                ) {
-                    return method.apply { isAccessible = true }.invoke(this, *args)
-                }
-            }
-        current = current.superclass
-    }
-    throw NoSuchMethodException("Method '$name'(${args.size} args) not found in ${this.javaClass.name}")
-}
-
-// 按方法名和参数运行时类型匹配，在自身及父类中查找并调用静态方法
-fun Class<*>.callStaticMethod(name: String, vararg args: Any?): Any? {
-    var current: Class<*>? = this
-    while (current != null && current != Any::class.java) {
-        current.declaredMethods
-            .filter { it.name == name && Modifier.isStatic(it.modifiers) && it.parameterTypes.size == args.size }
-            .forEach { method ->
-                if (method.parameterTypes.withIndex().all { (index, type) ->
-                        isCompatible(type, args[index])
-                    }
-                ) {
-                    return method.apply { isAccessible = true }.invoke(null, *args)
-                }
-            }
-        current = current.superclass
-    }
-    throw NoSuchMethodException("Static method '$name'(${args.size} args) not found in ${this.name}")
-}
-
-// 按构造函数参数运行时类型匹配，创建实例
-fun Class<*>.newInstance(vararg args: Any?): Any {
-    declaredConstructors
-        .filter { it.parameterTypes.size == args.size }
-        .forEach { constructor ->
-            if (constructor.parameterTypes.withIndex().all { (index, type) ->
-                    isCompatible(type, args[index])
-                }
-            ) {
-                return constructor.apply { isAccessible = true }.newInstance(*args)
-            }
-        }
-    throw NoSuchMethodException("Constructor(${args.size} args) not found in $name")
-}
+import java.lang.reflect.Method
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getSystemContext(): Context {
@@ -135,12 +23,13 @@ fun getSystemContext(): Context {
 }
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
-fun currentApplication(): Application {
+fun currentApplication(): Application? {
     val activityThreadClass = Class.forName("android.app.ActivityThread")
     val currentApplicationMethod = activityThreadClass.getDeclaredMethod("currentApplication")
-    return (currentApplicationMethod.invoke(null) as? Application)
-        ?: (getSystemContext() as Application)
+    return currentApplicationMethod.invoke(null) as? Application
 }
+
+fun currentContext(): Context = currentApplication() ?: getSystemContext()
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
 fun getCurrentPackageName(): String {
@@ -259,8 +148,10 @@ fun xlog(
 
     // tag 必须为 null，确保 Vector/LSPosed 守护进程的白名单能正常收集到 modules 日志
     if (actualThrowable != null) {
+        android.util.Log.e("OneUIX", sb.toString(), actualThrowable)
         xposedModule.log(priority, null, sb.toString(), actualThrowable)
     } else {
+        android.util.Log.e("OneUIX", sb.toString())
         xposedModule.log(priority, null, sb.toString())
     }
 }

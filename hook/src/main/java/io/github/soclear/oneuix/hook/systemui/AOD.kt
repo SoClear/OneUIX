@@ -7,7 +7,7 @@ import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 object AOD {
@@ -27,7 +27,7 @@ object AOD {
                 .intercept { chain ->
                     val result = chain.proceed()
                     try {
-                        val batteryView = chain.thisObject["mView"] as View
+                        val batteryView = chain.thisObject.reflect["mView"] as View
                         if (batteryView.tag == "PluginFaceWidgetManager") {
                             val parentView = batteryView.parent.parent as View
                             parentView.visibility = View.GONE

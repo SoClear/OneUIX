@@ -3,7 +3,7 @@ package io.github.soclear.oneuix.hook
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.get
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 object WatchPairing {
@@ -113,7 +113,7 @@ object WatchPairing {
             ).intercept { chain ->
                 val result = chain.proceed()
                 if (result?.toString() == "WEAR_OS_NOT_SUPPORTED_PHONE") {
-                    problemClass["NO_PROBLEM"]
+                    problemClass.reflect["NO_PROBLEM"]
                 } else {
                     result
                 }

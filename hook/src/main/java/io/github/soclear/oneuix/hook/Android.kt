@@ -5,7 +5,7 @@ import android.app.NotificationChannel
 import android.os.Bundle
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
@@ -50,9 +50,9 @@ object Android {
             notificationChannelClass.declaredConstructors.forEach {
                 xposedModule.hook(it).intercept { chain ->
                     val result = chain.proceed()
-                    chain.thisObject["mBlockableSystem"] = true
-                    chain.thisObject["mImportanceLockedByOEM"] = false
-                    chain.thisObject["mImportanceLockedDefaultApp"] = false
+                    chain.thisObject.reflect["mBlockableSystem"] = true
+                    chain.thisObject.reflect["mImportanceLockedByOEM"] = false
+                    chain.thisObject.reflect["mImportanceLockedDefaultApp"] = false
                     result
                 }
             }
@@ -89,7 +89,7 @@ object Android {
     context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
     fun setMaxNeverKilledAppNum(num: Int) {
         try {
-            param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp")["MAX_NEVERKILLEDAPP_NUM"] = num
+            param.classLoader.loadClass("com.android.server.am.DynamicHiddenApp").reflect["MAX_NEVERKILLEDAPP_NUM"] = num
         } catch (t: Throwable) {
             xlog(t)
         }
@@ -106,8 +106,8 @@ object Android {
                 .forEach {
                     xposedModule.hook(it).intercept { chain ->
                         val result = chain.proceed()
-                        chain.thisObject["isChinaMode"] = false
-                        chain.thisObject["isHongKongMode"] = false
+                        chain.thisObject.reflect["isChinaMode"] = false
+                        chain.thisObject.reflect["isHongKongMode"] = false
                         result
                     }
                 }

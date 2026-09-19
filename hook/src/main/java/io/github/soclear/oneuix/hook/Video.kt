@@ -15,11 +15,9 @@ import kotlinx.serialization.Serializable
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
 import io.github.soclear.oneuix.hook.util.getHookConfig
 import io.github.soclear.oneuix.hook.util.longVersionCode
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import org.luckypray.dexkit.DexKitBridge
 import org.luckypray.dexkit.wrap.DexField
@@ -92,7 +90,7 @@ object Video {
             classLoader.loadClass(PLAY_SPEED_POPUP).getDeclaredMethod("inflateView")
         ).intercept { chain ->
             val result = chain.proceed()
-            val playSpeedLayout = chain.thisObject["mAnimationLayout"] as ViewGroup
+            val playSpeedLayout = chain.thisObject.reflect["mAnimationLayout"] as ViewGroup
             val speedButtonLayout = playSpeedLayout.getChildAt(1) as LinearLayout
             speedButtonLayout.setPadding(0, 0, 0, 0)
             initializeSpeedControls(
@@ -120,7 +118,7 @@ object Video {
                 hookConfig.setPlaySpeedMethod,
             )
 
-            val currentSpeed = playSpeedStore!!["t"] as Int
+            val currentSpeed = playSpeedStore!!.reflect["t"] as Int
             updateButtonStates(currentSpeed, speed3Button, speed4Button)
 
             speedButtonLayout.addView(speed3Button.view)
@@ -176,12 +174,12 @@ object Video {
             inactiveButton?.setSelected(false, null)
 
             // 更新存储的播放速度
-            playSpeedStore!![DexField(playSpeedField).name] = activeButton.speedValue
+            playSpeedStore!!.reflect[DexField(playSpeedField).name] = activeButton.speedValue
             // 设置实际的播放速度
-            playSpeedSetter!!.callMethod(DexMethod(setPlaySpeedMethod).name, activeButton.speedValue)
-            popupObject.callMethod("updateCurrentPlaySpeed", activeButton.speedValue)
-            popupObject.callMethod("removeMessage", MESSAGE_CODE)
-            popupObject.callMethod("sendMessage", MESSAGE_CODE, MESSAGE_DELAY)
+            playSpeedSetter!!.reflect.call(DexMethod(setPlaySpeedMethod).name, activeButton.speedValue)
+            popupObject.reflect.call("updateCurrentPlaySpeed", activeButton.speedValue)
+            popupObject.reflect.call("removeMessage", MESSAGE_CODE)
+            popupObject.reflect.call("sendMessage", MESSAGE_CODE, MESSAGE_DELAY)
         }
     }
 

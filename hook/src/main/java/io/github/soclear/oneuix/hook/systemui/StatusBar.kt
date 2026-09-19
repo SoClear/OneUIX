@@ -20,9 +20,7 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
-import io.github.soclear.oneuix.hook.util.callMethod
-import io.github.soclear.oneuix.hook.util.get
-import io.github.soclear.oneuix.hook.util.set
+import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -44,16 +42,16 @@ object StatusBar {
                 if (left != null) {
                     val method = clazz.getDeclaredMethod("calculateLeftPadding")
                     xposedModule.hook(method).intercept { chain ->
-                        val inputProperties = chain.thisObject["inputProperties"]
-                        val density = inputProperties?.get("density") as? Float ?: 1f
+                        val inputProperties = chain.thisObject.reflect["inputProperties"]
+                        val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
                         (left * density).roundToInt()
                     }
                 }
                 if (right != null) {
                     val method = clazz.getDeclaredMethod("calculateRightPadding")
                     xposedModule.hook(method).intercept { chain ->
-                        val inputProperties = chain.thisObject["inputProperties"]
-                        val density = inputProperties?.get("density") as? Float ?: 1f
+                        val inputProperties = chain.thisObject.reflect["inputProperties"]
+                        val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
                         (right * density).roundToInt()
                     }
                 }
@@ -75,7 +73,7 @@ object StatusBar {
             xposedModule.hook(method).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val mBatteryIconView = chain.thisObject["mBatteryIconView"] as? ImageView
+                    val mBatteryIconView = chain.thisObject.reflect["mBatteryIconView"] as? ImageView
                     if (mBatteryIconView != null) {
                         mBatteryIconView.layoutParams = mBatteryIconView.layoutParams.apply {
                             if (widthScale != null) {
@@ -141,13 +139,13 @@ object StatusBar {
             xposedModule.hook(method).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val mSecondsHandler = chain.thisObject["mSecondsHandler"]
+                    val mSecondsHandler = chain.thisObject.reflect["mSecondsHandler"]
                     if (mSecondsHandler == null) {
                         val looper = Looper.myLooper()
                         if (looper != null) {
                             val handler = Handler(looper)
-                            chain.thisObject["mSecondsHandler"] = handler
-                            val mSecondTick = chain.thisObject["mSecondTick"] as? Runnable
+                            chain.thisObject.reflect["mSecondsHandler"] = handler
+                            val mSecondTick = chain.thisObject.reflect["mSecondTick"] as? Runnable
                             if (mSecondTick != null) {
                                 handler.post(mSecondTick)
                             }
@@ -171,7 +169,7 @@ object StatusBar {
             xposedModule.hook(onViewAttachedMethod).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val clockTextView = chain.thisObject["view"] as? TextView
+                    val clockTextView = chain.thisObject.reflect["view"] as? TextView
                     clockTextView?.fontFeatureSettings = "tnum"
                 } catch (t: Throwable) {
                     xlog(t)
@@ -194,7 +192,7 @@ object StatusBar {
             xposedModule.hook(method).intercept { chain ->
                 val result = chain.proceed()
                 try {
-                    val clockView = chain.thisObject["view"] as? TextView
+                    val clockView = chain.thisObject.reflect["view"] as? TextView
                     clockView?.setTextSize(TypedValue.COMPLEX_UNIT_PX, clockView.textSize * scale)
                 } catch (t: Throwable) {
                     xlog(t)
@@ -324,7 +322,7 @@ object StatusBar {
 
         fun lockScreen(context: Context) {
             val powerManager = context.getSystemService(PowerManager::class.java)
-            powerManager?.callMethod("goToSleep", SystemClock.uptimeMillis())
+            powerManager?.reflect?.call("goToSleep", SystemClock.uptimeMillis())
         }
 
         try {
@@ -386,8 +384,8 @@ object StatusBar {
             xposedModule.hook(method).intercept { chain ->
                 val carrierTextCallbackInfo = chain.args[0]
                 if (carrierTextCallbackInfo != null) {
-                    runCatching { carrierTextCallbackInfo["carrierText"] = carrierName }
-                    runCatching { carrierTextCallbackInfo["carrierTextShort"] = carrierName }
+                    runCatching { carrierTextCallbackInfo.reflect["carrierText"] = carrierName }
+                    runCatching { carrierTextCallbackInfo.reflect["carrierTextShort"] = carrierName }
                 }
                 chain.proceed()
             }
@@ -428,12 +426,12 @@ object StatusBar {
                             )
                         )
                     }
-                    val level = batteryMeterView["mLevel"] as? Int ?: 0
+                    val level = batteryMeterView.reflect["mLevel"] as? Int ?: 0
                     val percent = if (hidePercentSign) "$level" else "$level%"
-                    val isCharging = batteryMeterView.callMethod("isCharging") as? Boolean ?: false
+                    val isCharging = batteryMeterView.reflect.call("isCharging") as? Boolean ?: false
                     val suffix = if (isCharging && !hideChargingIcon) "\u26A1\uFE0E" else ""
                     textView.text = "$percent$suffix"
-                    val textColor = batteryMeterView["mTextColor"] as? Int ?: 0
+                    val textColor = batteryMeterView.reflect["mTextColor"] as? Int ?: 0
                     textView.setTextColor(textColor)
                 } catch (t: Throwable) {
                     xlog(t)
@@ -453,7 +451,7 @@ object StatusBar {
                         try {
                             val view = chain.thisObject as ViewGroup
                             val textView = view.findViewById<TextView>(viewId)
-                            val textColor = view["mTextColor"] as? Int ?: 0
+                            val textColor = view.reflect["mTextColor"] as? Int ?: 0
                             textView?.setTextColor(textColor)
                         } catch (t: Throwable) {
                             xlog(t)
