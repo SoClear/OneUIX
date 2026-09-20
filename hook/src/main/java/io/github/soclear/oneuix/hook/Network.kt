@@ -51,7 +51,10 @@ object Network {
     @SuppressLint("PrivateApi")
     @Suppress("DEPRECATION")
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun showSeparateUpDownNetworkSpeeds(intervalMillisecond: Long = 3000L) = afterAttach {
+    fun showSeparateUpDownNetworkSpeeds(
+        intervalMillisecond: Long = 3000L,
+        thresholdKb: Int = 0
+    ) = afterAttach {
         if (param.packageName != Package.SYSTEMUI || intervalMillisecond <= 0L) {
             return@afterAttach
         }
@@ -121,6 +124,17 @@ object Network {
             return "%.1fM".format(miBytesPerSecond)
         }
 
+        fun shouldDisplayNetworkSpeed(
+            txBytesPerSecond: Float,
+            rxBytesPerSecond: Float,
+            thresholdKb: Int,
+        ): Boolean {
+            if (thresholdKb <= 0) return true
+            val thresholdBytesPerSecond = thresholdKb * 1024f
+            return txBytesPerSecond > thresholdBytesPerSecond ||
+                    rxBytesPerSecond > thresholdBytesPerSecond
+        }
+
         fun calculateSpeedString(
             current: NetworkStats,
             previous: NetworkStats,
@@ -128,6 +142,9 @@ object Network {
         ): String {
             val txBytesPerSecond = (current.totalTx - previous.totalTx) / actualIntervalSeconds
             val rxBytesPerSecond = (current.totalRx - previous.totalRx) / actualIntervalSeconds
+            if (!shouldDisplayNetworkSpeed(txBytesPerSecond, rxBytesPerSecond, thresholdKb)) {
+                return ""
+            }
             return "${formatSpeed(txBytesPerSecond)}\n${formatSpeed(rxBytesPerSecond)}"
         }
 

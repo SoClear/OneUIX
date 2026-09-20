@@ -1,6 +1,8 @@
 package io.github.soclear.oneuix.hook.systemui
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
@@ -137,29 +139,51 @@ object Notification {
     fun hideOngoingActivityMedia(packages: Set<String>) {
         if (param.packageName != Package.SYSTEMUI || packages.isEmpty()) return
         try {
-            val statusBarNotificationClass = param.classLoader
-                .loadClass("android.service.notification.StatusBarNotification")
-            xposedModule.hook(
-                param.classLoader
-                    .loadClass("com.android.systemui.media.controls.domain.pipeline.LegacyMediaDataManagerImpl")
-                    .getDeclaredMethod(
-                        "onNotificationAdded",
-                        String::class.java,
-                        statusBarNotificationClass
-                    )
-            ).intercept { chain ->
+            // Only change visibility for Samsung's synthetic MediaOngoingActivity notification.
+            // Keep the shared media pipeline and all player instances intact for QS playback.
+            val listenerClass = param.classLoader.loadClass(
+                $$"com.android.systemui.statusbar.phone.ongoingactivity.OngoingActivityController$mediaPanelVisibilityListener$1"
+            )
+            val method = listenerClass.getDeclaredMethod(
+                "onMediaVisibilityChanged",
+                Boolean::class.javaPrimitiveType
+            )
+            xposedModule.hook(method).intercept { chain ->
                 try {
-                    val sbn = chain.args[1] ?: return@intercept chain.proceed()
-                    val packageName = sbn.reflect.call("getPackageName") as String
-                    if (packageName in packages) {
-                        null
-                    } else {
-                        chain.proceed()
+                    if (chain.args.firstOrNull() == true) {
+                        val controller = chain.thisObject.reflect[$$"this$0"]
+                        val mediaHost = controller?.reflect?.get("mediaHost")
+                        val mediaData = if (ONE_UI_VERSION >= 80500) {
+                            // 8.5 shares and sorts media data across surfaces. The latest
+                            // notification may belong to a different player.
+                            val repository = mediaHost?.reflect?.get("mSecMediaDataRepository")
+                            val data = repository?.reflect?.call("getMediaData") as? Map<*, *>
+                            data?.values?.firstOrNull { value ->
+                                value != null &&
+                                    (value.reflect["packageName"] as? String) in packages
+                            }
+                        } else {
+                            val currentData = mediaHost?.reflect?.get("mCurrentMediaData")
+                            currentData?.reflect?.get("data")
+                        }
+                        val packageName = mediaData?.reflect?.get("packageName") as? String
+                        if (packageName in packages) {
+                            // Notifications survive a SystemUI restart, while isMediaVisible
+                            // starts false. Cancel stale entries even if the callback returns early.
+                            val context = controller?.reflect?.get("mContext") as? Context
+                            context?.getSystemService(NotificationManager::class.java)
+                                ?.cancel(12030705)
+                            // Let the original callback cancel an existing live activity
+                            // and update its own isMediaVisible state normally.
+                            val newArgs = chain.args.toTypedArray()
+                            newArgs[0] = false
+                            return@intercept chain.proceed(newArgs)
+                        }
                     }
                 } catch (t: Throwable) {
                     xlog(t)
-                    chain.proceed()
                 }
+                chain.proceed()
             }
         } catch (t: Throwable) {
             xlog(t)

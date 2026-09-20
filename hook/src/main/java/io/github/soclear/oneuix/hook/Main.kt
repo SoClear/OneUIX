@@ -259,7 +259,9 @@ class Main : XposedModule() {
                 }
 
                 if (preference.systemUI.statusBar.showSeparateUpDownNetworkSpeeds) {
-                    Network.showSeparateUpDownNetworkSpeeds()
+                    Network.showSeparateUpDownNetworkSpeeds(
+                        thresholdKb = preference.systemUI.statusBar.networkSpeedThresholdKb
+                    )
                 }
 
                 if (preference.systemUI.statusBar.setStatusBarClockFormat) {
