@@ -30,6 +30,7 @@ data class Preference(
         val statusBar: StatusBar = StatusBar(),
         val qs: QS = QS(),
         val aod: AOD = AOD(),
+        val notification: Notification = Notification(),
         val other: Other = Other(),
     ) {
         @Serializable
@@ -94,15 +95,18 @@ data class Preference(
         )
 
         @Serializable
+        data class Notification(
+            val hideOngoingActivityMedia: Boolean = false,
+            val hideOngoingActivityMediaPackages: String = "",
+            val disableNotificationGrouping: Boolean = false,
+            val autoExpandNotifications: Boolean = false
+        )
+
+        @Serializable
         data class Other(
             val disableScreenshotCaptureSound: Boolean = false,
             val customPowerMenu: Boolean = false,
-            val powerMenuActions: List<PowerMenuAction> =
-                PowerMenuAction.defaultPreferences(),
-            val disableNotificationGrouping: Boolean = false,
-            val autoExpandNotifications: Boolean = false,
-            val hideOngoingActivityMedia: Boolean = false,
-            val hideOngoingActivityMediaPackages: String = "",
+            val powerMenuActions: List<PowerMenuAction> = PowerMenuAction.defaultPreferences()
         )
     }
 

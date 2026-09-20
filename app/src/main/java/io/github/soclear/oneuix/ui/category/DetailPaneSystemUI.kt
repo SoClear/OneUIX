@@ -801,30 +801,30 @@ fun DetailPaneSystemUI(
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.music_note),
                 title = stringResource(id = R.string.hideOngoingActivityMedia_title),
-                summary = if (uiState.other.hideOngoingActivityMedia && uiState.other.hideOngoingActivityMediaPackages.isNotEmpty()) {
-                    uiState.other.hideOngoingActivityMediaPackages
+                summary = if (uiState.notification.hideOngoingActivityMedia && uiState.notification.hideOngoingActivityMediaPackages.isNotEmpty()) {
+                    uiState.notification.hideOngoingActivityMediaPackages
                 } else {
                     stringResource(id = R.string.hideOngoingActivityMedia_summary)
                 },
                 clickable = true,
                 onClick = { expanded = !expanded },
-                checked = uiState.other.hideOngoingActivityMedia,
+                checked = uiState.notification.hideOngoingActivityMedia,
                 onCheckedChange = {
-                    if (it && uiState.other.hideOngoingActivityMediaPackages.isEmpty()) {
+                    if (it && uiState.notification.hideOngoingActivityMediaPackages.isEmpty()) {
                         expanded = true
                     } else if (!it) {
                         expanded = false
                     }
-                    onEvent(SystemUIEvent.Other.HideOngoingActivityMedia(it))
+                    onEvent(SystemUIEvent.Notification.HideOngoingActivityMedia(it))
                 }
             )
-            AnimatedVisibility(expanded && uiState.other.hideOngoingActivityMedia) {
+            AnimatedVisibility(expanded && uiState.notification.hideOngoingActivityMedia) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 ) {
                     var tempPackages by remember {
-                        mutableStateOf(uiState.other.hideOngoingActivityMediaPackages)
+                        mutableStateOf(uiState.notification.hideOngoingActivityMediaPackages)
                     }
                     OutlinedTextField(
                         value = tempPackages,
@@ -836,7 +836,7 @@ fun DetailPaneSystemUI(
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
                         onClick = {
-                            onEvent(SystemUIEvent.Other.HideOngoingActivityMediaPackages(tempPackages))
+                            onEvent(SystemUIEvent.Notification.HideOngoingActivityMediaPackages(tempPackages))
                         }
                     ) {
                         Text(text = stringResource(id = R.string.confirm))
@@ -848,17 +848,17 @@ fun DetailPaneSystemUI(
             icon = ImageVector.vectorResource(id = R.drawable.notifications),
             title = stringResource(id = R.string.disableNotificationGrouping_title),
             summary = stringResource(id = R.string.disableNotificationGrouping_summary),
-            checked = uiState.other.disableNotificationGrouping,
+            checked = uiState.notification.disableNotificationGrouping,
             onCheckedChange = {
-                onEvent(SystemUIEvent.Other.DisableNotificationGrouping(it))
+                onEvent(SystemUIEvent.Notification.DisableNotificationGrouping(it))
             }
         )
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.notifications),
             title = stringResource(id = R.string.autoExpandNotifications_title),
-            checked = uiState.other.autoExpandNotifications,
+            checked = uiState.notification.autoExpandNotifications,
             onCheckedChange = {
-                onEvent(SystemUIEvent.Other.AutoExpandNotifications(it))
+                onEvent(SystemUIEvent.Notification.AutoExpandNotifications(it))
             }
         )
 
@@ -1141,6 +1141,20 @@ sealed interface SystemUIEvent {
         value class AODLockSupportLunar(val value: Boolean) : AOD
     }
 
+    sealed interface Notification : SystemUIEvent {
+        @JvmInline
+        value class HideOngoingActivityMedia(val value: Boolean) : Notification
+
+        @JvmInline
+        value class HideOngoingActivityMediaPackages(val value: String) : Notification
+
+        @JvmInline
+        value class DisableNotificationGrouping(val value: Boolean) : Notification
+
+        @JvmInline
+        value class AutoExpandNotifications(val value: Boolean) : Notification
+    }
+
     sealed interface Other : SystemUIEvent {
         @JvmInline
         value class CustomPowerMenu(val value: Boolean) : Other
@@ -1150,18 +1164,6 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class DisableScreenshotCaptureSound(val value: Boolean) : Other
-
-        @JvmInline
-        value class DisableNotificationGrouping(val value: Boolean) : Other
-
-        @JvmInline
-        value class AutoExpandNotifications(val value: Boolean) : Other
-
-        @JvmInline
-        value class HideOngoingActivityMedia(val value: Boolean) : Other
-
-        @JvmInline
-        value class HideOngoingActivityMediaPackages(val value: String) : Other
     }
 }
 
@@ -1170,6 +1172,7 @@ fun SettingViewModel.onSystemUIEvent(event: SystemUIEvent) {
         is SystemUIEvent.StatusBar -> onStatusBarEvent(event)
         is SystemUIEvent.QS -> onQSEvent(event)
         is SystemUIEvent.AOD -> onAODEvent(event)
+        is SystemUIEvent.Notification -> onNotification(event)
         is SystemUIEvent.Other -> onOtherEvent(event)
     }
 }
@@ -1686,6 +1689,52 @@ private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
     }
 }
 
+private fun SettingViewModel.onNotification(event: SystemUIEvent.Notification) {
+    updateData { preference ->
+        when (event) {
+            is SystemUIEvent.Notification.HideOngoingActivityMedia -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        notification = preference.systemUI.notification.copy(
+                            hideOngoingActivityMedia = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.Notification.HideOngoingActivityMediaPackages -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        notification = preference.systemUI.notification.copy(
+                            hideOngoingActivityMediaPackages = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.Notification.DisableNotificationGrouping -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        notification = preference.systemUI.notification.copy(
+                            disableNotificationGrouping = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.Notification.AutoExpandNotifications -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        notification = preference.systemUI.notification.copy(
+                            autoExpandNotifications = event.value
+                        )
+                    )
+                )
+            }
+        }
+    }
+}
+
 private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
     updateData { preference ->
         when (event) {
@@ -1714,46 +1763,6 @@ private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
                     systemUI = preference.systemUI.copy(
                         other = preference.systemUI.other.copy(
                             disableScreenshotCaptureSound = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.Other.DisableNotificationGrouping -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        other = preference.systemUI.other.copy(
-                            disableNotificationGrouping = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.Other.AutoExpandNotifications -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        other = preference.systemUI.other.copy(
-                            autoExpandNotifications = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.Other.HideOngoingActivityMedia -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        other = preference.systemUI.other.copy(
-                            hideOngoingActivityMedia = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.Other.HideOngoingActivityMediaPackages -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        other = preference.systemUI.other.copy(
-                            hideOngoingActivityMediaPackages = event.value
                         )
                     )
                 )

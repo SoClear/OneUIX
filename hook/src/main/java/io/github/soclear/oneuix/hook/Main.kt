@@ -213,7 +213,7 @@ class Main : XposedModule() {
                     Android.setBlockableNotificationChannel()
                 }
 
-                if (preference.systemUI.other.autoExpandNotifications) {
+                if (preference.systemUI.notification.autoExpandNotifications) {
                     Notification.autoExpandNotifications()
                 }
 
@@ -385,12 +385,12 @@ class Main : XposedModule() {
                 if (preference.systemUI.other.disableScreenshotCaptureSound) {
                     Other.disableScreenshotCaptureSound()
                 }
-                if (preference.systemUI.other.disableNotificationGrouping) {
+                if (preference.systemUI.notification.disableNotificationGrouping) {
                     Notification.disableNotificationGrouping()
                 }
-                if (preference.systemUI.other.hideOngoingActivityMedia) {
+                if (preference.systemUI.notification.hideOngoingActivityMedia) {
                     Notification.hideOngoingActivityMedia(
-                        preference.systemUI.other.hideOngoingActivityMediaPackages
+                        preference.systemUI.notification.hideOngoingActivityMediaPackages
                             .split(",")
                             .map { it.trim() }
                             .filter { it.isNotEmpty() }
