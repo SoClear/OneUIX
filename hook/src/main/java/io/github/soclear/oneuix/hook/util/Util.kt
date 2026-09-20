@@ -147,10 +147,8 @@ fun xlog(
 
     // tag 必须为 null，确保 Vector/LSPosed 守护进程的白名单能正常收集到 modules 日志
     if (actualThrowable != null) {
-        android.util.Log.e("OneUIX", sb.toString(), actualThrowable)
         xposedModule.log(priority, null, sb.toString(), actualThrowable)
     } else {
-        android.util.Log.e("OneUIX", sb.toString())
         xposedModule.log(priority, null, sb.toString())
     }
 }
