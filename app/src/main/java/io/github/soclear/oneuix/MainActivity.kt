@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
 import io.github.soclear.oneuix.ui.SettingScreen
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.theme.OneUIXTheme
@@ -22,6 +23,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setSettingScreen()
+        if (!XposedServiceManager.isModuleActive) {
+            Toast.makeText(this, R.string.module_disabled_tip, Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setSettingScreen() {
