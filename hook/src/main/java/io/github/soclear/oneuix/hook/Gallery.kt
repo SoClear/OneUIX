@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.currentContext
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
@@ -106,228 +107,231 @@ object Gallery {
                 .commit()
         }
 
-        val classLoader = param.classLoader
+        afterAttach {
+            try {
+                val mediaItemClass = classLoader.loadClass(
+                    "com.samsung.android.gallery.module.data.MediaItem"
+                )
+                val mediaItemMdeClass = classLoader.loadClass(
+                    "com.samsung.android.gallery.module.data.MediaItemMde"
+                )
+                val mediaDataMdeSpaceClass = classLoader.loadClass(
+                    "com.samsung.android.gallery.module.dataset.MediaDataMdeSpace"
+                )
+                val mediaDataNestedClass = classLoader.loadClass(
+                    "com.samsung.android.gallery.module.dataset.MediaDataNested"
+                )
+                val albumHelperClass = classLoader.loadClass(
+                    "com.samsung.android.gallery.module.album.AlbumHelper"
+                )
 
-        try {
-            val mediaItemClass = classLoader.loadClass(
-                "com.samsung.android.gallery.module.data.MediaItem"
-            )
-            val mediaItemMdeClass = classLoader.loadClass(
-                "com.samsung.android.gallery.module.data.MediaItemMde"
-            )
-            val mediaDataMdeSpaceClass = classLoader.loadClass(
-                "com.samsung.android.gallery.module.dataset.MediaDataMdeSpace"
-            )
-            val mediaDataNestedClass = classLoader.loadClass(
-                "com.samsung.android.gallery.module.dataset.MediaDataNested"
-            )
-            val albumHelperClass = classLoader.loadClass(
-                "com.samsung.android.gallery.module.album.AlbumHelper"
-            )
+                fun isSharing(item: Any): Boolean =
+                    runCatching { item.reflect("getStorageType")?.toString() }.getOrNull() == "Sharing"
 
-            fun isSharing(item: Any): Boolean =
-                runCatching { item.reflect("getStorageType")?.toString() }.getOrNull() == "Sharing"
+                fun getSpaceId(item: Any): String? =
+                    runCatching { mediaItemMdeClass.reflect.callAs<String>("getSpaceId", item) }.getOrNull()
 
-            fun getSpaceId(item: Any): String? =
-                runCatching { mediaItemMdeClass.reflect.callAs<String>("getSpaceId", item) }.getOrNull()
-
-            fun getSpacesFromChildDataMap(childDataMap: Any?): MutableList<Any>? {
-                val map = childDataMap as? Map<*, *> ?: return null
-                @Suppress("UNCHECKED_CAST")
-                return (map as Map<Any, Any>)[sharedAlbumsLocation] as? MutableList<Any>
-            }
-
-            fun refreshSharingData() {
-                val hiddenIds = getHiddenSharedAlbumIds()
-                val albums = synchronized(sharedAlbums) { LinkedHashMap(sharedAlbums) }
-                val visibleAlbums = albums.filterKeys { it !in hiddenIds }.values
-                val dataSets = synchronized(sharingDataSets) {
-                    sharingDataSets.toList()
+                fun getSpacesFromChildDataMap(childDataMap: Any?): MutableList<Any>? {
+                    val map = childDataMap as? Map<*, *> ?: return null
+                    @Suppress("UNCHECKED_CAST")
+                    return (map as Map<Any, Any>)[sharedAlbumsLocation] as? MutableList<Any>
                 }
-                dataSets.forEach { dataSet ->
-                    try {
-                        val data: MutableList<Any> = dataSet.reflect.getAs("mData") ?: return@forEach
-                        val spaces = getSpacesFromChildDataMap(dataSet.reflect["mChildDataMap"]) ?: return@forEach
 
-                        listOf(data, spaces).forEach { list ->
-                            list.removeAll { item ->
-                                getSpaceId(item) in albums
-                            }
-                            list.addAll(visibleAlbums)
-                        }
-                        dataSet.reflect["mDataCount"] = data.size
-                        runCatching { dataSet.reflect("notifyChanged") }
-                    } catch (t: Throwable) {
-                        xlog(t)
-                    }
-                }
-            }
-
-            mediaDataMdeSpaceClass.declaredConstructors.forEach { constructor ->
-                xposedModule.hook(constructor).intercept { chain ->
-                    val result = chain.proceed()
-                    chain.thisObject?.let {
-                        sharingDataSets.add(it)
-                    }
-                    result
-                }
-            }
-
-            fun handleSwap(
-                data: MutableList<Any>?,
-                spaceMap: MutableMap<String, Any>?,
-                childDataMap: Any?,
-                onUpdateDataCount: (Int) -> Unit
-            ) {
-                val spaces = getSpacesFromChildDataMap(childDataMap)
-                if (spaces != null && data != null && spaceMap != null) {
+                fun refreshSharingData() {
                     val hiddenIds = getHiddenSharedAlbumIds()
-
-                    synchronized(sharedAlbums) {
-                        spaces.forEach { item ->
-                            val spaceId = getSpaceId(item) ?: return@forEach
-                            runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
-                            sharedAlbums[spaceId] = item
-                        }
+                    val albums = synchronized(sharedAlbums) { LinkedHashMap(sharedAlbums) }
+                    val visibleAlbums = albums.filterKeys { it !in hiddenIds }.values
+                    val dataSets = synchronized(sharingDataSets) {
+                        sharingDataSets.toList()
                     }
+                    dataSets.forEach { dataSet ->
+                        try {
+                            val data: MutableList<Any> = dataSet.reflect.getAs("mData") ?: return@forEach
+                            val spaces = getSpacesFromChildDataMap(dataSet.reflect["mChildDataMap"]) ?: return@forEach
 
-                    if (hiddenIds.isNotEmpty()) {
-                        data.removeAll { item ->
-                            isSharing(item) && getSpaceId(item) in hiddenIds
+                            listOf(data, spaces).forEach { list ->
+                                list.removeAll { item ->
+                                    getSpaceId(item) in albums
+                                }
+                                list.addAll(visibleAlbums)
+                            }
+                            dataSet.reflect["mDataCount"] = data.size
+                            runCatching { dataSet.reflect("notifyChanged") }
+                        } catch (t: Throwable) {
+                            xlog(t)
                         }
-                        spaces.removeAll { item -> getSpaceId(item) in hiddenIds }
-                        hiddenIds.forEach { spaceMap.remove(it) }
-                    }
-                    onUpdateDataCount(data.size)
-                }
-            }
-
-            val swapInternalMethod = mediaDataMdeSpaceClass.reflect.findMethod {
-                it.name == "swapInternal" && it.parameterTypes.size == 6
-            }
-            if (swapInternalMethod != null) {
-                xposedModule.hook(swapInternalMethod).intercept { chain ->
-                    try {
-                        @Suppress("UNCHECKED_CAST")
-                        val data = chain.args.getOrNull(1) as? MutableList<Any>
-                        @Suppress("UNCHECKED_CAST")
-                        val spaceMap = chain.args.getOrNull(2) as? MutableMap<String, Any>
-                        val childDataMap = chain.args.getOrNull(4)
-                        var updated = false
-                        val newArgs = chain.args.toTypedArray()
-                        handleSwap(data, spaceMap, childDataMap) { newCount ->
-                            newArgs[5] = newCount
-                            updated = true
-                        }
-                        if (updated) chain.proceed(newArgs) else chain.proceed()
-                    } catch (t: Throwable) {
-                        xlog(t)
-                        chain.proceed()
                     }
                 }
-            }
 
-            val swapLambdaMethod = mediaDataMdeSpaceClass.reflect.findMethod {
-                it.parameterTypes.size == 9 &&
-                    it.parameterTypes[2] == java.util.ArrayList::class.java &&
-                    it.parameterTypes[5] == java.util.HashMap::class.java
-            }
-            if (swapLambdaMethod != null) {
-                xposedModule.hook(swapLambdaMethod).intercept { chain ->
-                    try {
-                        @Suppress("UNCHECKED_CAST")
-                        val data = chain.args.getOrNull(2) as? MutableList<Any>
-                        @Suppress("UNCHECKED_CAST")
-                        val spaceMap = chain.args.getOrNull(3) as? MutableMap<String, Any>
-                        val childDataMap = chain.args.getOrNull(5)
-                        var updated = false
-                        val newArgs = chain.args.toTypedArray()
-                        handleSwap(data, spaceMap, childDataMap) { newCount ->
-                            newArgs[6] = newCount
-                            updated = true
+                mediaDataMdeSpaceClass.declaredConstructors.forEach { constructor ->
+                    xposedModule.hook(constructor).intercept { chain ->
+                        val result = chain.proceed()
+                        chain.thisObject?.let {
+                            sharingDataSets.add(it)
                         }
-                        if (updated) chain.proceed(newArgs) else chain.proceed()
-                    } catch (t: Throwable) {
-                        xlog(t)
-                        chain.proceed()
+                        result
                     }
                 }
-            }
 
-            val createFullListMethod = mediaDataNestedClass.reflect.findMethod {
-                it.name == "createFullList" && it.parameterTypes.size == 2
-            }
-            if (createFullListMethod != null) {
-                xposedModule.hook(createFullListMethod).intercept { chain ->
-                    val result = chain.proceed()
-                    val locationKey = runCatching {
-                        chain.thisObject?.reflect?.callAs<String>("getLocationKey")
-                    }.getOrNull()
-                    if (locationKey == hideAlbumsLocation) {
-                        @Suppress("UNCHECKED_CAST")
-                        val data = result as? MutableList<Any>
-                        @Suppress("UNCHECKED_CAST")
-                        val fullListArg = chain.args.getOrNull(1) as? MutableList<Any>
+                fun handleSwap(
+                    data: MutableList<Any>?,
+                    spaceMap: MutableMap<String, Any>?,
+                    childDataMap: Any?,
+                    onUpdateDataCount: (Int) -> Unit
+                ) {
+                    val spaces = getSpacesFromChildDataMap(childDataMap)
+                    if (spaces != null && data != null && spaceMap != null) {
                         val hiddenIds = getHiddenSharedAlbumIds()
 
-                        if (sharedAlbums.isEmpty()) {
-                            val dataSets = synchronized(sharingDataSets) { sharingDataSets.toList() }
-                            for (dataSet in dataSets) {
-                                val spaces = getSpacesFromChildDataMap(dataSet.reflect["mChildDataMap"])
-                                if (!spaces.isNullOrEmpty()) {
-                                    synchronized(sharedAlbums) {
-                                        spaces.forEach { item ->
-                                            val spaceId = getSpaceId(item) ?: return@forEach
-                                            runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
-                                            sharedAlbums[spaceId] = item
+                        synchronized(sharedAlbums) {
+                            spaces.forEach { item ->
+                                val spaceId = getSpaceId(item) ?: return@forEach
+                                runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
+                                sharedAlbums[spaceId] = item
+                            }
+                        }
+
+                        if (hiddenIds.isNotEmpty()) {
+                            data.removeAll { item ->
+                                isSharing(item) && getSpaceId(item) in hiddenIds
+                            }
+                            spaces.removeAll { item -> getSpaceId(item) in hiddenIds }
+                            hiddenIds.forEach { spaceMap.remove(it) }
+                        }
+                        onUpdateDataCount(data.size)
+                    }
+                }
+
+                val swapInternalMethod = mediaDataMdeSpaceClass.reflect.findMethod {
+                    it.name == "swapInternal" && it.parameterTypes.size == 6
+                }
+                if (swapInternalMethod != null) {
+                    xposedModule.hook(swapInternalMethod).intercept { chain ->
+                        try {
+                            @Suppress("UNCHECKED_CAST")
+                            val data = chain.args.getOrNull(1) as? MutableList<Any>
+
+                            @Suppress("UNCHECKED_CAST")
+                            val spaceMap = chain.args.getOrNull(2) as? MutableMap<String, Any>
+                            val childDataMap = chain.args.getOrNull(4)
+                            var updated = false
+                            val newArgs = chain.args.toTypedArray()
+                            handleSwap(data, spaceMap, childDataMap) { newCount ->
+                                newArgs[5] = newCount
+                                updated = true
+                            }
+                            if (updated) chain.proceed(newArgs) else chain.proceed()
+                        } catch (t: Throwable) {
+                            xlog(t)
+                            chain.proceed()
+                        }
+                    }
+                }
+
+                val swapLambdaMethod = mediaDataMdeSpaceClass.reflect.findMethod {
+                    it.parameterTypes.size == 9 &&
+                            it.parameterTypes[2] == java.util.ArrayList::class.java &&
+                            it.parameterTypes[5] == java.util.HashMap::class.java
+                }
+                if (swapLambdaMethod != null) {
+                    xposedModule.hook(swapLambdaMethod).intercept { chain ->
+                        try {
+                            @Suppress("UNCHECKED_CAST")
+                            val data = chain.args.getOrNull(2) as? MutableList<Any>
+
+                            @Suppress("UNCHECKED_CAST")
+                            val spaceMap = chain.args.getOrNull(3) as? MutableMap<String, Any>
+                            val childDataMap = chain.args.getOrNull(5)
+                            var updated = false
+                            val newArgs = chain.args.toTypedArray()
+                            handleSwap(data, spaceMap, childDataMap) { newCount ->
+                                newArgs[6] = newCount
+                                updated = true
+                            }
+                            if (updated) chain.proceed(newArgs) else chain.proceed()
+                        } catch (t: Throwable) {
+                            xlog(t)
+                            chain.proceed()
+                        }
+                    }
+                }
+
+                val createFullListMethod = mediaDataNestedClass.reflect.findMethod {
+                    it.name == "createFullList" && it.parameterTypes.size == 2
+                }
+                if (createFullListMethod != null) {
+                    xposedModule.hook(createFullListMethod).intercept { chain ->
+                        val result = chain.proceed()
+                        val locationKey = runCatching {
+                            chain.thisObject?.reflect?.callAs<String>("getLocationKey")
+                        }.getOrNull()
+                        if (locationKey == hideAlbumsLocation) {
+                            @Suppress("UNCHECKED_CAST")
+                            val data = result as? MutableList<Any>
+
+                            @Suppress("UNCHECKED_CAST")
+                            val fullListArg = chain.args.getOrNull(1) as? MutableList<Any>
+                            val hiddenIds = getHiddenSharedAlbumIds()
+
+                            if (sharedAlbums.isEmpty()) {
+                                val dataSets = synchronized(sharingDataSets) { sharingDataSets.toList() }
+                                for (dataSet in dataSets) {
+                                    val spaces = getSpacesFromChildDataMap(dataSet.reflect["mChildDataMap"])
+                                    if (!spaces.isNullOrEmpty()) {
+                                        synchronized(sharedAlbums) {
+                                            spaces.forEach { item ->
+                                                val spaceId = getSpaceId(item) ?: return@forEach
+                                                runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
+                                                sharedAlbums[spaceId] = item
+                                            }
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+
+                            if (data != null) {
+                                synchronized(sharedAlbums) {
+                                    sharedAlbums.forEach { (spaceId, item) ->
+                                        runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
+                                        if (!data.contains(item)) {
+                                            data.add(item)
+                                        }
+                                        if (fullListArg != null && !fullListArg.contains(item)) {
+                                            fullListArg.add(item)
                                         }
                                     }
-                                    break
                                 }
                             }
                         }
+                        result
+                    }
+                }
 
-                        if (data != null) {
-                            synchronized(sharedAlbums) {
-                                sharedAlbums.forEach { (spaceId, item) ->
-                                    runCatching { item.reflect("setAlbumHide", spaceId in hiddenIds) }
-                                    if (!data.contains(item)) {
-                                        data.add(item)
-                                    }
-                                    if (fullListArg != null && !fullListArg.contains(item)) {
-                                        fullListArg.add(item)
-                                    }
-                                }
-                            }
+                val updateAlbumsHideStateMethod = albumHelperClass.reflect.findMethod {
+                    it.name == "updateAlbumsHideState" && it.parameterTypes.contentEquals(arrayOf(mediaItemClass))
+                }
+                if (updateAlbumsHideStateMethod != null) {
+                    xposedModule.hook(updateAlbumsHideStateMethod).intercept { chain ->
+                        val item = chain.args.firstOrNull() ?: return@intercept chain.proceed()
+                        val isShare = isSharing(item)
+                        val spaceId = getSpaceId(item)
+                        if (!isShare) return@intercept chain.proceed()
+                        if (spaceId == null) return@intercept chain.proceed()
+                        val hidden = (runCatching { item.reflect.callAs<Boolean>("isAlbumHide") }.getOrNull())
+                            ?: return@intercept chain.proceed()
+
+                        if (setSharedAlbumHidden(spaceId, hidden)) {
+                            refreshSharingData()
+                            1
+                        } else {
+                            chain.proceed()
                         }
                     }
-                    result
                 }
+            } catch (t: Throwable) {
+                xlog(t)
             }
-
-            val updateAlbumsHideStateMethod = albumHelperClass.reflect.findMethod {
-                it.name == "updateAlbumsHideState" && it.parameterTypes.contentEquals(arrayOf(mediaItemClass))
-            }
-            if (updateAlbumsHideStateMethod != null) {
-                xposedModule.hook(updateAlbumsHideStateMethod).intercept { chain ->
-                    val item = chain.args.firstOrNull() ?: return@intercept chain.proceed()
-                    val isShare = isSharing(item)
-                    val spaceId = getSpaceId(item)
-                    if (!isShare) return@intercept chain.proceed()
-                    if (spaceId == null) return@intercept chain.proceed()
-                    val hidden = (runCatching { item.reflect.callAs<Boolean>("isAlbumHide") }.getOrNull())
-                        ?: return@intercept chain.proceed()
-
-                    if (setSharedAlbumHidden(spaceId, hidden)) {
-                        refreshSharingData()
-                        1
-                    } else {
-                        chain.proceed()
-                    }
-                }
-            }
-        } catch (t: Throwable) {
-            xlog(t)
         }
     }
 
