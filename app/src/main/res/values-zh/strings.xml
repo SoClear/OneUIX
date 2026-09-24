@@ -8,6 +8,8 @@
     <string name="status_bar">状态栏</string>
     <string name="qs">快捷设置</string>
     <string name="aod">息屏提醒</string>
+    <string name="dualStatusBar_title">双行状态栏</string>
+    <string name="dualStatusBar_summary">将状态栏显示为双行：上行显示系统图标，下行显示通知图标</string>
     <string name="statusBarLeftPaddingDp_title">修改状态栏左边距</string>
     <string name="statusBarRightPaddingDp_title">修改状态栏右边距</string>
     <string name="setBatteryIconWidthScale_title">设置电池图标宽度缩放倍数</string>

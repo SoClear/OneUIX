@@ -70,6 +70,13 @@ fun DetailPaneSystemUI(
             Text(text = stringResource(CommonR.string.restartSystemUI))
         }
         DividerText(R.string.status_bar)
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.mobile_screensaver),
+            title = stringResource(id = R.string.dualStatusBar_title),
+            summary = stringResource(id = R.string.dualStatusBar_summary),
+            checked = uiState.statusBar.dualStatusBar,
+            onCheckedChange = { onEvent(SystemUIEvent.StatusBar.DualStatusBar(it)) }
+        )
         Column {
             var padding by remember {
                 mutableFloatStateOf(uiState.statusBar.statusBarLeftPaddingDp)
@@ -990,6 +997,9 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
 sealed interface SystemUIEvent {
     sealed interface StatusBar : SystemUIEvent {
         @JvmInline
+        value class DualStatusBar(val value: Boolean) : StatusBar
+
+        @JvmInline
         value class ModifyStatusBarLeftPadding(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -1180,6 +1190,16 @@ fun SettingViewModel.onSystemUIEvent(event: SystemUIEvent) {
 private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.StatusBar.DualStatusBar -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            dualStatusBar = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.StatusBar.ModifyStatusBarLeftPadding -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(

@@ -15,6 +15,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.content.res.Configuration
+import android.widget.RelativeLayout
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
@@ -462,6 +464,225 @@ object StatusBar {
                         result
                     }
                 }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun setDualStatusBar() {
+        if (param.packageName != Package.SYSTEMUI) return
+        try {
+            val systemBarUtilsClass = param.classLoader.loadClass("com.android.internal.policy.SystemBarUtils")
+
+            fun calcHeight(raw: Int, density: Float, isLandscape: Boolean): Int {
+                val secondRow = (26f * density).roundToInt()
+                if (isLandscape) {
+                    val rawDp = raw / density
+                    return if (rawDp > 45f) (raw - secondRow) else raw
+                }
+                val rawDp = raw / density
+                return if (rawDp > 45f) raw else raw + secondRow
+            }
+
+            xposedModule.hook(
+                systemBarUtilsClass.getDeclaredMethod("getStatusBarHeight", Context::class.java)
+            ).intercept { chain ->
+                val context = chain.args[0] as? Context
+                val density = context?.resources?.displayMetrics?.density ?: 3.75f
+                val isLandscape = context?.resources?.configuration?.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val raw = chain.proceed() as Int
+                calcHeight(raw, density, isLandscape)
+            }
+
+            xposedModule.hook(
+                systemBarUtilsClass.getDeclaredMethod(
+                    "getStatusBarHeightForRotation",
+                    Context::class.java,
+                    Int::class.javaPrimitiveType
+                )
+            ).intercept { chain ->
+                val context = chain.args[0] as? Context
+                val density = context?.resources?.displayMetrics?.density ?: 3.75f
+                val rot = chain.args[1] as? Int ?: 0
+                val isLandscape = (rot == 1 || rot == 3)
+                val raw = chain.proceed() as Int
+                calcHeight(raw, density, isLandscape)
+            }
+
+            val phoneStatusBarViewClass = param.classLoader.loadClass(
+                "com.android.systemui.statusbar.phone.PhoneStatusBarView"
+            )
+
+            @SuppressLint("InternalInsetResource", "DiscouragedApi")
+            fun updateLayout(statusBar: ViewGroup) {
+                val res = statusBar.resources
+                val isLandscape = res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val density = res.displayMetrics.density
+                val singleHeight = runCatching {
+                    val id = res.getIdentifier("status_bar_height", "dimen", "android")
+                    if (id != 0) res.getDimensionPixelSize(id) else null
+                }.getOrNull() ?: (34.13f * density).roundToInt()
+                val secondRowHeight = (26f * density).roundToInt()
+
+                val contents = statusBar.findViewById<RelativeLayout>(
+                    res.getIdentifier("status_bar_contents", "id", Package.SYSTEMUI)
+                ) ?: return
+                val leftContainer = statusBar.findViewById<ViewGroup>(
+                    res.getIdentifier("status_bar_left_container", "id", Package.SYSTEMUI)
+                )
+                val centerContainer = statusBar.findViewById<View>(
+                    res.getIdentifier("status_bar_center_container", "id", Package.SYSTEMUI)
+                )
+                val rightContainer = statusBar.findViewById<View>(
+                    res.getIdentifier("system_icon_area", "id", Package.SYSTEMUI)
+                )
+                val notifContainer = statusBar.findViewById<ViewGroup>(
+                    res.getIdentifier("samsung_notification_indicator_container", "id", Package.SYSTEMUI)
+                )
+                val notifArea = statusBar.findViewById<View>(
+                    res.getIdentifier("notification_icon_area", "id", Package.SYSTEMUI)
+                )
+                val notifOriginalParent = statusBar.findViewById<ViewGroup>(
+                    res.getIdentifier("status_bar_start_side_except_heads_up", "id", Package.SYSTEMUI)
+                ) ?: leftContainer
+
+                if (isLandscape) {
+                    (leftContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            lp.height = ViewGroup.LayoutParams.MATCH_PARENT
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            leftContainer.layoutParams = lp
+                        }
+                    }
+                    (rightContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            lp.height = ViewGroup.LayoutParams.MATCH_PARENT
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            rightContainer.layoutParams = lp
+                        }
+                    }
+                    (centerContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                            lp.height = ViewGroup.LayoutParams.MATCH_PARENT
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            lp.addRule(RelativeLayout.CENTER_IN_PARENT)
+                            centerContainer.layoutParams = lp
+                        }
+                    }
+                    if (notifContainer != null && notifContainer.parent != notifOriginalParent) {
+                        (notifContainer.parent as? ViewGroup)?.removeView(notifContainer)
+                        val lp = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        notifOriginalParent?.addView(notifContainer, lp)
+                        notifArea?.layoutParams?.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                    }
+                } else {
+                    val contentsLp = contents.layoutParams as? ViewGroup.MarginLayoutParams
+                    val topMargin = contentsLp?.topMargin?.takeIf { it > 0 }
+                        ?: runCatching { res.getDimensionPixelSize(17106428) }.getOrNull()
+                        ?: (23f * density / 3.75f).roundToInt()
+                    val bottomMargin = contentsLp?.bottomMargin?.takeIf { it > 0 }
+                        ?: runCatching { res.getDimensionPixelSize(17106425) }.getOrNull()
+                        ?: (15f * density / 3.75f).roundToInt()
+                    val firstRowHeight = (singleHeight - topMargin - bottomMargin).coerceAtLeast((24f * density).roundToInt())
+
+                    (leftContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != firstRowHeight) {
+                            lp.height = firstRowHeight
+                            lp.removeRule(RelativeLayout.CENTER_VERTICAL)
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                            lp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            leftContainer.layoutParams = lp
+                        }
+                    }
+                    (rightContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != firstRowHeight) {
+                            lp.height = firstRowHeight
+                            lp.removeRule(RelativeLayout.CENTER_VERTICAL)
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                            lp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            rightContainer.layoutParams = lp
+                        }
+                    }
+                    (centerContainer?.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                        if (lp.height != firstRowHeight) {
+                            lp.height = firstRowHeight
+                            lp.removeRule(RelativeLayout.CENTER_IN_PARENT)
+                            lp.removeRule(RelativeLayout.CENTER_VERTICAL)
+                            lp.removeRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                            lp.addRule(RelativeLayout.CENTER_HORIZONTAL)
+                            lp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                            centerContainer.layoutParams = lp
+                        }
+                    }
+                    if (notifContainer != null && notifContainer.parent != contents) {
+                        (notifContainer.parent as? ViewGroup)?.removeView(notifContainer)
+                        val lp = RelativeLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            secondRowHeight
+                        ).apply {
+                            addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                            addRule(RelativeLayout.ALIGN_PARENT_START)
+                        }
+                        contents.addView(notifContainer, lp)
+                        notifArea?.layoutParams?.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    } else if (notifContainer != null) {
+                        (notifContainer.layoutParams as? RelativeLayout.LayoutParams)?.let { lp ->
+                            if (lp.height != secondRowHeight) {
+                                lp.height = secondRowHeight
+                                lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                                lp.addRule(RelativeLayout.ALIGN_PARENT_START)
+                                notifContainer.layoutParams = lp
+                            }
+                        }
+                    }
+                }
+            }
+
+            var listenerAdded = false
+            fun ensureLayoutListener(statusBar: ViewGroup) {
+                if (listenerAdded) return
+                val res = statusBar.resources
+                val contents = statusBar.findViewById<RelativeLayout>(
+                    res.getIdentifier("status_bar_contents", "id", Package.SYSTEMUI)
+                ) ?: return
+                listenerAdded = true
+                contents.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                    val isLandscape = res.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    if (!isLandscape) {
+                        updateLayout(statusBar)
+                    }
+                }
+            }
+
+            xposedModule.hook(
+                phoneStatusBarViewClass.getDeclaredMethod("onFinishInflate")
+            ).intercept { chain ->
+                val result = chain.proceed()
+                (chain.thisObject as? ViewGroup)?.let { updateLayout(it) }
+                result
+            }
+
+            xposedModule.hook(
+                phoneStatusBarViewClass.getDeclaredMethod("onAttachedToWindow")
+            ).intercept { chain ->
+                val result = chain.proceed()
+                (chain.thisObject as? ViewGroup)?.let {
+                    updateLayout(it)
+                    ensureLayoutListener(it)
+                }
+                result
+            }
+
+            xposedModule.hook(
+                phoneStatusBarViewClass.getDeclaredMethod("onConfigurationChanged", Configuration::class.java)
+            ).intercept { chain ->
+                val result = chain.proceed()
+                (chain.thisObject as? ViewGroup)?.let { updateLayout(it) }
+                result
+            }
         } catch (t: Throwable) {
             xlog(t)
         }

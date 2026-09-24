@@ -8,6 +8,8 @@
     <string name="status_bar">Строка состояния</string>
     <string name="qs">Быстрые настройки</string>
     <string name="aod">Always On Display</string>
+    <string name="dualStatusBar_title">Двойная строка состояния</string>
+    <string name="dualStatusBar_summary">Отображение строки состояния в две строки: верхняя для системных значков, нижняя для уведомлений</string>
     <string name="statusBarLeftPaddingDp_title">Отступ строки состояния слева</string>
     <string name="statusBarRightPaddingDp_title">Отступ строки состояния справа</string>
     <string name="setBatteryIconWidthScale_title">Масштаб ширины иконки батареи</string>

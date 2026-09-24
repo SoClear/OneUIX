@@ -300,6 +300,10 @@ class Main : XposedModule() {
                     StatusBar.doubleTapStatusBarToSleep()
                 }
 
+                if (preference.systemUI.statusBar.dualStatusBar) {
+                    StatusBar.setDualStatusBar()
+                }
+
                 if (preference.systemUI.statusBar.modifyStatusBarMaxNotificationIcons) {
                     val max = preference.systemUI.statusBar.statusBarMaxNotificationIcons
                     Notification.setStatusBarMaxNotificationIcons(max)

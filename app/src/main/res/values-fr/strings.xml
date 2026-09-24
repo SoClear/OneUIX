@@ -8,6 +8,8 @@
     <string name="status_bar">Barre d\'état</string>
     <string name="qs">Paramètres rapides</string>
     <string name="aod">AOD (Always On Display)</string>
+    <string name="dualStatusBar_title">Double barre d\'état</string>
+    <string name="dualStatusBar_summary">Afficher la barre d\'état sur deux lignes : icônes système en haut et notifications en bas</string>
     <string name="statusBarLeftPaddingDp_title">Modifier la marge gauche de la barre d\'état</string>
     <string name="statusBarRightPaddingDp_title">Modifier la marge droite de la barre d\'état</string>
     <string name="setBatteryIconWidthScale_title">Définir le facteur d\'échelle de largeur de l\'icône de batterie</string>

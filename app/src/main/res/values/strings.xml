@@ -8,6 +8,8 @@
     <string name="status_bar">Status Bar</string>
     <string name="qs">Quick Settings</string>
     <string name="aod">Always On Display</string>
+    <string name="dualStatusBar_title">Dual status bar</string>
+    <string name="dualStatusBar_summary">Display status bar in two rows: top for system icons and bottom for notifications</string>
     <string name="statusBarLeftPaddingDp_title">Modify status bar left padding</string>
     <string name="statusBarRightPaddingDp_title">Modify status bar right padding</string>
     <string name="setBatteryIconWidthScale_title">Set battery icon width scale factor</string>

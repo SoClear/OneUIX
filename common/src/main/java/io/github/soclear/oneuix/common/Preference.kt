@@ -66,6 +66,7 @@ data class Preference(
             val customCarrierName: String = "",
             val hideLockscreenStatusBar: Boolean = false,
             val restoreBluetoothStatusBarIcon: Boolean = false,
+            val dualStatusBar: Boolean = false,
         )
 
         @Serializable
