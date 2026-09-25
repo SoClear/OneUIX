@@ -72,6 +72,7 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val categoryAppInfoList by viewModel.categoryAppInfoList.collectAsStateWithLifecycle()
     val preference by viewModel.preference.collectAsStateWithLifecycle()
+    val chargingState by viewModel.chargingState.collectAsStateWithLifecycle()
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -140,7 +141,12 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
 
                         Category.Settings -> DetailPaneSettings(
                             uiState = preference.settings,
-                            onEvent = viewModel::onSettingsEvent
+                            onEvent = viewModel::onSettingsEvent,
+                            chargingState = chargingState,
+                            onChargingRefresh = viewModel::refreshChargingControl,
+                            onRememberChargingLimit = viewModel::setRememberChargingLimit,
+                            onChargingLimitChange = viewModel::setChargingLimit,
+                            onPauseChargingAtCurrentLevel = viewModel::pauseChargingAtCurrentLevel,
                         )
 
                         Category.Call -> DetailPaneCall(

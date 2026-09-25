@@ -167,4 +167,23 @@
     <string name="backup_config">备份配置</string>
     <string name="restore_config">恢复配置</string>
     <string name="restore_failed">恢复失败，文件可能已损坏</string>
+    <string name="charging_control_title">充电设置</string>
+    <string name="remember_charging_limit_title">记住以下电池峰值设置</string>
+    <string name="remember_charging_limit_summary">开机后自动调整至您的偏好</string>
+    <string name="charging_limit_title">自定义电池充电上限</string>
+    <string name="charging_limit_summary">可选 20%% 至 100%% 的任意整数</string>
+    <string name="charging_limit_value">%1$d%%</string>
+    <string name="charging_limit_unavailable">系统未提供三星充电上限设置，无法控制。</string>
+    <string name="charging_limit_mode_hint">80、85、90、95%% 使用三星原生保护；其他档位使用设备充电阈值。</string>
+    <string name="charging_limit_inactive">上限数值已保存，但当前未启用；拖动滑块可重新启用。</string>
+    <string name="charging_limit_failed">设置充电上限失败，请检查 root 授权和电池保护设置。</string>
+    <string name="bypass_charging_title">旁路供电</string>
+    <string name="bypass_charging_summary">连接 USB PD 电源时暂停电池充电</string>
+    <string name="bypass_charging_on">已暂停充电</string>
+    <string name="bypass_charging_requires_power">需电量至少 20%，并连接兼容的 25W 及以上 USB PD PPS 充电器。</string>
+    <string name="bypass_charging_failed">切换旁路供电失败，请检查 root 授权和充电器兼容性。</string>
+    <string name="pause_at_current_level_summary">将充电上限设为当前电量</string>
+    <string name="pause_at_current_level_off">点击关闭旁路供电，保留上限数值</string>
+    <string name="charging_limit_tile_label">暂停充电</string>
+    <string name="remember_charging_limit_failed">保存开机设置失败，请检查 root 授权。</string>
 </resources>

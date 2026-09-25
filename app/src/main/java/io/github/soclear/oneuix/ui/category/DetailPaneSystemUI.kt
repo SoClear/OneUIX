@@ -897,7 +897,7 @@ fun DetailPaneSystemUI(
 }
 
 @Composable
-private fun DividerText(@StringRes id: Int) = Text(
+internal fun DividerText(@StringRes id: Int) = Text(
     text = stringResource(id),
     modifier = Modifier.padding(start = 16.dp, top = 32.dp, end = 16.dp),
     color = MaterialTheme.colorScheme.primary,

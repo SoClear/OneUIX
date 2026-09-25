@@ -167,4 +167,23 @@
     <string name="backup_config">Back up config</string>
     <string name="restore_config">Restore config</string>
     <string name="restore_failed">Restore failed, the file may be corrupted</string>
+    <string name="charging_control_title">Charging settings</string>
+    <string name="remember_charging_limit_title">Remember battery charge limit</string>
+    <string name="remember_charging_limit_summary">Restore your preferred limit after restart</string>
+    <string name="charging_limit_title">Custom battery charge limit</string>
+    <string name="charging_limit_summary">Choose any level from 20%% to 100%%</string>
+    <string name="charging_limit_value">%1$d%%</string>
+    <string name="charging_limit_unavailable">This device does not expose Samsung’s charge limit setting.</string>
+    <string name="charging_limit_mode_hint">80, 85, 90 and 95%% use Samsung protection; other levels use the device charge threshold.</string>
+    <string name="charging_limit_inactive">Limit saved but not active. Move the slider to enable it again.</string>
+    <string name="charging_limit_failed">Could not apply the limit. Check root access and battery protection settings.</string>
+    <string name="bypass_charging_title">Pass-through charging</string>
+    <string name="bypass_charging_summary">Pause battery charging while connected to USB PD power</string>
+    <string name="bypass_charging_on">Charging paused</string>
+    <string name="bypass_charging_requires_power">Requires at least 20% battery and a compatible 25W+ USB PD PPS charger.</string>
+    <string name="bypass_charging_failed">Could not change pass-through charging. Check root access and charger compatibility.</string>
+    <string name="pause_at_current_level_summary">Set the charge limit to the current battery level</string>
+    <string name="pause_at_current_level_off">Tap to stop pass-through and keep the saved limit</string>
+    <string name="charging_limit_tile_label">Pause charging</string>
+    <string name="remember_charging_limit_failed">Could not save the restart preference. Check root access.</string>
 </resources>
