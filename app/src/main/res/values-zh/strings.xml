@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">三星 One UI 扩展</string>
-    <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
     <string name="confirm">确认</string>
     <string name="other">其他</string>
     <string name="notification">通知</string>

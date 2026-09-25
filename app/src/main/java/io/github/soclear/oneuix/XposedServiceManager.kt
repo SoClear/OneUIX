@@ -9,9 +9,6 @@ object XposedServiceManager {
     var xposedService: XposedService? = null
         private set
 
-    val isModuleActive: Boolean
-        get() = xposedService != null
-
     init {
         XposedServiceHelper.registerListener(object : XposedServiceHelper.OnServiceListener {
             override fun onServiceBind(service: XposedService) {

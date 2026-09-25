@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Samsung One UI Extension</string>
-    <string name="module_disabled_tip">Please enable this module in LSPosed</string>
     <string name="confirm">Confirm</string>
     <string name="other">Other</string>
     <string name="notification">Notification</string>
