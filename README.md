@@ -96,6 +96,7 @@
 
 #### 设置
 
+- 充电设置：20–100% 整数上限通过设备充电阈值停充；快捷设置一键设为当前电量并请求 USB PD 旁路，再点关闭旁路、保留上限数值（需 root；旁路供电需兼容的 USB PD PPS 充电器）
 - 开发者选项显示强制最大刷新率选项
 - 解锁户外模式
 - 显示更多电池信息
@@ -240,6 +241,7 @@
 
 #### Settings
 
+- Charging control: remember a custom 20–100% limit and pause charging at the current level from Quick Settings (root and compatible USB PD PPS charger required)
 - Show 'Force peak refresh rate' in Developer options
 - Unlock Outdoor mode
 - Show more battery info

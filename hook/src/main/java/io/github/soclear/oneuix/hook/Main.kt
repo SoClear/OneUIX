@@ -463,6 +463,7 @@ class Main : XposedModule() {
     }
 
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = with(param) {
+        ChargingControl.install()
         val preference = PreferenceProvider.loadPreference() ?: return@with
 
         if (preference.android.disableWritingToolkitGlobally) {
