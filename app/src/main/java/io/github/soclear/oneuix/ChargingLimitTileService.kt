@@ -44,14 +44,15 @@ class ChargingLimitTileService : TileService() {
             val state = repository.read()
             state to repository.isQuickPauseApplied(state)
         }
-        val level = state.batteryLevel
-        tile.state = when {
-            applied -> Tile.STATE_ACTIVE
-            !state.pluggedIn || level == null || level < 20 -> Tile.STATE_UNAVAILABLE
-            else -> Tile.STATE_INACTIVE
-        }
+        tile.state = chargingTileState(applied, state.pluggedIn, state.batteryLevel)
         tile.subtitle = if (applied) getString(R.string.bypass_charging_on)
         else getString(R.string.charging_limit_value, state.limit)
         tile.updateTile()
     }
+}
+
+internal fun chargingTileState(applied: Boolean, pluggedIn: Boolean, level: Int?): Int = when {
+    applied -> Tile.STATE_ACTIVE
+    pluggedIn && (level == null || level < 20) -> Tile.STATE_UNAVAILABLE
+    else -> Tile.STATE_INACTIVE
 }
