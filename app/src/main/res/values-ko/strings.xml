@@ -1,7 +1,13 @@
 <resources>
+    <string name="framework_connecting">프레임워크에 연결 중…</string>
+    <string name="framework_unavailable">프레임워크에 연결되지 않았습니다. LSPosed에서 이 모듈이 활성화되어 있는지 확인하세요. 연결되면 설정을 불러옵니다.</string>
+    <string name="preferences_loading">설정을 불러오는 중…</string>
+    <string name="preferences_failed">설정을 읽거나 저장할 수 없습니다. 수정이 일시 중지되었습니다. 다시 시도하거나 유효한 백업에서 복원하세요.</string>
+    <string name="connection_retry">재시도</string>
+    <string name="backup_failed">백업 실패</string>
+
     <string name="app_name">One UI X</string>
     <string name="xposed_description">삼성 One UI 확장 모듈</string>
-    <string name="module_disabled_tip">LSPosed에서 이 모듈을 활성화해 주세요</string>
     <string name="confirm">확인</string>
     <string name="other">기타</string>
     <string name="notification">알림</string>

@@ -1,7 +1,13 @@
 <resources>
+    <string name="framework_connecting">Подключение к фреймворку…</string>
+    <string name="framework_unavailable">Нет подключения к фреймворку. Проверьте, включён ли модуль в LSPosed. После подключения настройки загрузятся автоматически.</string>
+    <string name="preferences_loading">Загрузка настроек…</string>
+    <string name="preferences_failed">Не удалось прочитать или сохранить настройки. Изменение приостановлено. Повторите попытку или восстановите действительную резервную копию.</string>
+    <string name="connection_retry">Повторить</string>
+    <string name="backup_failed">Ошибка резервного копирования</string>
+
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Расширение One UI для Samsung</string>
-    <string name="module_disabled_tip">Пожалуйста, включите этот модуль в LSPosed</string>
     <string name="confirm">Подтвердить</string>
     <string name="other">Другое</string>
     <string name="notification">Уведомления</string>

@@ -4,6 +4,13 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
@@ -13,7 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.ui.category.Category
@@ -61,6 +72,7 @@ import io.github.soclear.oneuix.ui.category.onVideoEvent
 import io.github.soclear.oneuix.ui.category.onWatchManagerEvent
 import io.github.soclear.oneuix.ui.category.onWeatherEvent
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CancellationException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -71,15 +83,23 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val categoryAppInfoList by viewModel.categoryAppInfoList.collectAsStateWithLifecycle()
-    val preference by viewModel.preference.collectAsStateWithLifecycle()
+    val preferenceState by viewModel.preferenceState.collectAsStateWithLifecycle()
+    val preference = preferenceState.preference
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri?.let {
             scope.launch {
-                context.contentResolver.openOutputStream(it)?.use { stream ->
-                    viewModel.backupTo(stream)
+                try {
+                    val saved = context.contentResolver.openOutputStream(it)?.use { stream ->
+                        viewModel.backupTo(stream)
+                    } ?: false
+                    if (!saved) Toast.makeText(context, R.string.backup_failed, Toast.LENGTH_SHORT).show()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    Toast.makeText(context, R.string.backup_failed, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -89,15 +109,28 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     ) { uri ->
         uri?.let {
             scope.launch {
-                context.contentResolver.openInputStream(it)?.use { stream ->
-                    try {
+                try {
+                    val restored = context.contentResolver.openInputStream(it)?.use { stream ->
                         viewModel.restoreFrom(stream)
-                    } catch (_: Throwable) {
-                        Toast.makeText(context, R.string.restore_failed, Toast.LENGTH_SHORT).show()
-                    }
+                    } ?: false
+                    if (!restored) Toast.makeText(context, R.string.restore_failed, Toast.LENGTH_SHORT).show()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                    Toast.makeText(context, R.string.restore_failed, Toast.LENGTH_SHORT).show()
                 }
             }
         }
+    }
+
+    if (preferenceState.status != PreferenceStatus.Ready) {
+        PreferenceConnectionStatus(
+            status = preferenceState.status,
+            onRetry = viewModel::retryConnection,
+            onRestore = { restoreLauncher.launch(arrayOf("application/json")) },
+            modifier = modifier,
+        )
+        return
     }
 
     NavigableListDetailPaneScaffold(
@@ -238,4 +271,36 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
         },
         modifier = modifier.fillMaxSize(),
     )
+}
+
+@Composable
+private fun PreferenceConnectionStatus(
+    status: PreferenceStatus,
+    onRetry: () -> Unit,
+    onRestore: () -> Unit,
+    modifier: Modifier,
+) {
+    val message = when (status) {
+        PreferenceStatus.Connecting -> R.string.framework_connecting
+        PreferenceStatus.Unavailable -> R.string.framework_unavailable
+        PreferenceStatus.Loading -> R.string.preferences_loading
+        PreferenceStatus.Error -> R.string.preferences_failed
+        PreferenceStatus.Ready -> return
+    }
+    Column(
+        modifier = modifier.fillMaxSize().padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineSmall)
+        Text(stringResource(message), textAlign = TextAlign.Center)
+        if (status == PreferenceStatus.Connecting || status == PreferenceStatus.Loading) {
+            CircularProgressIndicator()
+        } else {
+            Button(onClick = onRetry) { Text(stringResource(R.string.connection_retry)) }
+        }
+        if (status == PreferenceStatus.Error) {
+            Button(onClick = onRestore) { Text(stringResource(R.string.restore_config)) }
+        }
+    }
 }

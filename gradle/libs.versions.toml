@@ -10,7 +10,6 @@ activityCompose = "1.13.0"
 composeBom = "2026.09.00"
 libxposed = "102.0.0"
 dexkit = "2.2.0"
-datastore = "1.2.1"
 kotlinxSerializationJson = "1.11.0"
 
 [libraries]
@@ -34,7 +33,6 @@ dexkit = { group = "org.luckypray", name = "dexkit", version.ref = "dexkit" }
 adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive" }
 adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout" }
 adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation" }
-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 
 

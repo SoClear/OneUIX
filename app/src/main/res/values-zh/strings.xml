@@ -1,7 +1,13 @@
 <resources>
+    <string name="framework_connecting">正在连接框架…</string>
+    <string name="framework_unavailable">尚未连接到框架，请检查是否已在 LSPosed 中启用本模块。连接成功后将自动加载设置。</string>
+    <string name="preferences_loading">正在加载设置…</string>
+    <string name="preferences_failed">无法读取或保存设置，已暂停修改。请重试，或从有效备份恢复。</string>
+    <string name="connection_retry">重试</string>
+    <string name="backup_failed">备份失败</string>
+
     <string name="app_name">One UI X</string>
     <string name="xposed_description">三星 One UI 扩展</string>
-    <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
     <string name="confirm">确认</string>
     <string name="other">其他</string>
     <string name="notification">通知</string>

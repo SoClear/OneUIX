@@ -1,7 +1,13 @@
 <resources>
+    <string name="framework_connecting">Connexion au framework…</string>
+    <string name="framework_unavailable">Connexion au framework indisponible. Vérifiez que ce module est activé dans LSPosed. Les paramètres seront chargés dès que la connexion sera établie.</string>
+    <string name="preferences_loading">Chargement des paramètres…</string>
+    <string name="preferences_failed">Impossible de lire ou d’enregistrer les paramètres. Les modifications sont suspendues. Réessayez ou restaurez une sauvegarde valide.</string>
+    <string name="connection_retry">Réessayer</string>
+    <string name="backup_failed">Échec de la sauvegarde</string>
+
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Extension pour Samsung One UI</string>
-    <string name="module_disabled_tip">Veuillez activer ce module dans LSPosed</string>
     <string name="confirm">Confirmer</string>
     <string name="other">Autre</string>
     <string name="notification">Notification</string>
