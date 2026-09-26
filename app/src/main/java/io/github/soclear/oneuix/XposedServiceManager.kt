@@ -2,27 +2,34 @@ package io.github.soclear.oneuix
 
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 
 object XposedServiceManager {
+    private val xposedServiceFlow = MutableStateFlow<XposedService?>(null)
 
-    @Volatile
-    var xposedService: XposedService? = null
-        private set
+    val xposedService: XposedService?
+        get() = xposedServiceFlow.value
 
     val isModuleActive: Boolean
-        get() = xposedService != null
+        get() = xposedServiceFlow.value != null
 
     init {
         XposedServiceHelper.registerListener(object : XposedServiceHelper.OnServiceListener {
             override fun onServiceBind(service: XposedService) {
-                xposedService = service
+                xposedServiceFlow.value = service
             }
 
             override fun onServiceDied(service: XposedService) {
-                if (xposedService == service) {
-                    xposedService = null
+                if (xposedServiceFlow.value == service) {
+                    xposedServiceFlow.value = null
                 }
             }
         })
+    }
+
+    suspend fun awaitXposedService(): XposedService {
+        return xposedServiceFlow.filterNotNull().first()
     }
 }

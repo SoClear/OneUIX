@@ -19,7 +19,7 @@ object PreferenceSerializer : Serializer<Preference> {
 
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun readFrom(input: InputStream): Preference = try {
-        val service = XposedServiceManager.xposedService ?: return defaultValue
+        val service = XposedServiceManager.awaitXposedService()
         val parcelFileDescriptor = service.openRemoteFile(Preference.FILE_NAME)
 
         ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor).use { inputStream ->
