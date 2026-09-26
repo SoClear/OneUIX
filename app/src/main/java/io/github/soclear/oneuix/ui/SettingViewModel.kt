@@ -4,13 +4,11 @@ import android.app.Application
 import android.content.pm.PackageManager
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -18,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import io.github.soclear.oneuix.common.IgnoreUnknownKeysJson
 import io.github.soclear.oneuix.common.Preference
+import io.github.soclear.oneuix.XposedServiceManager
 import io.github.soclear.oneuix.ui.category.Category
 import io.github.soclear.oneuix.ui.category.CategoryAppInfo
 import java.io.InputStream
@@ -46,32 +45,31 @@ class SettingViewModel(application: Application) : ViewModel() {
         emit(categoryAppInfoList)
     }.flowOn(Dispatchers.IO).stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val dataStore: DataStore<Preference> = application.dataStore
+    private val preferenceStore = PreferenceStore(XposedServiceManager.preferences, viewModelScope)
+    val preferenceState = preferenceStore.state
 
-    val preference = dataStore.data.stateIn(
-        scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = Preference()
-    )
+    fun retryConnection() = preferenceStore.retry()
 
     fun updateData(nextPreference: (currentPreference: Preference) -> Preference) {
         viewModelScope.launch {
-            dataStore.updateData {
-                nextPreference(it)
-            }
+            preferenceStore.update(nextPreference)
         }
     }
 
-    suspend fun backupTo(output: OutputStream) = withContext(Dispatchers.IO) {
+    suspend fun backupTo(output: OutputStream): Boolean = withContext(Dispatchers.IO) {
+        val preference = preferenceStore.snapshot() ?: return@withContext false
         output.write(
             IgnoreUnknownKeysJson.encodeToString(
-                Preference.serializer(), dataStore.data.first()
+                Preference.serializer(), preference
             ).encodeToByteArray()
         )
+        true
     }
 
-    suspend fun restoreFrom(input: InputStream) = withContext(Dispatchers.IO) {
+    suspend fun restoreFrom(input: InputStream): Boolean = withContext(Dispatchers.IO) {
         val restored = IgnoreUnknownKeysJson.decodeFromString(
             Preference.serializer(), input.readBytes().decodeToString()
         )
-        dataStore.updateData { restored }
+        preferenceStore.restore(restored)
     }
 }

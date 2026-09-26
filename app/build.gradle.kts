@@ -108,7 +108,6 @@ dependencies {
     implementation(libs.adaptive)
     implementation(libs.adaptive.layout)
     implementation(libs.adaptive.navigation)
-    implementation(libs.datastore)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)

@@ -1,4 +1,11 @@
 <resources>
+    <string name="framework_connecting">Connecting to framework…</string>
+    <string name="framework_unavailable">Not connected to the framework. Check that this module is enabled in LSPosed. Settings will load automatically once connected.</string>
+    <string name="preferences_loading">Loading settings…</string>
+    <string name="preferences_failed">Could not read or save settings. Editing is paused. Retry to reload saved settings, or restore a valid backup.</string>
+    <string name="connection_retry">Retry</string>
+    <string name="backup_failed">Backup failed</string>
+
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Samsung One UI Extension</string>
     <string name="confirm">Confirm</string>
