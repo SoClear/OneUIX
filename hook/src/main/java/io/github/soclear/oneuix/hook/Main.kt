@@ -404,9 +404,16 @@ class Main : XposedModule() {
                         preference.systemUI.other.powerMenuActions,
                     )
                 }
+
+                if (preference.android.disableFlagSecure) {
+                    DisableFlagSecure.hookSystemUI(classLoader)
+                }
             }
 
             Package.SYSTEMUI if (processName == "${Package.SYSTEMUI}:screenshot") -> {
+                if (preference.android.disableFlagSecure) {
+                    DisableFlagSecure.hookSystemUI(classLoader)
+                }
                 if (preference.systemUI.other.disableScreenshotCaptureSound) {
                     Other.disableScreenshotCaptureSound()
                 }
@@ -497,6 +504,10 @@ class Main : XposedModule() {
 
         if (preference.android.disableScreenWakeOnPowerUnplugged) {
             Android.disableScreenWakeOnPowerUnplugged()
+        }
+
+        if (preference.android.disableFlagSecure) {
+            DisableFlagSecure.hookSystemServer(classLoader)
         }
     }
 }

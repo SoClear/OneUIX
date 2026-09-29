@@ -164,6 +164,8 @@
     <string name="disableScreenWakeOnPowerUnplugged_title">Не включать экран при отключении зарядки</string>
     <string name="disableWritingToolkitGlobally_title">Отключить инструменты для письма глобально</string>
     <string name="disableWritingToolkitGlobally_summary">Удаляет инструменты для письма Samsung из меню выделения текста во всех приложениях через системный фреймворк</string>
+    <string name="disableFlagSecure_title">Отключить FLAG_SECURE</string>
+    <string name="disableFlagSecure_summary">Разрешить снимки и запись экрана в защищенных окнах</string>
     <string name="backup_config">Резервное копирование</string>
     <string name="restore_config">Восстановить конфиг</string>
     <string name="restore_failed">Ошибка восстановления, файл может быть повреждён</string>

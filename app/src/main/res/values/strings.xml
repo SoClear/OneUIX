@@ -164,6 +164,8 @@
     <string name="disableScreenWakeOnPowerUnplugged_title">Keep screen off when unplugged</string>
     <string name="disableWritingToolkitGlobally_title">Disable Writing Toolkit globally</string>
     <string name="disableWritingToolkitGlobally_summary">Removes Samsung Writing Toolkit from text selection menus in all apps through the System Framework</string>
+    <string name="disableFlagSecure_title">Disable FLAG_SECURE</string>
+    <string name="disableFlagSecure_summary">Allow screenshots and screen recording in secure windows</string>
     <string name="backup_config">Back up config</string>
     <string name="restore_config">Restore config</string>
     <string name="restore_failed">Restore failed, the file may be corrupted</string>

@@ -164,6 +164,8 @@
     <string name="disableScreenWakeOnPowerUnplugged_title">Garder l\'écran éteint au débranchement</string>
     <string name="disableWritingToolkitGlobally_title">Désactiver globalement les outils d\'écriture</string>
     <string name="disableWritingToolkitGlobally_summary">Supprime les outils d\'écriture Samsung des menus de sélection de texte de toutes les applications via le framework système</string>
+    <string name="disableFlagSecure_title">Désactiver FLAG_SECURE</string>
+    <string name="disableFlagSecure_summary">Autoriser les captures et enregistrements d\'écran dans les fenêtres sécurisées</string>
     <string name="backup_config">Sauvegarder la config</string>
     <string name="restore_config">Restaurer la config</string>
     <string name="restore_failed">Échec de la restauration, le fichier est peut-être corrompu</string>

@@ -164,6 +164,8 @@
     <string name="disableScreenWakeOnPowerUnplugged_title">拔出充电器时不亮屏</string>
     <string name="disableWritingToolkitGlobally_title">全局禁用写作工具包</string>
     <string name="disableWritingToolkitGlobally_summary">通过系统框架从所有应用的文本选择菜单中移除三星写作工具包</string>
+    <string name="disableFlagSecure_title">禁用安全标记 (FLAG_SECURE)</string>
+    <string name="disableFlagSecure_summary">允许在受保护的应用窗口中截屏和录屏</string>
     <string name="backup_config">备份配置</string>
     <string name="restore_config">恢复配置</string>
     <string name="restore_failed">恢复失败，文件可能已损坏</string>

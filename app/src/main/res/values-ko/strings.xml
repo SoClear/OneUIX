@@ -164,6 +164,8 @@
     <string name="disableScreenWakeOnPowerUnplugged_title">충전기 분리 시 화면 켜짐 방지</string>
     <string name="disableWritingToolkitGlobally_title">글쓰기 도구 전체 비활성화</string>
     <string name="disableWritingToolkitGlobally_summary">시스템 프레임워크를 통해 모든 앱의 텍스트 선택 메뉴에서 Samsung 글쓰기 도구를 제거합니다</string>
+    <string name="disableFlagSecure_title">FLAG_SECURE 비활성화</string>
+    <string name="disableFlagSecure_summary">보안 창에서 스크린샷 및 화면 녹화 허용</string>
     <string name="backup_config">설정 백업</string>
     <string name="restore_config">설정 복원</string>
     <string name="restore_failed">복원에 실패했습니다. 파일이 손상되었을 수 있습니다</string>

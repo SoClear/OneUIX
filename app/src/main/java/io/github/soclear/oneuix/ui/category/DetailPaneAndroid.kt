@@ -120,6 +120,13 @@ fun DetailPaneAndroid(
             checked = uiState.disableWritingToolkitGlobally,
             onCheckedChange = { onEvent(AndroidEvent.DisableWritingToolkitGlobally(it)) }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.screenshot),
+            title = stringResource(id = R.string.disableFlagSecure_title),
+            summary = stringResource(id = R.string.disableFlagSecure_summary),
+            checked = uiState.disableFlagSecure,
+            onCheckedChange = { onEvent(AndroidEvent.DisableFlagSecure(it)) }
+        )
     }
 }
 
@@ -150,6 +157,9 @@ sealed interface AndroidEvent {
 
     @JvmInline
     value class DisableWritingToolkitGlobally(val value: Boolean) : AndroidEvent
+
+    @JvmInline
+    value class DisableFlagSecure(val value: Boolean) : AndroidEvent
 }
 
 fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
@@ -223,6 +233,14 @@ fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
                 preference.copy(
                     android = preference.android.copy(
                         disableWritingToolkitGlobally = event.value
+                    )
+                )
+            }
+
+            is AndroidEvent.DisableFlagSecure -> {
+                preference.copy(
+                    android = preference.android.copy(
+                        disableFlagSecure = event.value
                     )
                 )
             }
