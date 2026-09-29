@@ -105,21 +105,25 @@ object DisableFlagSecure {
     }
 
     context(xposedModule: XposedModule)
-    private fun hookScreenshotHardwareBuffer(classLoader: ClassLoader) = runCatching {
-        val bufferClass = runCatching {
-            classLoader.loadClass($$"android.window.ScreenCapture$ScreenshotHardwareBuffer")
-        }.getOrElse {
-            classLoader.loadClass($$"android.view.SurfaceControl$ScreenshotHardwareBuffer")
-        }
-        bufferClass.declaredMethods.filter { it.name == "containsSecureLayers" }.forEach {
-            xposedModule.hook(it).intercept { false }
+    private fun hookScreenshotHardwareBuffer(classLoader: ClassLoader) {
+        listOf(
+            $$"android.window.ScreenCaptureInternal$ScreenshotHardwareBuffer",
+            $$"android.window.ScreenCapture$ScreenshotHardwareBuffer",
+            $$"android.view.SurfaceControl$ScreenshotHardwareBuffer"
+        ).forEach { className ->
+            runCatching {
+                classLoader.loadClass(className).declaredMethods
+                    .filter { it.name == "containsSecureLayers" }
+                    .forEach { xposedModule.hook(it).intercept { false } }
+            }
         }
     }
 
     context(xposedModule: XposedModule)
     private fun hookOneUI(classLoader: ClassLoader) = runCatching {
         classLoader.loadClass("com.android.server.wm.WmScreenshotController").declaredMethods
-            .filter { it.name == "canBeScreenshotTarget" }.forEach {
+            .filter { it.name == "canBeScreenshotTarget" || it.name == "isScreenshotAllowedByPolicy" }
+            .forEach {
                 xposedModule.hook(it).intercept { true }
             }
     }
