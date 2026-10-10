@@ -9,6 +9,7 @@ import io.github.libxposed.api.XposedModule
 import java.util.function.BiConsumer
 import java.util.function.BiPredicate
 
+// TODO: https://github.com/LSPosed/DisableFlagSecure/pull/115
 @SuppressLint("PrivateApi", "BlockedPrivateApi")
 object DisableFlagSecure {
 
