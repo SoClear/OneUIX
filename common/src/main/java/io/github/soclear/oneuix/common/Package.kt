@@ -1,6 +1,8 @@
 package io.github.soclear.oneuix.common
 
 object Package {
+    /** This module, which the app pane for the feature gates is listed under. */
+    const val SELF = "io.github.soclear.oneuix"
     const val ANDROID = "android"
     const val BIXBY_AGENT = "com.samsung.android.bixby.agent"
     const val BIXBY_WAKEUP = "com.samsung.android.bixby.wakeup"

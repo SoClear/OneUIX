@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -30,6 +32,7 @@ fun SwitchItem(
     modifier: Modifier = Modifier,
     summary: String? = null,
     icon: ImageVector? = null,
+    iconTint: Color? = null,
     clickable: Boolean = false,
     onClick: () -> Unit = {},
     checked: Boolean,
@@ -56,7 +59,9 @@ fun SwitchItem(
         headlineContent = { Text(title) },
         modifier = listItemModifier,
         supportingContent = summary?.let { { Text(it) } },
-        leadingContent = icon?.let { { Icon(it, title) } },
+        leadingContent = icon?.let {
+            { Icon(it, title, tint = iconTint ?: LocalContentColor.current) }
+        },
         trailingContent = {
             Row(
                 modifier = Modifier.height(IntrinsicSize.Min),
