@@ -52,6 +52,13 @@ fun DetailPaneLauncher(
             checked = uiState.removeShortcutBadge,
             onCheckedChange = { onEvent(LauncherEvent.RemoveShortcutBadge(it)) }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.block),
+            title = stringResource(id = R.string.forceStopInTaskMenu_title),
+            summary = stringResource(id = R.string.forceStopInTaskMenu_summary),
+            checked = uiState.forceStopInTaskMenu,
+            onCheckedChange = { onEvent(LauncherEvent.ForceStopInTaskMenu(it)) }
+        )
     }
 }
 
@@ -70,6 +77,9 @@ sealed interface LauncherEvent {
 
     @JvmInline
     value class RemoveShortcutBadge(val value: Boolean) : LauncherEvent
+
+    @JvmInline
+    value class ForceStopInTaskMenu(val value: Boolean) : LauncherEvent
 }
 
 fun SettingViewModel.onLauncherEvent(event: LauncherEvent) {
@@ -102,6 +112,12 @@ fun SettingViewModel.onLauncherEvent(event: LauncherEvent) {
             is LauncherEvent.RemoveShortcutBadge -> preference.copy(
                 other = preference.other.copy(
                     removeShortcutBadge = event.value
+                )
+            )
+
+            is LauncherEvent.ForceStopInTaskMenu -> preference.copy(
+                other = preference.other.copy(
+                    forceStopInTaskMenu = event.value
                 )
             )
         }

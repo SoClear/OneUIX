@@ -3,7 +3,9 @@ package io.github.soclear.oneuix.hook
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Rect
@@ -11,20 +13,26 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.hook.util.currentContext
 import io.github.soclear.oneuix.hook.util.getHookConfig
+import io.github.soclear.oneuix.hook.util.getPackageVersionCode
 import io.github.soclear.oneuix.hook.util.longVersionCode
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
@@ -33,6 +41,7 @@ import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 import java.lang.ref.WeakReference
 import java.lang.reflect.Constructor
+import java.lang.reflect.Method
 import kotlin.math.roundToInt
 
 
@@ -457,7 +466,237 @@ object Launcher {
         }
     }
 
-    @Serializable
+    /** The launcher version the task menu names below were read from. */
+    private const val TASK_MENU_LAUNCHER_VERSION = 1800705053L
+
+    /** The row this module added, so a menu never gets it twice. */
+    private var addedRow: WeakReference<View>? = null
+
+    /**
+     * The name of the entry.
+     *
+     * The launcher has no way to read this module's strings, and the module's own copy of this name
+     * reads the same in every locale it ships, so it is written out here.
+     */
+    private const val FORCE_STOP_LABEL = "Force stop"
+
+    /** Whether the launcher is building the one extra row this module asks it for. */
+    private val addingExtraRow = ThreadLocal.withInitial { false }
+
+    /**
+     * Adds a Force stop entry to the recents task menu, the one an app icon shows when it is long
+     * pressed in Recents.
+     *
+     * That menu is a PopupWindow the launcher builds for a task, and every entry reaches it through
+     * `ig.m.a(ig.o, View)`: the item is bound into a row layout, the row is appended to the menu's
+     * LinearLayout and given its own click listener. Calling that method once more for the item that
+     * is being bound, and then rewriting the row it just added, gives the menu an entry that force
+     * stops the task's package and closes the menu. The launcher holds FORCE_STOP_PACKAGES, so this
+     * needs no root.
+     *
+     * The class and field names are the launcher's obfuscated ones for the version they were read
+     * from, so any other launcher version is left alone rather than hooked wrongly.
+     */
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun forceStopInTaskMenu() {
+        if (param.packageName != Package.LAUNCHER) return
+        // The host's own version, not the context's: this runs before the app is ready, when the
+        // current context is still the system one.
+        val launcherVersion = getPackageVersionCode()
+        if (launcherVersion != TASK_MENU_LAUNCHER_VERSION) {
+            xlog(
+                "task menu: nothing hooked, launcher $launcherVersion is not $TASK_MENU_LAUNCHER_VERSION",
+                priority = Log.INFO
+            )
+            return
+        }
+
+        try {
+            val menuClass = param.classLoader.loadClass("ig.m")
+            val itemClass = param.classLoader.loadClass("ig.o")
+            val addRow = menuClass.getDeclaredMethod("a", itemClass, View::class.java)
+            addRow.isAccessible = true
+
+            xposedModule.hook(addRow).intercept { chain ->
+                val result = chain.proceed()
+                // The row this module asks for goes through the same method, and is left alone.
+                if (addingExtraRow.get() != true) {
+                    try {
+                        addForceStopRow(
+                            menu = chain.thisObject,
+                            item = chain.args.getOrNull(0),
+                            anchor = chain.args.getOrNull(1),
+                            addRow = addRow,
+                            container = (chain.thisObject.reflect["c"]?.reflect["a"]) as? ViewGroup,
+                        )
+                    } catch (t: Throwable) {
+                        xlog(t)
+                    }
+                }
+                result
+            }
+            xlog("task menu: hook installed", priority = Log.INFO)
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
+
+    /** Whether a problem with the row has already been reported, so the log stays readable. */
+    private var reportedRowProblem = false
+
+    /**
+     * Appends the Force stop entry, unless the menu already carries one.
+     *
+     * The launcher builds one more row for the item it has just bound, and that row is then given
+     * this entry's name and action. Letting the launcher build it, rather than assembling a row
+     * here, is what keeps the entry in line with the rows beside it: their spacing, their text and
+     * their inset all come from the launcher's own row layout.
+     */
+    context(xposedModule: XposedModule)
+    private fun addForceStopRow(
+        menu: Any?,
+        item: Any?,
+        anchor: Any?,
+        addRow: Method,
+        container: ViewGroup?
+    ) {
+        if (item == null || container == null) {
+            reportRowProblem("no item or container, got item=$item container=$container")
+            return
+        }
+        val existing = addedRow?.get()
+        if (existing != null && existing.parent === container) return
+
+        val template = container.getChildAt(container.childCount - 1)
+        val templateLabel = template?.let { rowLabel(it) }
+        val packageName = taskPackage(item.reflect["c"])
+        if (template == null || templateLabel == null || packageName == null) {
+            reportRowProblem(
+                "row skipped, template=$template label=$templateLabel package=$packageName"
+            )
+            return
+        }
+
+        val row = extraRow(addRow, menu, item, anchor, container) ?: run {
+            reportRowProblem("the launcher added no row to rewrite")
+            return
+        }
+
+        val name = templateLabel.text?.toString().orEmpty()
+        if (renameRow(row, name).isEmpty()) {
+            reportRowProblem("the added row carries no name to change")
+            return
+        }
+
+        addedRow = WeakReference(row)
+        clickEverywhere(
+            row,
+            View.OnClickListener {
+                forceStop(row.context, packageName)
+                (menu as? PopupWindow)?.dismiss()
+            }
+        )
+        xlog("task menu: force stop row added for $packageName", priority = Log.INFO)
+
+        // The launcher writes a row's own name once more while it finishes the menu, which puts its
+        // name back over this one, so the name is set again behind that write.
+        Handler(Looper.getMainLooper()).post { renameRow(row, name) }
+    }
+
+    /**
+     * Names the row, by renaming every text view that still carries the launcher's own name for the
+     * entry, so a row holding its name more than once does not keep showing the old one.
+     */
+    private fun renameRow(row: View, launcherName: String): List<TextView> {
+        val targets = textViews(row).filter { it.text?.toString() == launcherName }
+        (targets.ifEmpty { listOfNotNull(rowLabel(row)) }).forEach { it.text = FORCE_STOP_LABEL }
+        return targets
+    }
+
+    /**
+     * The row the launcher builds for an item that has already had its row, which is the one this
+     * module takes over. The call goes back through the hook above, which leaves it alone.
+     */
+    context(xposedModule: XposedModule)
+    private fun extraRow(
+        addRow: Method,
+        menu: Any?,
+        item: Any,
+        anchor: Any?,
+        container: ViewGroup
+    ): View? {
+        val before = container.childCount
+        addingExtraRow.set(true)
+        try {
+            addRow.invoke(menu, item, anchor)
+        } catch (t: Throwable) {
+            xlog(t)
+        } finally {
+            addingExtraRow.set(false)
+        }
+        if (container.childCount <= before) return null
+        return container.getChildAt(container.childCount - 1)
+    }
+
+    /**
+     * Points a whole row at one action, its children included, so that no part of a row the launcher
+     * built for another entry can still answer to that entry's own action.
+     */
+    private fun clickEverywhere(view: View, action: View.OnClickListener) {
+        view.setOnClickListener(action)
+        view.isClickable = true
+        if (view is ViewGroup) {
+            for (index in 0 until view.childCount) clickEverywhere(view.getChildAt(index), action)
+        }
+    }
+
+    /** Every text view under a row, in the order they appear. */
+    private fun textViews(view: View): List<TextView> = when (view) {
+        is TextView -> listOf(view)
+        is ViewGroup -> (0 until view.childCount).flatMap { textViews(view.getChildAt(it)) }
+        else -> emptyList()
+    }
+
+    /** The text view a row shows as its entry name, which is the longest text it carries. */
+    private fun rowLabel(row: View): TextView? =
+        textViews(row)
+            .filter { it.visibility == View.VISIBLE && !it.text.isNullOrBlank() }
+            .maxWithOrNull(compareBy({ it.text.length }, { it.textSize }))
+
+    /** Says once why the row was not added, so the reason is visible without a flood of lines. */
+    context(xposedModule: XposedModule)
+    private fun reportRowProblem(reason: String) {
+        if (reportedRowProblem) return
+        reportedRowProblem = true
+        xlog("task menu: $reason", priority = Log.INFO)
+    }
+
+    /** Force stops a package. The launcher holds FORCE_STOP_PACKAGES, so this needs no root. */
+    context(xposedModule: XposedModule)
+    private fun forceStop(context: Context, packageName: String) {
+        val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE)
+        runCatching {
+            ActivityManager::class.java
+                .getDeclaredMethod("forceStopPackage", String::class.java)
+                .invoke(activityManager, packageName)
+        }.onFailure { xlog(it) }
+    }
+
+    /** The package a recents task belongs to, from whichever of its fields carries it. */
+    private fun taskPackage(task: Any?, depth: Int = 0): String? {
+        if (task == null || depth > 2) return null
+        if (task is ComponentName) return task.packageName
+        if (task is Intent) return task.component?.packageName
+        return task.javaClass.declaredFields.firstNotNullOfOrNull { field ->
+            try {
+                field.isAccessible = true
+                taskPackage(field.get(task), depth + 1)
+            } catch (t: Throwable) {
+                null
+            }
+        }
+    }
+
     private data class LauncherHookConfig(
         override val versionCode: Long,
         val gridItemDecorationClass: String,
