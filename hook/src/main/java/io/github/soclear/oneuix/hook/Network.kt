@@ -8,12 +8,19 @@ import android.os.Build
 import android.os.Handler
 import android.os.Message
 import android.os.SystemClock
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.ScaleXSpan
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
+import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
@@ -51,12 +58,15 @@ object Network {
     @SuppressLint("PrivateApi")
     @Suppress("DEPRECATION")
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun showSeparateUpDownNetworkSpeeds(
+    fun showCustomNetworkSpeed(
+        statusBar: Preference.SystemUI.StatusBar,
         intervalMillisecond: Long = 3000L,
-        thresholdKb: Int = 0
     ) = afterAttach {
         if (param.packageName != Package.SYSTEMUI || intervalMillisecond <= 0L) {
             return@afterAttach
+        }
+        val layout = NetworkSpeedOption.Layout.entries.getOrElse(statusBar.networkSpeedLayout) {
+            NetworkSpeedOption.Layout.SYSTEM
         }
         val netSpeedViewString = "${Package.SYSTEMUI}.statusbar.policy.NetspeedView"
         val controllerString = "${netSpeedViewString}Controller"
@@ -66,6 +76,7 @@ object Network {
         val messageInitial = 1
         val messageUpdate = 2
 
+        var speedView: TextView? = null
         var lastNetworkStats = NetworkStats(0L, 0L, emptySet())
         var lastUpdateTime = 0L
 
@@ -78,11 +89,9 @@ object Network {
             var totalRx = 0L
             val validInterfaces = mutableSetOf<String>()
             try {
-                // 获取设备上所有的网络接口
                 val networkInterfaces = NetworkInterface.getNetworkInterfaces()
                 while (networkInterfaces.hasMoreElements()) {
                     val networkInterface = networkInterfaces.nextElement()
-                    // 排除本地回环接口(lo)和VPN虚拟接口(tun)
                     if (networkInterface.isUp &&
                         !networkInterface.isVirtual &&
                         !networkInterface.isLoopback &&
@@ -95,57 +104,84 @@ object Network {
                     }
                 }
             } catch (t: Throwable) {
-                // 如果出错，回退到可能不准的方法，但至少不会崩溃
                 xlog(t)
             }
             return NetworkStats(totalTx, totalRx, validInterfaces)
         }
 
-        // 格式化网速，speed 为每秒字节数
+        val markerUp = if (statusBar.showNetworkSpeedArrows) NetworkSpeedOption.MARKERS_UP.getOrElse(statusBar.networkSpeedMarker) { "↑" } else ""
+        val markerDown = if (statusBar.showNetworkSpeedArrows) NetworkSpeedOption.MARKERS_DOWN.getOrElse(statusBar.networkSpeedMarker) { "↓" } else ""
+        val unit = NetworkSpeedOption.UNITS.getOrElse(statusBar.networkSpeedUnit) { NetworkSpeedOption.UNITS[0] }
+        val threshold = statusBar.networkSpeedThreshold
+        val textSizeSp = statusBar.networkSpeedTextSizeSp
+        val markerSizeSp = statusBar.networkSpeedMarkerSizeSp
+        val markerGap = statusBar.networkSpeedMarkerGap
+        val lineSpacingDp = statusBar.networkSpeedLineSpacingDp
+
         fun formatSpeed(bytesPerSecond: Float): String {
-            // 0 或负数显示为 "0B"
-            if (bytesPerSecond <= 0f) {
-                return "0B"
-            }
-            if (bytesPerSecond < 1024f) {
-                return "${bytesPerSecond.roundToInt()}B"
-            }
-            val kiBytesPerSecond = bytesPerSecond / 1024f
-            if (kiBytesPerSecond < 100f) {
-                return "%.2fK".format(kiBytesPerSecond)
-            }
-            if (kiBytesPerSecond < 1000f) {
-                return "%.1fK".format(kiBytesPerSecond)
-            }
-            val miBytesPerSecond = kiBytesPerSecond / 1024f
-            if (miBytesPerSecond < 100f) {
-                return "%.2fM".format(miBytesPerSecond)
-            }
-            return "%.1fM".format(miBytesPerSecond)
+            val scaled = if (unit.bits) bytesPerSecond * 8f else bytesPerSecond
+            if (scaled <= 0f) return "0${unit.byteSuffix}"
+            if (scaled < unit.base) return "${scaled.roundToInt()}${unit.byteSuffix}"
+            val kilos = scaled / unit.base
+            if (kilos < 100f) return "%.2f${unit.kiloPrefix}".format(kilos)
+            if (kilos < 1000f) return "%.1f${unit.kiloPrefix}".format(kilos)
+            val megas = kilos / unit.base
+            return if (megas < 100f) "%.2f${unit.megaPrefix}".format(megas) else "%.1f${unit.megaPrefix}".format(megas)
         }
 
-        fun shouldDisplayNetworkSpeed(
-            txBytesPerSecond: Float,
-            rxBytesPerSecond: Float,
-            thresholdKb: Int,
-        ): Boolean {
-            if (thresholdKb <= 0) return true
-            val thresholdBytesPerSecond = thresholdKb * 1024f
-            return txBytesPerSecond > thresholdBytesPerSecond ||
-                    rxBytesPerSecond > thresholdBytesPerSecond
+        fun shouldDisplay(tx: Float, rx: Float): Boolean {
+            if (threshold <= 0) return true
+            val thresholdBytes = threshold * unit.base / (if (unit.bits) 8f else 1f)
+            return tx > thresholdBytes || rx > thresholdBytes
         }
 
-        fun calculateSpeedString(
-            current: NetworkStats,
-            previous: NetworkStats,
-            actualIntervalSeconds: Float
-        ): String {
-            val txBytesPerSecond = (current.totalTx - previous.totalTx) / actualIntervalSeconds
-            val rxBytesPerSecond = (current.totalRx - previous.totalRx) / actualIntervalSeconds
-            if (!shouldDisplayNetworkSpeed(txBytesPerSecond, rxBytesPerSecond, thresholdKb)) {
-                return ""
+        fun appendReading(text: SpannableStringBuilder, marker: String, speed: String, extraGap: Float = 0f) {
+            if (marker.isNotEmpty()) {
+                val start = text.length
+                text.append(marker)
+                if (markerSizeSp > 0f) {
+                    text.setSpan(AbsoluteSizeSpan(markerSizeSp.roundToInt(), true), start, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
             }
-            return "${formatSpeed(txBytesPerSecond)}\u00A0\n${formatSpeed(rxBytesPerSecond)}\u00A0"
+            val gap = (if (marker.isNotEmpty()) markerGap else 0f) + extraGap
+            if (gap > 0f) {
+                val gapStart = text.length
+                text.append(" ")
+                if (gap != 1f) {
+                    text.setSpan(ScaleXSpan(gap), gapStart, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            }
+            text.append(speed)
+        }
+
+        fun calculateSpeedString(txBytesPerSec: Float, rxBytesPerSec: Float): CharSequence {
+            if (!shouldDisplay(txBytesPerSec, rxBytesPerSec)) return ""
+            val result = SpannableStringBuilder()
+            when (layout) {
+                NetworkSpeedOption.Layout.ACTIVE_DIRECTION -> {
+                    val isTx = txBytesPerSec >= rxBytesPerSec
+                    val speed = maxOf(txBytesPerSec, rxBytesPerSec)
+                    if (speed < 1f) return ""
+                    appendReading(result, if (isTx) markerUp else markerDown, formatSpeed(speed))
+                }
+                NetworkSpeedOption.Layout.SPLIT_HORIZONTAL -> {
+                    appendReading(result, markerUp, formatSpeed(txBytesPerSec))
+                    result.append(' ')
+                    appendReading(result, markerDown, formatSpeed(rxBytesPerSec))
+                }
+                else -> { // Layout.SPLIT_VERTICAL
+                    val speedUp = formatSpeed(txBytesPerSec)
+                    val speedDown = formatSpeed(rxBytesPerSec)
+                    val paint = speedView?.paint
+                    val wUp = paint?.measureText(speedUp) ?: 0f
+                    val wDown = paint?.measureText(speedDown) ?: 0f
+                    val spaceW = paint?.measureText(" ")?.takeIf { it > 0f } ?: 1f
+                    appendReading(result, markerUp, speedUp, if (wDown > wUp) (wDown - wUp) / spaceW else 0f)
+                    result.append('\u00A0').append('\n')
+                    appendReading(result, markerDown, speedDown, if (wUp > wDown) (wUp - wDown) / spaceW else 0f)
+                }
+            }
+            return result.append('\u00A0')
         }
 
         try {
@@ -173,14 +209,22 @@ object Network {
                                     currentTime > lastUpdateTime
                                 ) {
                                     val actualIntervalSeconds = (currentTime - lastUpdateTime) / 1000f
-                                    val speedString = calculateSpeedString(
-                                        currentNetworkStats,
-                                        lastNetworkStats,
-                                        actualIntervalSeconds
-                                    )
+                                    val tx = (currentNetworkStats.totalTx - lastNetworkStats.totalTx) / actualIntervalSeconds
+                                    val rx = (currentNetworkStats.totalRx - lastNetworkStats.totalRx) / actualIntervalSeconds
+                                    val speedString = calculateSpeedString(tx, rx)
 
                                     observable.reflect.call("setChanged")
-                                    observable.notifyObservers(speedString)
+                                    try {
+                                        observable.notifyObservers(speedString.toString())
+                                    } catch (t: Throwable) {
+                                        xlog(t)
+                                    }
+                                    if (speedString.isNotEmpty()) {
+                                        speedView?.apply {
+                                            visibility = View.VISIBLE
+                                            text = speedString
+                                        }
+                                    }
                                 }
 
                                 lastNetworkStats = currentNetworkStats
@@ -201,15 +245,36 @@ object Network {
                 val result = chain.proceed()
                 try {
                     (chain.thisObject.reflect["mContentView"] as? TextView)?.apply {
-                        setLines(2)
-                        gravity = Gravity.END
-                        textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+                        speedView = this
+                        setLines(if (layout == NetworkSpeedOption.Layout.SPLIT_VERTICAL) 2 else 1)
+                        gravity = Gravity.START
+                        textAlignment = View.TEXT_ALIGNMENT_VIEW_START
                         setTypeface(Typeface.MONOSPACE, Typeface.BOLD)
+                        if (textSizeSp > 0f) setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp)
+                        if (lineSpacingDp > 0f) {
+                            setLineSpacing(
+                                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, lineSpacingDp, resources.displayMetrics),
+                                1f
+                            )
+                        }
                     }
                 } catch (t: Throwable) {
                     xlog(t)
                 }
                 result
+            }
+
+            if (textSizeSp > 0f) {
+                val scaleViewMethod = netspeedViewClass.getDeclaredMethod("scaleView", Float::class.javaPrimitiveType)
+                xposedModule.hook(scaleViewMethod).intercept { chain ->
+                    val result = chain.proceed()
+                    try {
+                        speedView?.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp)
+                    } catch (t: Throwable) {
+                        xlog(t)
+                    }
+                    result
+                }
             }
         } catch (t: Throwable) {
             xlog(t)

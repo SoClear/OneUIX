@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
@@ -53,7 +54,8 @@ private const val ESIM_ADAPTER_SIM_BOTH = 2
 fun DetailPaneSystemUI(
     uiState: Preference.SystemUI,
     onEvent: (SystemUIEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToNetworkSpeed: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -273,61 +275,13 @@ fun DetailPaneSystemUI(
             icon = ImageVector.vectorResource(id = R.drawable.net_speed),
             title = stringResource(id = R.string.supportRealTimeNetworkSpeed_title),
             summary = stringResource(id = R.string.supportRealTimeNetworkSpeed_summary),
+            clickable = true,
+            onClick = onNavigateToNetworkSpeed,
             checked = uiState.statusBar.supportRealTimeNetworkSpeed,
             onCheckedChange = {
                 onEvent(SystemUIEvent.StatusBar.SupportRealTimeNetworkSpeed(it))
             }
         )
-        SwitchItem(
-            icon = ImageVector.vectorResource(id = R.drawable.net_speed),
-            title = stringResource(id = R.string.showSeparateUpDownNetworkSpeeds_title),
-            summary = stringResource(id = R.string.showSeparateUpDownNetworkSpeeds_summary),
-            checked = uiState.statusBar.showSeparateUpDownNetworkSpeeds,
-            onCheckedChange = {
-                onEvent(SystemUIEvent.StatusBar.ShowSeparateUpDownNetworkSpeeds(it))
-            }
-        )
-        Column {
-            var expanded by rememberSaveable { mutableStateOf(false) }
-            var threshold by remember {
-                mutableIntStateOf(uiState.statusBar.networkSpeedThresholdKb)
-            }
-            SwitchItem(
-                icon = ImageVector.vectorResource(id = R.drawable.net_speed),
-                title = stringResource(id = R.string.networkSpeedThreshold_title),
-                summary = if (uiState.statusBar.networkSpeedThresholdKb > 0) {
-                    "${uiState.statusBar.networkSpeedThresholdKb} KB/s"
-                } else null,
-                modifier = Modifier.animateContentSize(),
-                clickable = true,
-                onClick = { expanded = !expanded },
-                checked = uiState.statusBar.networkSpeedThresholdKb > 0,
-                onCheckedChange = {
-                    if (it && threshold == 0) threshold = 1
-                    if (!it) threshold = 0
-                    onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(threshold))
-                }
-            )
-            AnimatedVisibility(expanded && uiState.statusBar.networkSpeedThresholdKb > 0) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                    OutlinedTextField(
-                        value = threshold.toString(),
-                        onValueChange = { threshold = it.toIntOrNull()?.coerceAtLeast(1) ?: 1 },
-                        modifier = Modifier.weight(1f),
-                        label = { Text(stringResource(id = R.string.networkSpeedThreshold_label)) }
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(onClick = {
-                        onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(threshold))
-                    }) {
-                        Text(text = stringResource(id = R.string.confirm))
-                    }
-                }
-            }
-        }
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -984,6 +938,7 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
     PowerMenuAction.RESTART_SYSTEMUI -> CommonR.string.restartSystemUI
     PowerMenuAction.RESTART_RECOVERY -> CommonR.string.restartRecovery
     PowerMenuAction.RESTART_DOWNLOAD -> CommonR.string.restartDownload
+    PowerMenuAction.SOFT_REBOOT -> CommonR.string.softReboot
     else -> R.string.other
 }
 
@@ -1032,7 +987,28 @@ sealed interface SystemUIEvent {
         value class SupportRealTimeNetworkSpeed(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class ShowSeparateUpDownNetworkSpeeds(val value: Boolean) : StatusBar
+        value class NetworkSpeedLayout(val value: Int) : StatusBar
+
+        @JvmInline
+        value class ShowNetworkSpeedArrows(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedMarker(val value: Int) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedUnit(val value: Int) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedTextSize(val value: Float) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedMarkerSize(val value: Float) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedMarkerGap(val value: Float) : StatusBar
+
+        @JvmInline
+        value class NetworkSpeedLineSpacing(val value: Float) : StatusBar
 
         @JvmInline
         value class NetworkSpeedThreshold(val value: Int) : StatusBar
@@ -1331,25 +1307,15 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
             }
 
 
-            is SystemUIEvent.StatusBar.ShowSeparateUpDownNetworkSpeeds -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        statusBar = preference.systemUI.statusBar.copy(
-                            showSeparateUpDownNetworkSpeeds = event.value
-                        )
-                    )
-                )
-            }
-
-            is SystemUIEvent.StatusBar.NetworkSpeedThreshold -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        statusBar = preference.systemUI.statusBar.copy(
-                            networkSpeedThresholdKb = event.value
-                        )
-                    )
-                )
-            }
+            is SystemUIEvent.StatusBar.NetworkSpeedLayout -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLayout = event.value)))
+            is SystemUIEvent.StatusBar.ShowNetworkSpeedArrows -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(showNetworkSpeedArrows = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedMarker -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarker = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedUnit -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedUnit = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedTextSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedTextSizeSp = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedMarkerSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerSizeSp = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedMarkerGap -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerGap = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedLineSpacing -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLineSpacingDp = event.value)))
+            is SystemUIEvent.StatusBar.NetworkSpeedThreshold -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedThreshold = event.value)))
 
             is SystemUIEvent.StatusBar.SetStatusBarClockFormat -> {
                 preference.copy(

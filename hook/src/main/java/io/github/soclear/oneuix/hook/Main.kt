@@ -2,6 +2,7 @@ package io.github.soclear.oneuix.hook
 
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
+import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.ESIM
@@ -263,10 +264,8 @@ class Main : XposedModule() {
                     Network.supportRealTimeNetworkSpeed()
                 }
 
-                if (preference.systemUI.statusBar.showSeparateUpDownNetworkSpeeds) {
-                    Network.showSeparateUpDownNetworkSpeeds(
-                        thresholdKb = preference.systemUI.statusBar.networkSpeedThresholdKb
-                    )
+                if (preference.systemUI.statusBar.networkSpeedLayout != NetworkSpeedOption.Layout.SYSTEM.ordinal) {
+                    Network.showCustomNetworkSpeed(preference.systemUI.statusBar)
                 }
 
                 if (preference.systemUI.statusBar.setStatusBarClockFormat) {

@@ -3,4 +3,5 @@
     <string name="restartSystemUI">System UI 재시작</string>
     <string name="restartRecovery">리커버리 모드로 부팅</string>
     <string name="restartDownload">다운로드 모드로 부팅</string>
+    <string name="softReboot">소프트 재부팅</string>
 </resources>

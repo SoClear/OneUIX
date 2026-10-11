@@ -29,6 +29,7 @@
 
 #### Android 系统
 
+- 软重启
 - 禁用每 72 小时验证锁屏密码
 - 修改“保持打开”应用的最大数量
 - 可以禁用系统的通知类别
@@ -49,7 +50,7 @@
 - 隐藏电池图标
 - 显示电量文字
 - 支持显示实时网速
-- 状态栏显示上传下载网速
+- 状态栏显示上传下载网速：横向或纵向分割、仅显示当前方向，箭头样式、大小、间距可调，可选比特/字节与 1000/1024 进制
 - 设置状态栏日期时间格式
 - 设置状态栏时间大小
 - 状态栏时间每秒更新
@@ -68,6 +69,7 @@
 - 隐藏快捷设置的 Smart View
 - 开启快捷设置 5G 磁贴
 - 开启沉浸模式快捷设置磁贴
+- 户外模式快捷设置磁贴
 - 隐藏快捷设置面板的媒体播放器 Bar
 - 隐藏快捷设置面板的附近设备和设备控制 Bar
 - 隐藏快捷设置面板的安全底部提示 Bar
@@ -88,7 +90,7 @@
 
 ##### 其他
 
-- 自定义关机菜单按钮
+- 自定义关机菜单按钮（包括软重启）
 - 禁用截图声音
 - 隐藏音乐应用的实时活动
 - 允许所有旋转角度
@@ -173,6 +175,7 @@
 
 #### Android System
 
+- Soft reboot
 - Disable PIN verification every 72 hours
 - Modify max number of 'Keep open' apps
 - Allow disabling system notification categories
@@ -193,7 +196,7 @@
 - Hide battery icon
 - Show battery level text
 - Support displaying real-time network speed
-- Show separate upload/download speeds in status bar
+- Show upload and download speeds in status bar: split horizontally or vertically, or only active direction, with selectable markers, size, spacing, units and scale
 - Set status bar date and time format
 - Set status bar clock size
 - Update status bar clock every second
@@ -212,6 +215,7 @@
 - Hide Smart View in Quick Settings
 - Enable 5G Quick Settings tile
 - Enable Immersive mode Quick Settings tile
+- Outdoor mode Quick Settings tile
 - Hide Media Player bar in QS panel
 - Hide Nearby Devices and Device Control bar in QS panel
 - Hide Security footer bar in QS panel
@@ -232,7 +236,7 @@
 
 ##### Other
 
-- Customize power menu actions
+- Customize power menu actions (including soft reboot)
 - Disable screenshot sound
 - Hide ongoing activity for media apps
 - Allow all rotation angles

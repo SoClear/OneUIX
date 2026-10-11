@@ -21,6 +21,7 @@
         <package android:name="com.android.systemui" />
         <package android:name="com.samsung.android.app.notes" />
         <package android:name="com.samsung.android.app.sketchbook" />
+        <package android:name="com.samsung.android.app.telephonyui" />
         <package android:name="com.samsung.android.app.watchmanager" />
         <package android:name="com.samsung.android.calendar" />
         <package android:name="com.samsung.android.da.daagent" />
@@ -79,6 +80,25 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+        <service
+            android:name=".OutdoorModeTileService"
+            android:exported="true"
+            android:icon="@drawable/light_mode"
+            android:label="@string/outdoorModeQsTile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".TilePreferencesActivity"
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
