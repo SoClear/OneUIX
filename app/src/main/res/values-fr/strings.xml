@@ -21,11 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Masquer le symbole de pourcentage</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Masquer l\'icône de charge</string>
     <string name="supportRealTimeNetworkSpeed_title">Afficher la vitesse du réseau en temps réel</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Paramètres -> Notifications -> Paramètres avancés -> Afficher la vitesse du réseau</string>
-    <string name="showSeparateUpDownNetworkSpeeds_title">Afficher les vitesses d\'envoi/téléchargement (Barre d\'état)</string>
-    <string name="showSeparateUpDownNetworkSpeeds_summary">Ligne supérieure pour l\'envoi, ligne inférieure pour le téléchargement</string>
-    <string name="networkSpeedThreshold_title">Seuil d\'affichage de la vitesse réseau</string>
-    <string name="networkSpeedThreshold_label">Seuil (Ko/s)</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Paramètres -> Notifications -> Paramètres avancés -> Afficher la vitesse du réseau\nAppuyez pour accéder à plus de paramètres</string>
     <string name="turnOn5gQsTile_title">Activer la tuile 5G dans les paramètres rapides</string>
     <string name="turnOn5gQsTile_summary">Nécessite de cocher l\'UI système et les paramètres d\'appel</string>
     <string name="root5gQsTile_summary">Veuillez accorder l\'accès root à cette application, puis ajoutez manuellement la tuile 5G</string>

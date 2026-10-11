@@ -20,6 +20,7 @@ data class PowerMenuAction(
         const val RESTART_SYSTEMUI = "restart_systemui"
         const val RESTART_RECOVERY = "restart_recovery"
         const val RESTART_DOWNLOAD = "restart_download"
+        const val SOFT_REBOOT = "soft_reboot"
 
         val DEFAULT_ORDER: List<String> = listOf(
             POWER,
@@ -34,6 +35,7 @@ data class PowerMenuAction(
             RESTART_SYSTEMUI,
             RESTART_RECOVERY,
             RESTART_DOWNLOAD,
+            SOFT_REBOOT,
         )
 
         fun defaultPreferences(): List<PowerMenuAction> =

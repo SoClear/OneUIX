@@ -21,11 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">백분율 기호 숨기기</string>
     <string name="hideBatteryLevelTextChargingIcon_title">충전 아이콘 숨기기</string>
     <string name="supportRealTimeNetworkSpeed_title">실시간 네트워크 속도 표시</string>
-    <string name="supportRealTimeNetworkSpeed_summary">설정 -&gt; 알림 -&gt; 고급 설정 -&gt; 실시간 네트워크 속도 표시</string>
-    <string name="showSeparateUpDownNetworkSpeeds_title">상태바에 업로드/다운로드 속도 분리 표시</string>
-    <string name="showSeparateUpDownNetworkSpeeds_summary">위쪽은 업로드 속도, 아래쪽은 다운로드 속도로 표시됩니다</string>
-    <string name="networkSpeedThreshold_title">네트워크 속도 표시 임계값</string>
-    <string name="networkSpeedThreshold_label">임계값 (KB/s)</string>
+    <string name="supportRealTimeNetworkSpeed_summary">설정 -&gt; 알림 -&gt; 고급 설정 -&gt; 실시간 네트워크 속도 표시\n탭하여 추가 설정으로 이동</string>
     <string name="turnOn5gQsTile_title">5G 빠른 설정 버튼 활성화</string>
     <string name="turnOn5gQsTile_summary">System UI 및 통화 설정을 모두 체크해야 합니다</string>
     <string name="root5gQsTile_summary">이 앱에 루팅(Root) 권한을 부여한 후, 수동으로 5G 버튼을 추가해 주세요</string>

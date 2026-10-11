@@ -21,11 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Скрыть символ процента</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Скрыть иконку зарядки</string>
     <string name="supportRealTimeNetworkSpeed_title">Отображение скорости сети в реальном времени</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Настройки -> Уведомления -> Дополнительные параметры -> Скорость сети в реальном времени</string>
-    <string name="showSeparateUpDownNetworkSpeeds_title">Раздельная скорость приема/передачи в строке состояния</string>
-    <string name="showSeparateUpDownNetworkSpeeds_summary">Сверху — выгрузка, снизу — загрузка</string>
-    <string name="networkSpeedThreshold_title">Порог отображения скорости сети</string>
-    <string name="networkSpeedThreshold_label">Порог (КБ/с)</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Настройки -> Уведомления -> Дополнительные параметры -> Скорость сети в реальном времени\nНажмите, чтобы открыть дополнительные настройки</string>
     <string name="turnOn5gQsTile_title">Включить плитку 5G в быстрых настройках</string>
     <string name="turnOn5gQsTile_summary">Требуется выбрать «System UI» и «Настройки вызовов» в LSPosed</string>
     <string name="root5gQsTile_summary">Предоставьте Root-права приложению, затем добавьте плитку 5G вручную</string>

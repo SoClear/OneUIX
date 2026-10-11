@@ -4,11 +4,15 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -16,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -26,6 +31,7 @@ import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SwitchItem
 import kotlin.math.roundToInt
+import io.github.soclear.oneuix.common.R as CommonR
 
 @Composable
 fun DetailPaneAndroid(
@@ -38,6 +44,16 @@ fun DetailPaneAndroid(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
+        Button(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                runCatching { ProcessBuilder("su", "-c", "setprop ctl.restart zygote").start() }
+            }
+        ) {
+            Text(text = stringResource(CommonR.string.softReboot))
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.lock_clock),
             title = stringResource(id = R.string.disablePinVerifyPer72h_title),
