@@ -19,6 +19,10 @@ jobs:
           java-version: '25'
           cache: gradle
       - uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: '16111833'
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Install Android SDK
         run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
       - name: Keep the test signing key across builds
