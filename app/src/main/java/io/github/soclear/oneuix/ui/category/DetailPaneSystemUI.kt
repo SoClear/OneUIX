@@ -576,6 +576,17 @@ fun DetailPaneSystemUI(
                 }
             )
         }
+        if (ONE_UI_VERSION >= 90000) {
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.audio_eraser),
+                title = stringResource(id = R.string.audioEraserQsTile_title),
+                summary = stringResource(id = R.string.audioEraserQsTile_summary),
+                checked = uiState.qs.audioEraserQsTile,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.QS.AudioEraserQsTile(it))
+                }
+            )
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ListItem(
                 headlineContent = { Text(stringResource(id = R.string.turnOn5gQsTile_title)) },
@@ -1073,6 +1084,9 @@ sealed interface SystemUIEvent {
         value class TurnOn5gQsTile(val value: Boolean) : QS
 
         @JvmInline
+        value class AudioEraserQsTile(val value: Boolean) : QS
+
+        @JvmInline
         value class HideQsBarMediaPlayer(val value: Boolean) : QS
 
         @JvmInline
@@ -1502,6 +1516,14 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                         qs = preference.systemUI.qs.copy(
                             turnOn5gQsTile = event.value
                         )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.AudioEraserQsTile -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(audioEraserQsTile = event.value)
                     )
                 )
             }

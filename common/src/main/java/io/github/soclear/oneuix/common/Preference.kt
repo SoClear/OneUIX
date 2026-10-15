@@ -82,6 +82,7 @@ data class Preference(
             val hideDeviceControlQsTile: Boolean = false,
             val hideSmartViewQsTile: Boolean = false,
             val turnOn5gQsTile: Boolean = false,
+            val audioEraserQsTile: Boolean = false,
             val hideQsBarMediaPlayer: Boolean = false,
             val hideQsBarNearbyDevicesAndDeviceControl: Boolean = false,
             val hideQsBarSecurityFooter: Boolean = false,

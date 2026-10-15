@@ -31,4 +31,5 @@ android {
 dependencies {
     implementation(libs.kotlinx.serialization.json)
     compileOnly(project(":stub"))
+    testImplementation(libs.junit)
 }

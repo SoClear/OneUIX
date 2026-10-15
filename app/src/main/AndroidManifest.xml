@@ -63,6 +63,19 @@
             </intent-filter>
         </activity>
         <service
+            android:name=".AudioEraserTileService"
+            android:exported="true"
+            android:icon="@drawable/audio_eraser"
+            android:label="@string/audioEraserQsTile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+        </service>
+        <service
             android:name=".FiveGTileService"
             android:exported="true"
             android:icon="@drawable/five_g"

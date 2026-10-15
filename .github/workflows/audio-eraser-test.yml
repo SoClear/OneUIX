@@ -1,0 +1,57 @@
+name: Audio eraser test APK
+
+on:
+  push:
+    branches: [feat/audio-eraser-tile]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '25'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK
+        run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
+      - name: Keep the test signing key across builds
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: oneuix-audio-eraser-debug-keystore-v1
+      - name: Label the separate test app
+        run: |
+          mkdir -p app/src/debug/res/values
+          cat > app/src/debug/res/values/audio_eraser_test.xml <<'XML'
+          <resources><string name="app_name">OneUIX Audio eraser test</string></resources>
+          XML
+      - name: Test, check hooks, and build installable APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :common:testDebugUnitTest :app:testDebugUnitTest :hook:lintDebug :app:assembleDebug -Poneuix.applicationId=io.github.cybr47.oneuix.audioeraser
+      - name: Name APK
+        run: mv app/build/outputs/apk/debug/app-debug.apk OneUIX-AudioEraser-Test.apk
+      - name: Upload test APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: OneUIX-AudioEraser-Test
+          path: OneUIX-AudioEraser-Test.apk
+          retention-days: 15
+      - name: Upload test and lint reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: AudioEraser-check-reports
+          path: |
+            common/build/reports/tests/
+            app/build/reports/tests/
+            hook/build/reports/lint-results-debug.*
+          if-no-files-found: ignore
+          retention-days: 15

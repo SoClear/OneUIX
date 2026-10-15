@@ -193,4 +193,7 @@
     <string name="supportBixbyCustomWakeup_summary">Enable custom phrases and retry Chinese model downloads on unsupported devices. Enable Bixby Agent and Voice wake-up in the module scope, then restart both apps.</string>
     <string name="bypassBixbyWakeWordRestrictions_title">Relax wake-up phrase restrictions</string>
     <string name="bypassBixbyWakeWordRestrictions_summary">Allow additional phrase text. Voice recording and model validation still apply.</string>
+    <string name="audioEraserQsTile_label">Audio eraser</string>
+    <string name="audioEraserQsTile_title">Use an Audio eraser QS tile</string>
+    <string name="audioEraserQsTile_summary">Replace the automatic banner with a movable, resizable tile. Restart SystemUI, then add Audio eraser from the quick panel editor. Tap the icon to toggle; expand or long-press for Samsung’s controls. The tile stays greyed out when unavailable. Requires Samsung Audio eraser support.</string>
 </resources>
