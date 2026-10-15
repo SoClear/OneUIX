@@ -83,6 +83,8 @@ data class Preference(
             val hideSmartViewQsTile: Boolean = false,
             val turnOn5gQsTile: Boolean = false,
             val audioEraserQsTile: Boolean = false,
+            // Older configurations used the tile option to hide the banner too.
+            val hideAudioEraserBanner: Boolean = audioEraserQsTile,
             val hideQsBarMediaPlayer: Boolean = false,
             val hideQsBarNearbyDevicesAndDeviceControl: Boolean = false,
             val hideQsBarSecurityFooter: Boolean = false,
@@ -95,7 +97,10 @@ data class Preference(
             val showTraditionalChineseDateOnQS: Boolean = false,
             val modifyQSClockTextSize: Boolean = false,
             val qsClockTextSize: Float = 32f,
-        )
+        ) {
+            val audioEraserQsTileEnabled: Boolean
+                get() = hideAudioEraserBanner && audioEraserQsTile
+        }
 
         @Serializable
         data class AOD(

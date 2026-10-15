@@ -64,6 +64,7 @@
         </activity>
         <service
             android:name=".AudioEraserTileService"
+            android:enabled="false"
             android:exported="true"
             android:icon="@drawable/audio_eraser"
             android:label="@string/audioEraserQsTile_label"

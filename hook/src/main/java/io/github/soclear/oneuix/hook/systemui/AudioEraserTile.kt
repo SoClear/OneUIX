@@ -21,6 +21,18 @@ object AudioEraserTile {
     private const val BANNER_PACKAGE = "com.android.systemui.samsung.quicksetting.ui.banner."
 
     context(xposedModule: XposedModule)
+    fun hideBanner() = afterAttachTry(ONE_UI_VERSION >= 90000) {
+        val bannerTransform = classLoader.loadClass(BANNER_PACKAGE + "TopBannerViewModel\$1\$1")
+            .declaredMethods.single { it.name == "invoke" && it.parameterCount == 5 }
+        // Hiding the banner needs no controller, playback tracking, or tile hooks.
+        xposedModule.hook(bannerTransform).intercept { chain ->
+            val args = chain.args.toTypedArray()
+            args[3] = false
+            chain.proceed(args)
+        }
+    }
+
+    context(xposedModule: XposedModule)
     fun install() = afterAttachTry(ONE_UI_VERSION >= 90000) {
         Bridge(xposedModule, classLoader).install()
     }
@@ -54,8 +66,6 @@ object AudioEraserTile {
             val baseClass = requireNotNull(customTileClass.superclass)
             val longClick = baseClass.reflect.findMethodExact("handleLongClick", expandable)
             val secondaryClick = baseClass.reflect.findMethodExact("handleSecondaryClick", expandable)
-            val bannerTransform = loader.loadClass(BANNER_PACKAGE + "TopBannerViewModel\$1\$1")
-                .declaredMethods.single { it.name == "invoke" && it.parameterCount == 5 }
             val updates = nativeClass.declaredMethods.filter {
                 it.name in setOf("updateEnabled", "updateMode", "updatePackageName", "updatePackageLabel", "updatePlaybackAllowed")
             }
@@ -132,14 +142,6 @@ object AudioEraserTile {
             module.hook(customTileClass.getDeclaredMethod("handleDestroy")).intercept { chain ->
                 synchronized(tiles) { tiles.remove(chain.thisObject) }
                 chain.proceed()
-            }
-            // Remove only Audio Eraser from the banner's presentation inputs.
-            module.hook(bannerTransform).intercept { chain ->
-                if (ready) {
-                    val args = chain.args.toTypedArray()
-                    args[3] = false
-                    chain.proceed(args)
-                } else chain.proceed()
             }
         }
 

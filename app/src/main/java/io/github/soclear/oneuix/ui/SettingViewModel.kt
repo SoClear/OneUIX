@@ -7,7 +7,9 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.soclear.oneuix.AudioEraserTileService
 import io.github.soclear.oneuix.common.IgnoreUnknownKeysJson
+import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.category.Category
 import io.github.soclear.oneuix.ui.category.CategoryAppInfo
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,7 +54,14 @@ class SettingViewModel(application: Application) : ViewModel() {
 
     private val dataStore: DataStore<Preference> = application.dataStore
 
-    val preference = dataStore.data.stateIn(
+    val preference = dataStore.data.onEach { preference ->
+        withContext(Dispatchers.IO) {
+            AudioEraserTileService.setEnabled(
+                application,
+                ONE_UI_VERSION >= 90000 && preference.systemUI.qs.audioEraserQsTileEnabled
+            )
+        }
+    }.stateIn(
         scope = viewModelScope, started = SharingStarted.Eagerly, initialValue = Preference()
     )
 

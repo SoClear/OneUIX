@@ -347,7 +347,11 @@ class Main : XposedModule() {
                     Network.turnOn5gQsTile()
                 }
 
-                if (preference.systemUI.qs.audioEraserQsTile) {
+                if (preference.systemUI.qs.hideAudioEraserBanner) {
+                    AudioEraserTile.hideBanner()
+                }
+
+                if (preference.systemUI.qs.audioEraserQsTileEnabled) {
                     AudioEraserTile.install()
                 }
 
