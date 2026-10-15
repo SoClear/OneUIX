@@ -6,8 +6,8 @@ object AudioEraserTileState {
     const val INACTIVE = 1
     const val ACTIVE = 2
 
-    fun resolve(enabled: Boolean, packageName: String?, mode: Int): Int = when {
-        !enabled || packageName.isNullOrBlank() || mode !in 0..1 -> UNAVAILABLE
+    fun resolve(enabled: Boolean, playbackAllowed: Boolean, packageName: String?, mode: Int): Int = when {
+        !enabled || !playbackAllowed || packageName.isNullOrBlank() || mode !in 0..1 -> UNAVAILABLE
         mode == 1 -> ACTIVE
         else -> INACTIVE
     }

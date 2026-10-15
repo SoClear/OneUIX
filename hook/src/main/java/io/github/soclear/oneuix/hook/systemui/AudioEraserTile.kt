@@ -1,11 +1,8 @@
 package io.github.soclear.oneuix.hook.systemui
 
 import android.content.ComponentName
-import android.content.SharedPreferences
 import android.os.Handler
 import android.os.Looper
-import android.service.quicksettings.Tile
-import android.widget.Switch
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.common.AudioEraserTileState
 import io.github.soclear.oneuix.common.BuildConfig
@@ -13,144 +10,132 @@ import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
+import java.lang.ref.WeakReference
 import java.lang.reflect.Proxy
 import java.util.Collections
 import java.util.WeakHashMap
+import java.util.concurrent.atomic.AtomicBoolean
 
-/** Bridges our editable CustomTile to the existing One UI 9 AudioEraser instance. */
 object AudioEraserTile {
+    private const val SERVICE_CLASS = "io.github.soclear.oneuix.AudioEraserTileService"
     private const val BANNER_PACKAGE = "com.android.systemui.samsung.quicksetting.ui.banner."
-    private const val TILE_SERVICE = "io.github.soclear.oneuix.AudioEraserTileService"
 
     context(xposedModule: XposedModule)
     fun install() = afterAttachTry(ONE_UI_VERSION >= 90000) {
-        Bridge { xlog("Audio eraser QS tile", it) }.install(xposedModule, classLoader)
+        Bridge(xposedModule, classLoader).install()
     }
 
-    private class Bridge(private val report: (Throwable) -> Unit) {
-        private val main = Handler(Looper.getMainLooper())
-        private val tiles = Collections.synchronizedMap(WeakHashMap<Any, Unit>())
-        @Volatile private var audioEraser: Any? = null
-        @Volatile private var hooksReady = false
-        private var preferences: SharedPreferences? = null
-        private var reportedError = false
-        private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
-            refreshTiles()
-        }
-        private val refresh = Runnable {
-            val snapshot = synchronized(tiles) { tiles.keys.toList() }
+    private class Bridge(
+        private val module: XposedModule,
+        private val loader: ClassLoader,
+    ) {
+        private val handler = Handler(Looper.getMainLooper())
+        private val tiles = Collections.newSetFromMap(WeakHashMap<Any, Boolean>())
+        private val reportedFailure = AtomicBoolean()
+        private val customTileClass = loader.loadClass("com.android.systemui.qs.external.CustomTile")
+        private val nativeClass = loader.loadClass(BANNER_PACKAGE + "AudioEraser")
+        private val onModeClass = loader.loadClass(BANNER_PACKAGE + "AudioEraser\$Mode\$On")
+        private val offModeClass = loader.loadClass(BANNER_PACKAGE + "AudioEraser\$Mode\$Off")
+        @Volatile private var controller = WeakReference<Any>(null)
+        @Volatile private var ready = false
+
+        private val refreshTiles = Runnable {
+            val snapshot = synchronized(tiles) { tiles.toList() }
             snapshot.forEach { tile -> safely { tile.reflect.call("refreshState", null) } }
         }
 
-        fun install(module: XposedModule, loader: ClassLoader) {
-            // Resolve the complete contract first. An unsupported firmware keeps its stock banner.
-            val audioClass = loader.loadClass(BANNER_PACKAGE + "AudioEraser")
-            val tileClass = loader.loadClass("com.android.systemui.qs.external.CustomTile")
-            val samsungTileClass = loader.loadClass("com.android.systemui.qs.tileimpl.SQSTileImpl")
+        fun install() {
+            val expandable = loader.loadClass("com.android.systemui.animation.Expandable")
             val stateClass = loader.loadClass("com.android.systemui.plugins.qs.QSTile\$State")
-            val expandableClass = loader.loadClass("com.android.systemui.animation.Expandable")
+            val constructor = nativeClass.declaredConstructors.single()
+            val updateState = customTileClass.getDeclaredMethod("handleUpdateState", stateClass, Any::class.java)
+            val click = customTileClass.getDeclaredMethod("handleClick", expandable)
+            val detailAdapter = customTileClass.getDeclaredMethod("getDetailAdapter")
+            val baseClass = requireNotNull(customTileClass.superclass)
+            val longClick = baseClass.reflect.findMethodExact("handleLongClick", expandable)
+            val secondaryClick = baseClass.reflect.findMethodExact("handleSecondaryClick", expandable)
             val bannerTransform = loader.loadClass(BANNER_PACKAGE + "TopBannerViewModel\$1\$1")
-            val transform = bannerTransform.declaredMethods.single {
-                it.name == "invoke" && it.parameterCount == 5
+                .declaredMethods.single { it.name == "invoke" && it.parameterCount == 5 }
+            val updates = nativeClass.declaredMethods.filter {
+                it.name in setOf("updateEnabled", "updateMode", "updatePackageName", "updatePackageLabel", "updatePlaybackAllowed")
             }
-            val update = tileClass.getDeclaredMethod("handleUpdateState", stateClass, Any::class.java)
-            val click = tileClass.getDeclaredMethod("handleClick", expandableClass)
-            val longClick = tileClass.getDeclaredMethod("handleLongClick", expandableClass)
-            val secondaryClick = samsungTileClass.getDeclaredMethod("handleSecondaryClick", expandableClass)
-            val detail = tileClass.getDeclaredMethod("getDetailAdapter")
-            val updateMode = audioClass.declaredMethods.single { it.name == "updateMode" }
-            audioClass.getDeclaredMethod("getPreferences")
-            audioClass.getDeclaredMethod("getPerformIconClickAction")
-            audioClass.getDeclaredMethod("getPerformClickAction")
-            audioClass.getDeclaredMethod("isIAEApp")
-            audioClass.getDeclaredField("detailAdapter")
-            audioClass.getDeclaredField("_mode")
-            tileClass.getDeclaredField("mComponent")
-            tileClass.getDeclaredField("mTile")
-            val function0 = loader.loadClass("kotlin.jvm.functions.Function0")
-            val function1 = loader.loadClass("kotlin.jvm.functions.Function1")
-            val unit = loader.loadClass("kotlin.Unit").getField("INSTANCE").get(null)
-            val invoke = function1.getMethod("invoke", Any::class.java)
+            require(updates.size == 5)
+            listOf("_enabled", "_mode", "_packageName", "_packageLabel", "_playbackAllowed", "detailAdapter")
+                .forEach { nativeClass.getDeclaredField(it) }
+            customTileClass.getDeclaredField("mComponent")
+            listOf("state", "label", "secondaryLabel", "contentDescription", "handlesLongClick", "handlesSecondaryClick", "dualTarget")
+                .forEach { stateClass.getDeclaredField(it) }
 
-            audioClass.declaredConstructors.forEach { constructor ->
-                module.hook(constructor).intercept { chain ->
+            module.hook(constructor).intercept { chain ->
+                val result = chain.proceed()
+                safely {
+                    val native = requireNotNull(chain.thisObject)
+                    controller = WeakReference(native)
+                    available(native)
+                    ready = true
+                    scheduleRefresh()
+                }
+                result
+            }
+            updates.forEach { method ->
+                module.hook(method).intercept { chain ->
                     val result = chain.proceed()
-                    safely {
-                        val controller = chain.thisObject
-                        val prefs = controller.reflect.call("getPreferences") as SharedPreferences
-                        synchronized(this) {
-                            preferences?.unregisterOnSharedPreferenceChangeListener(preferenceListener)
-                            preferences = prefs
-                            audioEraser = controller
-                            prefs.registerOnSharedPreferenceChangeListener(preferenceListener)
-                        }
-                        refreshTiles()
-                    }
+                    scheduleRefresh()
                     result
                 }
             }
-            module.hook(updateMode).intercept { chain ->
+            module.hook(updateState).intercept { chain ->
                 val result = chain.proceed()
-                refreshTiles()
-                result
-            }
-            module.hook(update).intercept { chain ->
-                val result = chain.proceed()
-                if (isOurTile(chain.thisObject)) {
-                    tiles[chain.thisObject] = Unit
-                    safely { updateTile(chain.thisObject, chain.args[0]!!) }
+                val tile = chain.thisObject
+                if (tile != null && isOurTile(tile)) safely {
+                    synchronized(tiles) { tiles.add(tile) }
+                    val native = controller.get()
+                    val status = if (ready && native != null) nativeState(native) else AudioEraserTileState.UNAVAILABLE
+                    val available = status != AudioEraserTileState.UNAVAILABLE
+                    val active = status == AudioEraserTileState.ACTIVE
+                    val state = requireNotNull(chain.args[0])
+                    state.reflect["state"] = status
+                    // The editable service is toggleable; keep accessibility's BooleanState in sync.
+                    if (state.javaClass.simpleName == "BooleanState") {
+                        state.reflect["value"] = active
+                    }
+                    if (native != null) {
+                        state.reflect["label"] = native.reflect.call("getTitle")
+                        state.reflect["secondaryLabel"] = if (available) value(native, "_packageLabel") else null
+                    }
+                    state.reflect["contentDescription"] = state.reflect["label"]
+                    state.reflect["handlesLongClick"] = available
+                    state.reflect["handlesSecondaryClick"] = available
+                    state.reflect["dualTarget"] = available
                 }
                 result
             }
-            module.hook(detail).intercept { chain ->
-                if (isOurTile(chain.thisObject)) {
-                    // IAE apps intentionally have no extra settings in Samsung's own UI.
-                    val controller = audioEraser
-                    if (controller != null && tileState() != AudioEraserTileState.UNAVAILABLE &&
-                        runCatching { controller.reflect.call("isIAEApp") == false }.getOrDefault(false)
-                    ) {
-                        runCatching { controller.reflect["detailAdapter"] }.getOrNull()
-                    } else null
+            module.hook(click).intercept { chain ->
+                if (chain.thisObject?.let(::isOurTile) == true) {
+                    performAction("performIconClickAction")
+                    null
                 } else chain.proceed()
             }
-            listOf(click, longClick, secondaryClick).forEach { method ->
+            listOf(longClick, secondaryClick).distinct().forEach { method ->
                 module.hook(method).intercept { chain ->
-                    if (isOurTile(chain.thisObject)) {
-                        // QSTile callbacks run off the main thread. Samsung's detail UI requires main.
-                        val isToggle = method == click
-                        main.post {
-                            safely {
-                                val controller = audioEraser
-                                if (controller != null && tileState() != AudioEraserTileState.UNAVAILABLE) {
-                                    val action = controller.reflect.call(
-                                        if (isToggle) "getPerformIconClickAction" else "getPerformClickAction"
-                                    )
-                                    val logger = Proxy.newProxyInstance(loader, arrayOf(function0)) { proxy, called, args ->
-                                        when (called.name) {
-                                            "invoke" -> {
-                                                controller.reflect.call(if (isToggle) "logIconClickAction" else "logClickAction")
-                                                unit
-                                            }
-                                            "toString" -> "OneUIX Audio eraser callback"
-                                            "hashCode" -> System.identityHashCode(proxy)
-                                            "equals" -> proxy === args?.firstOrNull()
-                                            else -> null
-                                        }
-                                    }
-                                    // Use the original actions, including Samsung account checks and policy.
-                                    invoke.invoke(action, logger)
-                                }
-                            }
-                        }
+                    if (chain.thisObject?.let(::isOurTile) == true) {
+                        performAction("performIconLongClickAction")
                         null
                     } else chain.proceed()
                 }
             }
-            hooksReady = true
-            // Remove only Audio eraser from the banner's input. Other call/video banners and the
-            // AudioEraser model's playback flows keep running. No Compose view/spacing hacks.
-            module.hook(transform).intercept { chain ->
-                if (hooksReady && audioEraser != null) {
+            module.hook(detailAdapter).intercept { chain ->
+                if (chain.thisObject?.let(::isOurTile) == true) {
+                    controller.get()?.takeIf { ready && available(it) }?.reflect?.get("detailAdapter")
+                } else chain.proceed()
+            }
+            module.hook(customTileClass.getDeclaredMethod("handleDestroy")).intercept { chain ->
+                synchronized(tiles) { tiles.remove(chain.thisObject) }
+                chain.proceed()
+            }
+            // Remove only Audio Eraser from the banner's presentation inputs.
+            module.hook(bannerTransform).intercept { chain ->
+                if (ready) {
                     val args = chain.args.toTypedArray()
                     args[3] = false
                     chain.proceed(args)
@@ -158,63 +143,63 @@ object AudioEraserTile {
             }
         }
 
-        private fun isOurTile(tile: Any): Boolean = runCatching {
-            val component = tile.reflect["mComponent"] as? ComponentName
-            component?.packageName == BuildConfig.MODULE_APPLICATION_ID && component.className == TILE_SERVICE
-        }.getOrDefault(false)
+        private fun isOurTile(tile: Any): Boolean {
+            if (!customTileClass.isInstance(tile)) return false
+            val component = tile.reflect["mComponent"] as? ComponentName ?: return false
+            return component.packageName == BuildConfig.MODULE_APPLICATION_ID && component.className == SERVICE_CLASS
+        }
 
-        private fun tileState(): Int {
-            val controller = audioEraser ?: return AudioEraserTileState.UNAVAILABLE
-            val prefs = preferences ?: return AudioEraserTileState.UNAVAILABLE
-            val mode = runCatching {
-                val value = controller.reflect["_mode"]!!.reflect.call("getValue")
-                when (value?.javaClass?.simpleName) {
-                    "Off" -> 0
-                    "On" -> 1
+        private fun value(native: Any, field: String): Any? =
+            native.reflect.getNonNull<Any>(field).reflect.call("getValue")
+
+        private fun available(native: Any): Boolean = nativeState(native) != AudioEraserTileState.UNAVAILABLE
+
+        private fun nativeState(native: Any): Int {
+            // Read the same live StateFlows as Samsung's banner, not their persisted preferences.
+            val mode = value(native, "_mode")
+            return AudioEraserTileState.resolve(
+                enabled = value(native, "_enabled") == true,
+                playbackAllowed = value(native, "_playbackAllowed") == true,
+                packageName = value(native, "_packageName") as? String,
+                mode = when {
+                    onModeClass.isInstance(mode) -> 1
+                    offModeClass.isInstance(mode) -> 0
                     else -> 2
                 }
-            }.getOrDefault(2)
-            return AudioEraserTileState.resolve(
-                prefs.getBoolean("audio_eraser_enabled", false),
-                prefs.getString("audio_eraser_package_name", null),
-                mode
             )
         }
 
-        private fun updateTile(tile: Any, state: Any) {
-            val status = tileState()
-            val nativeTile = tile.reflect["mTile"] as? Tile
-            nativeTile?.state = status
-            state.reflect["state"] = status
-            state.reflect["dualTarget"] = true
-            val controller = audioEraser
-            val title = controller?.reflect?.call("getTitle") as? CharSequence ?: nativeTile?.label
-            val subtitle = preferences?.getString("audio_eraser_package_label", "")
-                ?.takeIf { status != AudioEraserTileState.UNAVAILABLE && it.isNotBlank() }
-            state.reflect["label"] = title
-            state.reflect["secondaryLabel"] = subtitle
-            state.reflect["contentDescription"] = listOfNotNull(title, subtitle).joinToString(", ")
-            // CustomTile uses BooleanState when TOGGLEABLE_TILE metadata has been read.
-            if (state.javaClass.simpleName == "BooleanState") {
-                state.reflect["value"] = status == AudioEraserTileState.ACTIVE
-                state.reflect["expandedAccessibilityClassName"] = Switch::class.java.name
+        private fun performAction(field: String) {
+            handler.post {
+                safely {
+                    val native = controller.get() ?: return@safely
+                    if (!ready || !available(native)) return@safely
+                    val function0 = loader.loadClass("kotlin.jvm.functions.Function0")
+                    val unit = loader.loadClass("kotlin.Unit").getField("INSTANCE").get(null)
+                    val callback = Proxy.newProxyInstance(loader, arrayOf(function0)) { proxy, method, args ->
+                        when (method.name) {
+                            "invoke" -> unit
+                            "hashCode" -> System.identityHashCode(proxy)
+                            "equals" -> proxy === args?.firstOrNull()
+                            else -> "OneUIX Audio Eraser action"
+                        }
+                    }
+                    native.reflect.getNonNull<Any>(field).reflect.call("invoke", callback)
+                }
             }
         }
 
-        private fun refreshTiles() {
-            main.removeCallbacks(refresh)
-            main.post(refresh)
+        private fun scheduleRefresh() {
+            handler.removeCallbacks(refreshTiles)
+            handler.post(refreshTiles)
         }
 
-        private inline fun safely(block: () -> Unit) {
+        private inline fun safely(action: () -> Unit) {
             try {
-                block()
+                action()
             } catch (t: Throwable) {
-                // Hooks must never propagate a compatibility failure into SystemUI.
-                if (!reportedError) {
-                    reportedError = true
-                    report(t)
-                }
+                ready = false
+                if (reportedFailure.compareAndSet(false, true)) with(module) { xlog(t) }
             }
         }
     }

@@ -15,7 +15,7 @@ Its signing key is a debug key; it does not replace an official/release-signed i
 2. Disable the existing OneUIX module in LSPosed before enabling **OneUIX Audio eraser test**.
    Two copies must not hook SystemUI at the same time. Enable the same relevant scopes,
    including **System UI**, and open the test app once to save its preferences.
-3. In the test app, open **System UI → Quick settings → Use an Audio eraser QS tile**.
+3. In the test app, open **System UI → Quick settings → Audio eraser as a Quick Settings tile**.
 4. Turn it on and restart SystemUI using the app's existing button (or reboot).
 5. Edit the quick panel, add **Audio eraser**, then move/resize it using Samsung's editor.
 6. Tap its icon to toggle Audio eraser. Expand/secondary-click or long-press it for
@@ -38,9 +38,13 @@ No command broadcast receiver, elevated app permissions, polling loop, allowlist
 or system-partition modification is involved.
 
 The hook resolves One UI 9's `AudioEraser`, `CustomTile`, `SQSTileImpl`, and the top-banner
-combine transform before installing the bridge. The native AudioEraser instance and its
-preferences drive tile updates. Preference callbacks and native `updateMode` calls refresh
-existing tile instances. Toggle and expansion call Samsung's own actions on the main thread;
+combine transform before installing the bridge. It reads the native controller's live
+`_enabled`, `_playbackAllowed`, `_packageName`, `_packageLabel` and `_mode` StateFlows.
+Hooks on `updateEnabled`, `updatePlaybackAllowed`, `updatePackageName`,
+`updatePackageLabel` and `updateMode` refresh existing tile instances, including when
+playback starts without changing the effect mode. Saved preferences do not determine
+availability. This follows the implementation reverse-engineered from the working
+`b09f996` APK; its settings text and icon are retained. Toggle and expansion call Samsung's own actions on the main thread;
 `getDetailAdapter` returns Samsung's original adapter where supported. The top banner's
 Audio eraser visibility input is suppressed only after the native controller is captured.
 Other top banners and playback monitoring continue normally.
