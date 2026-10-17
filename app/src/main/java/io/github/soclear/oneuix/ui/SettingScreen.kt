@@ -27,6 +27,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneCalendar
 import io.github.soclear.oneuix.ui.category.DetailPaneCall
 import io.github.soclear.oneuix.ui.category.DetailPaneCamera
 import io.github.soclear.oneuix.ui.category.DetailPaneDualApp
+import io.github.soclear.oneuix.ui.category.DetailPaneFeatureOverrides
 import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
@@ -51,6 +52,7 @@ import io.github.soclear.oneuix.ui.category.onCalendarEvent
 import io.github.soclear.oneuix.ui.category.onCallEvent
 import io.github.soclear.oneuix.ui.category.onCameraEvent
 import io.github.soclear.oneuix.ui.category.onDualAppEvent
+import io.github.soclear.oneuix.ui.category.onFeatureOverrideEvent
 import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
@@ -79,6 +81,8 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     val categoryAppInfoList by viewModel.categoryAppInfoList.collectAsStateWithLifecycle()
     val preference by viewModel.preference.collectAsStateWithLifecycle()
     var selectedCategory by rememberSaveable { mutableStateOf<Category?>(null) }
+    val gates by viewModel.gates.collectAsStateWithLifecycle()
+    val deviceValues by viewModel.deviceValues.collectAsStateWithLifecycle()
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -252,6 +256,12 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.Weather -> DetailPaneWeather(
                             uiState = preference.other,
                             onEvent = viewModel::onWeatherEvent
+                        )
+
+                        Category.FeatureOverrides -> DetailPaneFeatureOverrides(
+                            uiState = gates,
+                            deviceValues = deviceValues,
+                            onEvent = viewModel::onFeatureOverrideEvent
                         )
                     }
                 }

@@ -11,6 +11,7 @@ data class Preference(
     val call: Call = Call(),
     val camera: Camera = Camera(),
     val other: Other = Other(),
+    val featureOverrides: List<FeatureOverride> = FeatureOverride.presets(),
 ) {
     @Serializable
     data class Android(
