@@ -24,5 +24,8 @@ enum class Category(val packageName: String) {
     ThemeCenter(Package.THEME_CENTER),
     Video(Package.VIDEO),
     WatchManager(Package.WATCH_MANAGER),
-    Weather(Package.WEATHER);
+    Weather(Package.WEATHER),
+
+    /** The module's own gates: Samsung feature switches answered with a value of our own. */
+    FeatureOverrides(Package.SELF);
 }

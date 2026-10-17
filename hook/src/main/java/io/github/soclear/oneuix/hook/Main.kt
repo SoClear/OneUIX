@@ -26,6 +26,11 @@ class Main : XposedModule() {
         if (!isFirstPackage) return@with
         val preference = PreferenceProvider.loadPreference() ?: return@with
 
+        // Answered for every hooked process, since each app that offers a gated feature reads the
+        // table itself. These go in before the per-app hooks, so one of those hooking the same
+        // getter still runs on top of the value set here.
+        Feature.applyOverrides(preference.featureOverrides)
+
         when (packageName) {
             Package.BIXBY_AGENT, Package.BIXBY_WAKEUP -> {
                 if (packageName == Package.BIXBY_AGENT && preference.other.unlockBixbyOfflineProcessing) {
