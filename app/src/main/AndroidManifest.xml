@@ -16,6 +16,14 @@
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
+    <!--
+        "Modify system settings" is what lets the app write a system setting itself instead of going
+        through root, and Android greys that screen's switch out for an app that does not declare
+        this permission, so the user has no way to grant it. Declaring it only makes the switch
+        usable; the grant is still the user's to give.
+    -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
     <queries>
         <package android:name="com.android.settings" />
         <package android:name="com.android.systemui" />
