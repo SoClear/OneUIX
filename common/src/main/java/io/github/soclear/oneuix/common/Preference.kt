@@ -175,6 +175,7 @@ data class Preference(
         val useSPenGoogleTranslate: Boolean = false,
         val hideAppsSearchBar: Boolean = false,
         val removeShortcutBadge: Boolean = false,
+        val forceStopInTaskMenu: Boolean = false,
         val bypassWatchPairingRegionCheck: Boolean = false,
         val watchPairingConnectionMode: Int = 0,
         val supplementChinaWearOsGms: Boolean = false,

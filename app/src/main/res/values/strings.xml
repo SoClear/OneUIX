@@ -162,6 +162,8 @@
     <string name="setCustomCarrierName_title">Set custom carrier name</string>
     <string name="hideLockscreenStatusBar_title">Hide status bar on lock screen</string>
     <string name="hideAppsSearchBar_title">Hide search bar on app screen</string>
+    <string name="forceStopInTaskMenu_title">Force stop in the recents menu</string>
+    <string name="forceStopInTaskMenu_summary">Adds a Force stop entry when an app icon is long pressed in Recents</string>
     <string name="removeShortcutBadge_title">Remove bottom-right shortcut badge</string>
     <string name="removeShortcutBadge_summary">Remove the original app badge from the bottom-right corner of home screen shortcuts</string>
     <string name="watchPairing_connectionMode_title">Watch connection mode</string>
