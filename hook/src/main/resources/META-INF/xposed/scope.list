@@ -10,6 +10,7 @@ com.samsung.android.bixby.wakeup
 com.samsung.android.calendar
 com.samsung.android.da.daagent
 com.samsung.android.dialer
+com.samsung.android.honeyboard
 com.samsung.android.incallui
 com.samsung.android.mdecservice
 com.samsung.android.messaging

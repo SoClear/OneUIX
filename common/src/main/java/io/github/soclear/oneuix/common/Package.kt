@@ -13,6 +13,7 @@ object Package {
     const val HEALTH = "com.sec.android.app.shealth"
     const val HEALTH_MONITOR = "com.samsung.android.shealthmonitor"
     const val INCALLUI = "com.samsung.android.incallui"
+    const val KEYBOARD = "com.samsung.android.honeyboard"
     const val LAUNCHER = "com.sec.android.app.launcher"
     const val MDEC_SERVICE = "com.samsung.android.mdecservice"
     const val MESSAGING = "com.samsung.android.messaging"

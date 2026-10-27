@@ -224,4 +224,6 @@
     <string name="hideLockscreenEmergencyButton_summary">Removes the emergency call shortcut from the unlock screen. This makes emergency dialing less accessible.</string>
     <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
     <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
+    <string name="unlockKeyboardShuangpinLayout_title">Unlock Shuangpin layout (experimental)</string>
+    <string name="unlockKeyboardShuangpinLayout_summary">Only bypasses the Shuangpin layout filter; does not change the region, scheme settings, or input engine. Tested against Samsung Keyboard 5.9.40.48 code; actual input is unverified. Enable Samsung Keyboard in the module scope and restart it after changing this option.</string>
 </resources>

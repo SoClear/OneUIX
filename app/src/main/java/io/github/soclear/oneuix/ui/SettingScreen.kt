@@ -31,6 +31,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
 import io.github.soclear.oneuix.ui.category.DetailPaneSamsungHealth
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
+import io.github.soclear.oneuix.ui.category.DetailPaneKeyboard
 import io.github.soclear.oneuix.ui.category.DetailPaneLauncher
 import io.github.soclear.oneuix.ui.category.DetailPaneMessaging
 import io.github.soclear.oneuix.ui.category.DetailPaneNFC
@@ -61,6 +62,7 @@ import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
 import io.github.soclear.oneuix.ui.category.onSamsungHealthEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
+import io.github.soclear.oneuix.ui.category.onKeyboardEvent
 import io.github.soclear.oneuix.ui.category.onLauncherEvent
 import io.github.soclear.oneuix.ui.category.onMessagingEvent
 import io.github.soclear.oneuix.ui.category.onNFCEvent
@@ -223,6 +225,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.HealthMonitor -> DetailPaneHealthMonitor(
                             uiState = preference.other,
                             onEvent = viewModel::onHealthMonitorEvent
+                        )
+
+                        Category.Keyboard -> DetailPaneKeyboard(
+                            uiState = preference.other,
+                            onEvent = viewModel::onKeyboardEvent
                         )
 
                         Category.Launcher -> DetailPaneLauncher(

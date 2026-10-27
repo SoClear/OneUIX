@@ -132,6 +132,12 @@ class Main : XposedModule() {
                 }
             }
 
+            Package.KEYBOARD -> {
+                if (preference.other.unlockKeyboardShuangpinLayout) {
+                    Keyboard.unlockShuangpinLayout()
+                }
+            }
+
             Package.LAUNCHER -> {
                 if (preference.other.modifyDockBottomPadding) {
                     Launcher.setDockBottomPadding(preference.other.dockBottomPaddingDp)

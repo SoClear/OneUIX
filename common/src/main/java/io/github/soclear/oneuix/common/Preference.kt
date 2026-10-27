@@ -163,6 +163,7 @@ data class Preference(
         val galaxyStoreSimOperator: String = "",
         val makeAllUserAppsAvailable: Boolean = true,
         val setWeatherProviderCN: Boolean = false,
+        val unlockKeyboardShuangpinLayout: Boolean = false,
         val showMemoryUsageInRecents: Boolean = false,
         val recentsGridThreeRows: Boolean = false,
         val hideRecentsCloseAllButton: Boolean = false,

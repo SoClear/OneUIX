@@ -16,6 +16,7 @@ enum class Category(val packageName: String) {
     GalaxyStore(Package.STORE),
     Health(Package.HEALTH),
     HealthMonitor(Package.HEALTH_MONITOR),
+    Keyboard(Package.KEYBOARD),
     Launcher(Package.LAUNCHER),
     Messaging(Package.MESSAGING),
     NFC(Package.NFC),
