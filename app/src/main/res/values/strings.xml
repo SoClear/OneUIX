@@ -225,5 +225,5 @@
     <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
     <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
     <string name="unlockKeyboardShuangpinLayout_title">Enable Shuangpin (experimental)</string>
-    <string name="unlockKeyboardShuangpinLayout_summary">Unlocks the Shuangpin layout and restores its XT9 input paths on Samsung Keyboard 5.9.40.48. Does not change the system region or unlock scheme settings. Actual input on international devices still needs testing. Enable Samsung Keyboard in the module scope and restart it after changing this option.</string>
+    <string name="unlockKeyboardShuangpinLayout_summary">Unlocks the Shuangpin layout and enables its XT9 symbol processing. Does not change the system region or unlock scheme settings. Enable Samsung Keyboard in the module scope and restart it after changing this option.</string>
 </resources>
