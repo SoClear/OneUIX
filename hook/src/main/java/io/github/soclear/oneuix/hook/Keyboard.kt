@@ -35,6 +35,11 @@ object Keyboard {
                 if (chain.args[1] == SHUANGPIN_LAYOUT) true else chain.proceed()
             }
             xlog("Keyboard: Shuangpin layout filter hooked: ${config.layoutFilterMethod}", priority = Log.INFO)
+            try {
+                KeyboardShuangpin594048.install(longVersionCode, classLoader)
+            } catch (t: Throwable) {
+                xlog("Keyboard: XT9 input adapter not installed; layout-only unlock remains active", t)
+            }
         }
     }
 

@@ -224,6 +224,6 @@
     <string name="hideLockscreenEmergencyButton_summary">移除解锁界面的紧急呼叫快捷入口，会降低紧急拨号的便捷性。</string>
     <string name="modifyDockBottomPadding_title">修改桌面底部栏下边距</string>
     <string name="modifyDockBottomPadding_summary">手机竖屏：%1$.1f dp，设为 0 移除底部留白，可能与手势区域重叠。</string>
-    <string name="unlockKeyboardShuangpinLayout_title">放开双拼布局（实验性）</string>
-    <string name="unlockKeyboardShuangpinLayout_summary">仅放开双拼布局过滤，不修改地区、方案设置或输入引擎。基于三星键盘 5.9.40.48 代码适配，实际输入尚未验证。请将三星键盘加入模块作用域，并在更改开关后重启键盘。</string>
+    <string name="unlockKeyboardShuangpinLayout_title">启用双拼（实验性）</string>
+    <string name="unlockKeyboardShuangpinLayout_summary">放开双拼布局，并补齐三星键盘 5.9.40.48 的 XT9 双拼输入路径。不修改系统地区，也不解锁方案设置。国际设备上的实际输入仍需验证。请将三星键盘加入模块作用域，并在更改开关后重启键盘。</string>
 </resources>
