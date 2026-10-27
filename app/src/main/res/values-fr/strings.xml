@@ -66,6 +66,8 @@
     <string name="hideQsBarSmartViewAndModes_title">Masquer la barre Smart View et Modes dans les paramètres rapides</string>
     <string name="hideDeviceControlQsTile_title">Masquer le contrôle des appareils dans les paramètres rapides</string>
     <string name="hideSmartViewQsTile_title">Masquer Smart View dans les paramètres rapides</string>
+    <string name="hideAudioEraserBanner_title">Masquer la bannière Gomme audio dans les paramètres rapides</string>
+    <string name="hideAudioEraserBanner_summary">Masquer la bannière Gomme audio affichée en haut du panneau des paramètres rapides pendant la lecture dans certaines applications multimédias. Les autres bannières sont conservées</string>
     <string name="alwaysExpandQsTileChunk_title">Toujours développer les tuiles des paramètres rapides</string>
     <string name="alwaysShowTimeDateOnQs_title">Toujours afficher l\'heure et la date dans les paramètres rapides</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modifier le nombre maximum d\'icônes de notification (Barre d\'état)</string>

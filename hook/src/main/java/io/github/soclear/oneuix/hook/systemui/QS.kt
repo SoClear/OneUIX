@@ -60,6 +60,38 @@ object QS {
         }
     }
 
+    // Hide the persistent "Audio Eraser" banner shown at the top of the QS panel
+    // while some media apps are playing. Only AudioEraser items are removed from the
+    // banner list; other banners (MicMode, VideoCallEffect, ...) are kept.
+    context(xposedModule: XposedModule)
+    fun hideAudioEraserBanner() = afterAttachTry(ONE_UI_VERSION >= 80500) {
+        val audioEraserClassName =
+            "com.android.systemui.samsung.quicksetting.ui.banner.AudioEraser"
+        classLoader
+            .loadClass($$"com.android.systemui.samsung.quicksetting.ui.banner.TopBannerViewModel$1$2")
+            .declaredMethods
+            .filter { it.name == "invokeSuspend" }
+            .forEach { method ->
+                xposedModule.hook(method).intercept { chain ->
+                    try {
+                        val continuation = chain.thisObject
+                        val banners = continuation.reflect[$$"L$0"] as? List<*>
+                        if (banners != null) {
+                            val filtered = banners.filterNot {
+                                it != null && it.javaClass.name == audioEraserClassName
+                            }
+                            if (filtered.size != banners.size) {
+                                continuation.reflect[$$"L$0"] = filtered
+                            }
+                        }
+                    } catch (t: Throwable) {
+                        xlog(t)
+                    }
+                    chain.proceed()
+                }
+            }
+    }
+
     // related classes: BarFactory BarController  BarOrderInteractor
     context(xposedModule: XposedModule)
     fun hideQsBar(qsBarSet: Set<QsBar>) =

@@ -66,6 +66,8 @@
     <string name="hideQsBarSmartViewAndModes_title">隐藏快捷设置面板的 Smart View 和模式 Bar</string>
     <string name="hideDeviceControlQsTile_title">隐藏快捷设置的设备控制</string>
     <string name="hideSmartViewQsTile_title">隐藏快捷设置的Smart View</string>
+    <string name="hideAudioEraserBanner_title">隐藏音频橡皮擦横幅</string>
+    <string name="hideAudioEraserBanner_summary">隐藏在使用特定应用时快捷面板常驻的音频橡皮擦横幅</string>
     <string name="alwaysExpandQsTileChunk_title">总是展开快捷设置磁贴块</string>
     <string name="alwaysShowTimeDateOnQs_title">快捷设置面板总是显示时间日期</string>
     <string name="setStatusBarMaxNotificationIcons_title">修改状态栏最大通知图标数量</string>

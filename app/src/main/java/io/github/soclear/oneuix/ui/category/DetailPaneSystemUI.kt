@@ -634,6 +634,17 @@ fun DetailPaneSystemUI(
                     onEvent(SystemUIEvent.QS.HideQsBarDataUsage(it))
                 }
             )
+            if (ONE_UI_VERSION >= 80500) {
+                SwitchItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
+                    title = stringResource(id = R.string.hideAudioEraserBanner_title),
+                    summary = stringResource(id = R.string.hideAudioEraserBanner_summary),
+                    checked = uiState.qs.hideAudioEraserBanner,
+                    onCheckedChange = {
+                        onEvent(SystemUIEvent.QS.HideAudioEraserBanner(it))
+                    }
+                )
+            }
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
@@ -1038,6 +1049,9 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class HideSmartViewQsTile(val value: Boolean) : QS
+
+        @JvmInline
+        value class HideAudioEraserBanner(val value: Boolean) : QS
 
         @JvmInline
         value class TurnOn5gQsTile(val value: Boolean) : QS
@@ -1461,6 +1475,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             hideSmartViewQsTile = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.HideAudioEraserBanner -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            hideAudioEraserBanner = event.value
                         )
                     )
                 )
