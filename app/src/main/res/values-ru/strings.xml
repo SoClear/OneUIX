@@ -67,6 +67,8 @@
     <string name="hideQsBarSmartViewAndModes_title">Скрыть Smart View и Режимы в панели быстрых настроек</string>
     <string name="hideDeviceControlQsTile_title">Скрыть «Управление устройством» в быстрых настройках</string>
     <string name="hideSmartViewQsTile_title">Скрыть Smart View в быстрых настройках</string>
+    <string name="hideAudioEraserBanner_title">Скрыть баннер «Аудиоластик» в быстрых настройках</string>
+    <string name="hideAudioEraserBanner_summary">Скрывать баннер «Аудиоластик», закрепляемый вверху панели быстрых настроек при работе некоторых медиаприложений. Остальные баннеры остаются</string>
     <string name="alwaysExpandQsTileChunk_title">Всегда разворачивать блок плиток быстрых настроек</string>
     <string name="alwaysShowTimeDateOnQs_title">Всегда показывать время и дату в панели быстрых настроек</string>
     <string name="setStatusBarMaxNotificationIcons_title">Макс. число значков уведомлений в строке состояния</string>

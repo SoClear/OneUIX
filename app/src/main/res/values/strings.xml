@@ -67,6 +67,8 @@
     <string name="hideQsBarSmartViewAndModes_title">Hide Smart View and Modes bar in QS panel</string>
     <string name="hideDeviceControlQsTile_title">Hide Device Control in Quick Settings</string>
     <string name="hideSmartViewQsTile_title">Hide Smart View in Quick Settings</string>
+    <string name="hideAudioEraserBanner_title">Hide Audio Eraser banner</string>
+    <string name="hideAudioEraserBanner_summary">Hide the Audio Eraser banner pinned in the Quick Settings panel when using certain apps</string>
     <string name="alwaysExpandQsTileChunk_title">Always expand Quick Settings tile chunk</string>
     <string name="alwaysShowTimeDateOnQs_title">Always show time and date in QS panel</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modify maximum number of notification icons in status bar</string>

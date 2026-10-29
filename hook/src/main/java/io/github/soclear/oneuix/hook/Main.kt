@@ -377,6 +377,10 @@ class Main : XposedModule() {
                     QS.hideSmartViewQsTile()
                 }
 
+                if (preference.systemUI.qs.hideAudioEraserBanner) {
+                    QS.hideAudioEraserBanner()
+                }
+
                 if (preference.systemUI.qs.turnOn5gQsTile) {
                     Network.turnOn5gQsTile()
                 }
