@@ -77,6 +77,8 @@
     <string name="showMorePlaybackSpeeds_summary">Includes local video player and built-in browser player</string>
     <string name="redirect_custom_tab_title">Force links to open in external Samsung Internet</string>
     <string name="redirect_custom_tab_summary">When Samsung Internet is set as the default browser, many apps open links in a limited in-app Samsung Internet Custom Tab. Enable this to force links out of the app and open them in the full Samsung Internet browser.</string>
+    <string name="hideGalaxyStoreDiscover_title">Hide Discover tab</string>
+    <string name="hideGalaxyStoreBenefits_title">Hide Benefits tab</string>
     <string name="blockGalaxyStoreAds_title">Remove ads in Galaxy Store</string>
     <string name="galaxyStoreRegion_title">Galaxy Store SIM operator (MCC+MNC)</string>
     <string name="galaxyStoreRegion_summary">Enter 5 or 6 digits, keeping leading zeros, then tap Confirm to save. Leave blank for no modification. Restart Galaxy Store to apply.</string>

@@ -77,6 +77,8 @@
     <string name="showMorePlaybackSpeeds_summary">Inclut le lecteur local et le lecteur intégré au navigateur</string>
     <string name="redirect_custom_tab_title">Forcer l\'ouverture dans Samsung Internet externe</string>
     <string name="redirect_custom_tab_summary">Quand Samsung Internet est défini comme navigateur par défaut, de nombreuses applications ouvrent les liens dans un onglet personnalisé Samsung Internet limité. Activez cette option pour quitter l\'application et ouvrir les liens dans le navigateur Samsung Internet complet.</string>
+    <string name="hideGalaxyStoreDiscover_title">Masquer l’onglet Découvrir</string>
+    <string name="hideGalaxyStoreBenefits_title">Masquer l’onglet Avantages</string>
     <string name="blockGalaxyStoreAds_title">Bloquer les publicités du Galaxy Store</string>
     <string name="galaxyStoreRegion_title">Opérateur SIM du Galaxy Store (MCC+MNC)</string>
     <string name="galaxyStoreRegion_summary">Saisissez 5 ou 6 chiffres en conservant les zéros initiaux, puis appuyez sur Confirmer pour enregistrer. Laissez vide pour ne rien modifier. Redémarrez Galaxy Store pour appliquer.</string>

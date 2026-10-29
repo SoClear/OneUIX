@@ -44,6 +44,18 @@ fun DetailPaneGalaxyStore(
             checked = uiState.blockGalaxyStoreAds,
             onCheckedChange = { onEvent(GalaxyStoreEvent.BlockGalaxyStoreAds(it)) }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(R.drawable.ad_off),
+            title = stringResource(R.string.hideGalaxyStoreDiscover_title),
+            checked = uiState.hideGalaxyStoreDiscover,
+            onCheckedChange = { onEvent(GalaxyStoreEvent.HideDiscover(it)) }
+        )
+        SwitchItem(
+            icon = ImageVector.vectorResource(R.drawable.ad_off),
+            title = stringResource(R.string.hideGalaxyStoreBenefits_title),
+            checked = uiState.hideGalaxyStoreBenefits,
+            onCheckedChange = { onEvent(GalaxyStoreEvent.HideBenefits(it)) }
+        )
         Column {
             val uriHandler = LocalUriHandler.current
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -98,6 +110,12 @@ sealed interface GalaxyStoreEvent {
     value class BlockGalaxyStoreAds(val value: Boolean) : GalaxyStoreEvent
 
     @JvmInline
+    value class HideDiscover(val value: Boolean) : GalaxyStoreEvent
+
+    @JvmInline
+    value class HideBenefits(val value: Boolean) : GalaxyStoreEvent
+
+    @JvmInline
     value class SetSimOperator(val value: Boolean) : GalaxyStoreEvent
 
     @JvmInline
@@ -110,6 +128,8 @@ fun SettingViewModel.onGalaxyStoreEvent(event: GalaxyStoreEvent) {
             is GalaxyStoreEvent.SetSimOperator -> preference.other.copy(setGalaxyStoreSimOperator = event.value)
             is GalaxyStoreEvent.SimOperator -> preference.other.copy(galaxyStoreSimOperator = event.value)
             is GalaxyStoreEvent.BlockGalaxyStoreAds -> preference.other.copy(blockGalaxyStoreAds = event.value)
+            is GalaxyStoreEvent.HideDiscover -> preference.other.copy(hideGalaxyStoreDiscover = event.value)
+            is GalaxyStoreEvent.HideBenefits -> preference.other.copy(hideGalaxyStoreBenefits = event.value)
         })
     }
 }

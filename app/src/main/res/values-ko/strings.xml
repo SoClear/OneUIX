@@ -77,6 +77,8 @@
     <string name="showMorePlaybackSpeeds_summary">자체 비디오 플레이어 및 내장 브라우저 플레이어에 적용됩니다</string>
     <string name="redirect_custom_tab_title">링크를 항상 외부 삼성 인터넷으로 열기</string>
     <string name="redirect_custom_tab_summary">삼성 인터넷이 기본 브라우저로 설정되어 있어도 많은 앱들이 인앱 \'삼성 인터넷 커스텀 탭\'으로 링크를 엽니다. 이 기능을 활성화하면 인앱 탭을 우회하여 전체 기능이 포함된 외부 삼성 인터넷 앱으로 링크를 강제 전환합니다.</string>
+    <string name="hideGalaxyStoreDiscover_title">추천 탭 숨기기</string>
+    <string name="hideGalaxyStoreBenefits_title">혜택 탭 숨기기</string>
     <string name="blockGalaxyStoreAds_title">Galaxy Store 광고 제거</string>
     <string name="galaxyStoreRegion_title">Galaxy Store SIM 통신사 코드 (MCC+MNC)</string>
     <string name="galaxyStoreRegion_summary">앞자리 0을 유지하여 5~6자리 숫자를 입력하고 확인을 눌러 저장하세요. 비워 두면 변경하지 않습니다. 적용하려면 Galaxy Store를 다시 시작하세요.</string>

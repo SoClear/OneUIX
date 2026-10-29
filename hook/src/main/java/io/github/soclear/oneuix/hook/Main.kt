@@ -249,6 +249,10 @@ class Main : XposedModule() {
             }
 
             Package.STORE -> {
+                GalaxyStore.hideTabs(
+                    preference.other.hideGalaxyStoreDiscover,
+                    preference.other.hideGalaxyStoreBenefits,
+                )
                 if (preference.other.setGalaxyStoreSimOperator) {
                     GalaxyStore.setRegion(preference.other.galaxyStoreSimOperator)
                 }

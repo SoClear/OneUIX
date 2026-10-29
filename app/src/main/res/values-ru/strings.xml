@@ -77,6 +77,8 @@
     <string name="showMorePlaybackSpeeds_summary">Включает стандартный видеоплеер и встроенный браузер</string>
     <string name="redirect_custom_tab_title">Открывать ссылки во внешнем Samsung Internet</string>
     <string name="redirect_custom_tab_summary">Когда Samsung Internet выбран браузером по умолчанию, многие приложения открывают ссылки в ограниченной встроенной вкладке Samsung Internet. Включите эту функцию, чтобы принудительно выходить из приложения и открывать ссылки в полном браузере Samsung Internet.</string>
+    <string name="hideGalaxyStoreDiscover_title">Скрыть вкладку «Интересное»</string>
+    <string name="hideGalaxyStoreBenefits_title">Скрыть вкладку «Преимущества»</string>
     <string name="blockGalaxyStoreAds_title">Удалить рекламу в Galaxy Store</string>
     <string name="galaxyStoreRegion_title">SIM-оператор Galaxy Store (MCC+MNC)</string>
     <string name="galaxyStoreRegion_summary">Введите 5 или 6 цифр, сохраняя начальные нули, затем нажмите «Подтвердить» для сохранения. Оставьте пустым для работы без изменений. Перезапустите Galaxy Store для применения.</string>

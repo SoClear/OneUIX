@@ -159,6 +159,8 @@ data class Preference(
         val supportBixbyCustomWakeup: Boolean = false,
         val bypassBixbyWakeWordRestrictions: Boolean = false,
         val blockGalaxyStoreAds: Boolean = true,
+        val hideGalaxyStoreDiscover: Boolean = false,
+        val hideGalaxyStoreBenefits: Boolean = false,
         val setGalaxyStoreSimOperator: Boolean = false,
         val galaxyStoreSimOperator: String = "",
         val makeAllUserAppsAvailable: Boolean = true,

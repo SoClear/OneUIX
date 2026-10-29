@@ -77,6 +77,8 @@
     <string name="showMorePlaybackSpeeds_summary">包含本地播放器和浏览器内置播放器</string>
     <string name="redirect_custom_tab_title">强制跳转外部三星浏览器</string>
     <string name="redirect_custom_tab_summary">当三星浏览器被设置为默认浏览器后，很多应用在点击链接时，会在应用内部弹出一个受限的简易三星浏览器网页窗口。开启此功能后，会强制跳出应用并交由外部三星浏览器打开，让你能使用完整的三星浏览器功能</string>
+    <string name="hideGalaxyStoreDiscover_title">隐藏“发现”标签</string>
+    <string name="hideGalaxyStoreBenefits_title">隐藏“优惠”标签</string>
     <string name="blockGalaxyStoreAds_title">去除应用商店的广告</string>
     <string name="galaxyStoreRegion_title">应用商店 SIM 运营商代码（MCC+MNC）</string>
     <string name="galaxyStoreRegion_summary">填写 5 或 6 位数字，保留前导零，点击确认保存；留空不修改。重启应用商店后生效。</string>
