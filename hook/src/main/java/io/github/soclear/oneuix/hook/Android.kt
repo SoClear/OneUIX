@@ -2,7 +2,6 @@ package io.github.soclear.oneuix.hook
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
-import android.os.Bundle
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.hook.util.reflect
@@ -10,37 +9,6 @@ import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Android {
-    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
-    fun disableWritingToolkitGlobally() {
-        val galaxyAiRestrictionsPackage = "com.samsung.android.knox.galaxyai"
-        val writingToolkitKey = "key_writing_toolkit"
-        val grayoutKey = "grayout"
-
-        val classLoader = param.classLoader
-
-        try {
-            val proxyClass = classLoader.loadClass("com.android.server.enterprise.EDMProxyService")
-            proxyClass.declaredMethods.filter {
-                it.name == "getApplicationRestrictions"
-            }.forEach {
-                xposedModule.hook(it).intercept { chain ->
-                    val result = chain.proceed()
-                    if (chain.args.getOrNull(0) != galaxyAiRestrictionsPackage) {
-                        result
-                    } else {
-                        val restrictions = Bundle(result as? Bundle ?: Bundle.EMPTY)
-                        val writingToolkit = Bundle(restrictions.getBundle(writingToolkitKey) ?: Bundle.EMPTY)
-                        writingToolkit.putBoolean(grayoutKey, true)
-                        restrictions.putBundle(writingToolkitKey, writingToolkit)
-                        restrictions
-                    }
-                }
-            }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
-    }
-
     @SuppressLint("BlockedPrivateApi")
     context(xposedModule: XposedModule)
     fun setBlockableNotificationChannel() {

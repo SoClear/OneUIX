@@ -29,11 +29,15 @@ import io.github.soclear.oneuix.ui.category.DetailPaneCamera
 import io.github.soclear.oneuix.ui.category.DetailPaneDualApp
 import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
+import io.github.soclear.oneuix.ui.category.DetailPaneSamsungHealth
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
 import io.github.soclear.oneuix.ui.category.DetailPaneLauncher
 import io.github.soclear.oneuix.ui.category.DetailPaneMessaging
+import io.github.soclear.oneuix.ui.category.DetailPaneNFC
 import io.github.soclear.oneuix.ui.category.ExtraPaneNetworkSpeed
+import io.github.soclear.oneuix.ui.category.ExtraPaneNfcCards
 import io.github.soclear.oneuix.ui.category.DetailPaneNotes
+import io.github.soclear.oneuix.ui.category.DetailPaneOther
 import io.github.soclear.oneuix.ui.category.DetailPanePhotoRetouching
 import io.github.soclear.oneuix.ui.category.DetailPaneSPen
 import io.github.soclear.oneuix.ui.category.DetailPaneSettings
@@ -44,6 +48,8 @@ import io.github.soclear.oneuix.ui.category.DetailPaneVideo
 import io.github.soclear.oneuix.ui.category.DetailPaneWatchManager
 import io.github.soclear.oneuix.ui.category.DetailPaneWeather
 import io.github.soclear.oneuix.ui.category.ListPaneCategory
+import io.github.soclear.oneuix.ui.category.OtherEvent
+import io.github.soclear.oneuix.ui.category.SystemUIEvent
 import io.github.soclear.oneuix.ui.category.onAndroidEvent
 import io.github.soclear.oneuix.ui.category.onBixbyEvent
 import io.github.soclear.oneuix.ui.category.onBrowserEvent
@@ -53,10 +59,13 @@ import io.github.soclear.oneuix.ui.category.onCameraEvent
 import io.github.soclear.oneuix.ui.category.onDualAppEvent
 import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
+import io.github.soclear.oneuix.ui.category.onSamsungHealthEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
 import io.github.soclear.oneuix.ui.category.onLauncherEvent
 import io.github.soclear.oneuix.ui.category.onMessagingEvent
+import io.github.soclear.oneuix.ui.category.onNFCEvent
 import io.github.soclear.oneuix.ui.category.onNotesEvent
+import io.github.soclear.oneuix.ui.category.onOtherEvent
 import io.github.soclear.oneuix.ui.category.onPhotoRetouchingEvent
 import io.github.soclear.oneuix.ui.category.onSPenEvent
 import io.github.soclear.oneuix.ui.category.onSettingsEvent
@@ -66,6 +75,7 @@ import io.github.soclear.oneuix.ui.category.onThemeCenterEvent
 import io.github.soclear.oneuix.ui.category.onVideoEvent
 import io.github.soclear.oneuix.ui.category.onWatchManagerEvent
 import io.github.soclear.oneuix.ui.category.onWeatherEvent
+import io.github.soclear.oneuix.ui.component.AppPicker
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -79,6 +89,14 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
     val categoryAppInfoList by viewModel.categoryAppInfoList.collectAsStateWithLifecycle()
     val preference by viewModel.preference.collectAsStateWithLifecycle()
     var selectedCategory by rememberSaveable { mutableStateOf<Category?>(null) }
+
+    fun navigateToExtra(destination: SettingDestination.Extra) {
+        scope.launch {
+            scaffoldNavigator.navigateTo(ListDetailPaneScaffoldRole.Extra, destination)
+        }
+    }
+
+    val onBack: () -> Unit = { scope.launch { scaffoldNavigator.navigateBack() } }
 
     val backupLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -144,13 +162,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.SystemUI -> DetailPaneSystemUI(
                             uiState = preference.systemUI,
                             onEvent = viewModel::onSystemUIEvent,
+                            onNavigateToAppPicker = {
+                                navigateToExtra(SettingDestination.Extra.HideOngoingActivityMediaApps)
+                            },
                             onNavigateToNetworkSpeed = {
-                                scope.launch {
-                                    scaffoldNavigator.navigateTo(
-                                        ListDetailPaneScaffoldRole.Extra,
-                                        SettingDestination.NetworkSpeed
-                                    )
-                                }
+                                navigateToExtra(SettingDestination.Extra.NetworkSpeed)
                             }
                         )
 
@@ -199,6 +215,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                             onEvent = viewModel::onGalaxyStoreEvent
                         )
 
+                        Category.Health -> DetailPaneSamsungHealth(
+                            uiState = preference.other,
+                            onEvent = viewModel::onSamsungHealthEvent
+                        )
+
                         Category.HealthMonitor -> DetailPaneHealthMonitor(
                             uiState = preference.other,
                             onEvent = viewModel::onHealthMonitorEvent
@@ -212,6 +233,12 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.Messaging -> DetailPaneMessaging(
                             uiState = preference.other,
                             onEvent = viewModel::onMessagingEvent
+                        )
+
+                        Category.NFC -> DetailPaneNFC(
+                            onNavigateToNfcCards = {
+                                navigateToExtra(SettingDestination.Extra.NfcCards)
+                            }
                         )
 
                         Category.Notes -> DetailPaneNotes(
@@ -253,21 +280,61 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                             uiState = preference.other,
                             onEvent = viewModel::onWeatherEvent
                         )
+
+                        Category.Other -> DetailPaneOther(
+                            uiState = preference.other,
+                            onEvent = viewModel::onOtherEvent,
+                            onNavigateToWritingToolkitApps = {
+                                navigateToExtra(SettingDestination.Extra.DisableWritingToolkitApps)
+                            },
+                            onNavigateToScreenshotDetectionApps = {
+                                navigateToExtra(SettingDestination.Extra.HideScreenshotDetectionApps)
+                            }
+                        )
                     }
                 }
             }
         },
         extraPane = {
             AnimatedPane {
-                ExtraPaneNetworkSpeed(
-                    uiState = preference.systemUI,
-                    onEvent = viewModel::onSystemUIEvent,
-                    onBack = {
-                        scope.launch {
-                            scaffoldNavigator.navigateBack()
-                        }
-                    }
-                )
+                when (scaffoldNavigator.currentDestination?.contentKey) {
+                    SettingDestination.Extra.NfcCards -> ExtraPaneNfcCards(
+                        uiState = preference.other,
+                        onEvent = viewModel::onNFCEvent,
+                        onBack = onBack
+                    )
+
+                    SettingDestination.Extra.NetworkSpeed -> ExtraPaneNetworkSpeed(
+                        uiState = preference.systemUI,
+                        onEvent = viewModel::onSystemUIEvent,
+                        onBack = onBack
+                    )
+
+                    SettingDestination.Extra.HideOngoingActivityMediaApps -> AppPicker(
+                        selectedPackages = preference.systemUI.notification.hideOngoingActivityMediaPackages
+                            .split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet(),
+                        onSelectionChange = {
+                            viewModel.onSystemUIEvent(
+                                SystemUIEvent.Notification.HideOngoingActivityMediaPackages(it.sorted().joinToString(","))
+                            )
+                        },
+                        onBack = onBack
+                    )
+
+                    SettingDestination.Extra.DisableWritingToolkitApps -> AppPicker(
+                        selectedPackages = preference.other.disableWritingToolkitPackages,
+                        onSelectionChange = { viewModel.onOtherEvent(OtherEvent.DisableWritingToolkitPackages(it)) },
+                        onBack = onBack
+                    )
+
+                    SettingDestination.Extra.HideScreenshotDetectionApps -> AppPicker(
+                        selectedPackages = preference.other.hideScreenshotDetectionPackages,
+                        onSelectionChange = { viewModel.onOtherEvent(OtherEvent.HideScreenshotDetectionPackages(it)) },
+                        onBack = onBack
+                    )
+
+                    else -> Unit
+                }
             }
         },
         modifier = modifier.fillMaxSize(),

@@ -131,7 +131,7 @@ object Network {
 
         fun shouldDisplay(tx: Float, rx: Float): Boolean {
             if (threshold <= 0) return true
-            val thresholdBytes = threshold * unit.base / (if (unit.bits) 8f else 1f)
+            val thresholdBytes = threshold.toFloat() * unit.base / (if (unit.bits) 8f else 1f)
             return tx > thresholdBytes || rx > thresholdBytes
         }
 

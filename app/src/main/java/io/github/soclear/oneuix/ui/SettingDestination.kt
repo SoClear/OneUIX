@@ -5,7 +5,7 @@ import java.io.Serializable
 
 sealed interface SettingDestination : Serializable {
     data class Detail(val category: Category) : SettingDestination
-    data object NetworkSpeed : SettingDestination {
-        private fun readResolve(): Any = NetworkSpeed
+    enum class Extra : SettingDestination {
+        NetworkSpeed, HideOngoingActivityMediaApps, DisableWritingToolkitApps, HideScreenshotDetectionApps, NfcCards
     }
 }

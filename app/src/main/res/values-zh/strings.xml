@@ -46,6 +46,7 @@
     <string name="immersiveModeQsTile_title">开启沉浸模式快捷设置磁贴</string>
     <string name="rootImmersiveModeQsTile_summary">需要 root 权限。请手动添加磁贴，点击后隐藏状态栏，再次点击恢复</string>
     <string name="outdoorModeQsTile_label">户外模式</string>
+    <string name="autoBrightnessQsTile_label">自动调节亮度</string>
     <string name="setStatusBarClockFormat_title">设置状态栏日期时间格式</string>
     <string name="setStatusBarClockTextScale_title">设置状态栏时间日期缩放倍数</string>
     <string name="updateStatusBarClockEverySecond_title">状态栏时间每秒更新</string>
@@ -77,6 +78,9 @@
     <string name="redirect_custom_tab_title">强制跳转外部三星浏览器</string>
     <string name="redirect_custom_tab_summary">当三星浏览器被设置为默认浏览器后，很多应用在点击链接时，会在应用内部弹出一个受限的简易三星浏览器网页窗口。开启此功能后，会强制跳出应用并交由外部三星浏览器打开，让你能使用完整的三星浏览器功能</string>
     <string name="blockGalaxyStoreAds_title">去除应用商店的广告</string>
+    <string name="galaxyStoreRegion_title">应用商店 SIM 运营商代码（MCC+MNC）</string>
+    <string name="galaxyStoreRegion_summary">填写 5 或 6 位数字，保留前导零，点击确认保存；留空不修改。重启应用商店后生效。</string>
+    <string name="galaxyStoreRegion_reference">查询国家和运营商代码（ITU）</string>
     <string name="blockGalaxyStoreAds_summary">去除开屏广告、推荐广告和推荐弹窗，去除安装年龄限制弹窗</string>
     <string name="supportAllCameraMenu_title">显示相机的所有菜单</string>
     <string name="supportAllCameraMenu_summary">快门音、自动 HDR、Log、边框叠加水印</string>
@@ -87,7 +91,10 @@
     <string name="autoExpandNotifications_title">自动展开通知</string>
     <string name="hideOngoingActivityMedia_title">隐藏音乐应用的实时活动</string>
     <string name="hideOngoingActivityMedia_summary">后台播放音乐时，隐藏状态栏实时活动胶囊和通知栏媒体通知卡片</string>
-    <string name="hideOngoingActivityMedia_packages_hint">包名，用英文逗号分隔</string>
+    <string name="app_picker_title">选择应用</string>
+    <string name="app_picker_search_hint">搜索应用名或包名</string>
+    <string name="app_picker_selected_count">已选择 %1$d 个应用</string>
+    <string name="app_picker_empty">没有匹配的应用</string>
     <string name="customPowerMenu_title">自定义关机菜单按钮</string>
     <string name="powerMenuActionVisible_summary">已显示，位置 %1$d</string>
     <string name="powerMenuActionHidden_summary">已隐藏</string>
@@ -136,6 +143,7 @@
     <string name="supportOutdoorMode_title">解锁户外模式</string>
     <string name="disablePinVerifyPer72h_title">禁用每 72 小时验证锁屏密码</string>
     <string name="hideAODStatusBar_title">隐藏息屏提醒的状态栏</string>
+    <string name="hideAODChargingInfo_title">隐藏息屏提醒的充电信息</string>
     <string name="aodLockSupportLunar_title">息屏提醒显示中国农历</string>
     <string name="enableChineseHolidayDisplay_title">日历中显示中国节假日</string>
     <string name="supportBlockMessage_title">支持拦截短信</string>
@@ -150,6 +158,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">设置->关于手机->状态信息</string>
     <string name="noAIWatermark_title">禁用 AI 水印</string>
     <string name="noAIWatermark_summary">包括图片编辑器和创意工作室</string>
+    <string name="hideSamsungHealthDiscover_title">隐藏“发现”页面</string>
     <string name="bypassHealthMonitorCountryCheck_title">绕过 Samsung Health Monitor 国家检查</string>
     <string name="bypassHealthMonitorCountryCheck_summary">在不支持的国家/地区使用 Health Monitor</string>
     <string name="useSPenGoogleTranslate_title">S Pen 使用谷歌翻译</string>
@@ -176,9 +185,11 @@
     <string name="liftFcmNetworkLimit_title">解除 FCM 网络限制</string>
     <string name="liftFcmNetworkLimit_summary">解除国行（包含港版）固件对 GMS/FCM 推送的网络限制</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">拔出充电器时不亮屏</string>
-    <string name="disableWritingToolkitGlobally_title">全局禁用写作工具包</string>
-    <string name="disableWritingToolkitGlobally_summary">通过系统框架从所有应用的文本选择菜单中移除三星写作工具包</string>
+    <string name="disableWritingToolkit_title">禁用写作工具包</string>
+    <string name="disableWritingToolkit_summary">将所选应用加入模块作用域并重启应用，从其文本选择菜单中移除三星写作工具包</string>
     <string name="disableFlagSecure_title">禁用安全标记 (FLAG_SECURE)</string>
+    <string name="hideScreenshotDetection_title">对应用隐藏截图行为</string>
+    <string name="hideScreenshotDetection_summary">将所选应用加入模块作用域并重启应用后生效。屏蔽截图回调与识别到的截图变更通知；仍可查看截图，普通照片通知保留</string>
     <string name="disableFlagSecure_summary">允许在受保护的应用窗口中截屏和录屏</string>
     <string name="backup_config">备份配置</string>
     <string name="restore_config">恢复配置</string>
@@ -193,4 +204,24 @@
     <string name="supportBixbyCustomWakeup_summary">开启自定义短语，并修复不受支持机型的中文模型下载。请在模块作用域中启用 Bixby 和语音唤醒，然后重启这两个应用。</string>
     <string name="bypassBixbyWakeWordRestrictions_title">放宽唤醒短语限制</string>
     <string name="bypassBixbyWakeWordRestrictions_summary">允许更多短语文本，仍需完成录音和模型校验。</string>
+    <string name="nfc_filter_title">NFC 卡片过滤</string>
+    <string name="nfc_service">NFC 服务</string>
+    <string name="nfc_filter_summary">将 NFC（com.android.nfc）加入模块作用域并重启手机一次，之后修改名单即时生效。点击已保存的卡片可修改备注。</string>
+    <string name="nfc_mode_off">关闭</string>
+    <string name="nfc_mode_blacklist">黑名单：忽略名单中的卡片</string>
+    <string name="nfc_mode_whitelist">白名单：仅识别名单中的卡片</string>
+    <string name="nfc_scan_hint">将卡片靠近手机读取 UID，也可手动输入，填写后保存。被过滤的卡片仍可在此读取。</string>
+    <string name="nfc_unavailable">此设备不支持 NFC，仍可手动输入 UID。</string>
+    <string name="nfc_disabled">请开启 NFC 后读卡，也可手动输入 UID。</string>
+    <string name="nfc_settings">NFC 设置</string>
+    <string name="nfc_uid_invalid">请输入完整的十六进制字节，如 92014119。</string>
+    <string name="nfc_note">备注（选填）</string>
+    <string name="nfc_save">保存 / 更新</string>
+    <string name="nfc_delete">删除</string>
+    <string name="alignStatusBarContentToTop_title">状态栏内容置顶</string>
+    <string name="alignStatusBarContentToTop_summary">仅竖屏生效，保留状态栏原高度和应用顶部避让区域</string>
+    <string name="hideLockscreenEmergencyButton_title">隐藏锁屏紧急呼叫按钮</string>
+    <string name="hideLockscreenEmergencyButton_summary">移除解锁界面的紧急呼叫快捷入口，会降低紧急拨号的便捷性。</string>
+    <string name="modifyDockBottomPadding_title">修改桌面底部栏下边距</string>
+    <string name="modifyDockBottomPadding_summary">手机竖屏：%1$.1f dp，设为 0 移除底部留白，可能与手势区域重叠。</string>
 </resources>

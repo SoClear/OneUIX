@@ -307,15 +307,17 @@ object QS {
     context(xposedModule: XposedModule)
     fun alwaysShowTimeDateOnQs() =
         afterAttachTry(Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && ONE_UI_VERSION < 80500) {
+            val isLegacyAnimator = applicationInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA
             try {
-                val animatorClass = classLoader.loadClass(
-                    "com.android.systemui.qs.animator.SecQSFragmentAnimatorBase"
+                // The panel transition owns clockDateContainer, independently of the expand animator.
+                val panelTransitionAnimatorClass = classLoader.loadClass(
+                    "com.android.systemui.qs.animator.PanelTransitionAnimator"
                 )
                 val qsClass = classLoader.loadClass("com.android.systemui.plugins.qs.QS")
-                val setQsMethod = animatorClass.getDeclaredMethod("setQs", qsClass)
+                val setQsMethod = panelTransitionAnimatorClass.reflect.findMethodExact("setQs", qsClass)
                 xposedModule.hook(setQsMethod).intercept { chain ->
                     val result = chain.proceed()
-                    if (applicationInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
+                    if (isLegacyAnimator) {
                         chain.thisObject.reflect["clockDateContainer"] = null
                     } else {
                         val context = chain.thisObject.reflect["context"] as? Context
@@ -338,19 +340,17 @@ object QS {
                     }
                     result
                 }
-                if (applicationInfo.targetSdkVersion >= Build.VERSION_CODES.BAKLAVA) {
-                    val legacyAnimatorClass = classLoader.loadClass(
+                val expandAnimatorClass = classLoader.loadClass(
+                    if (isLegacyAnimator) {
                         "com.android.systemui.qs.animator.LegacyQsExpandAnimator"
-                    )
-                    val method = legacyAnimatorClass.getDeclaredMethod($$"updateViews$2")
-                    xposedModule.hook(method).intercept(callback)
-                } else {
-                    val expandAnimatorClass = classLoader.loadClass(
+                    } else {
                         "com.android.systemui.qs.animator.QsExpandAnimator"
-                    )
-                    val method = expandAnimatorClass.getDeclaredMethod("updateViews")
-                    xposedModule.hook(method).intercept(callback)
-                }
+                    }
+                )
+                val method = expandAnimatorClass.getDeclaredMethod(
+                    if (isLegacyAnimator) $$"updateViews$2" else "updateViews"
+                )
+                xposedModule.hook(method).intercept(callback)
             } catch (t: Throwable) {
                 xlog(t)
             }

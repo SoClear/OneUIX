@@ -1,6 +1,15 @@
 package io.github.soclear.oneuix.ui.category
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Slider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -52,10 +61,39 @@ fun DetailPaneLauncher(
             checked = uiState.removeShortcutBadge,
             onCheckedChange = { onEvent(LauncherEvent.RemoveShortcutBadge(it)) }
         )
+        Column {
+            var padding by remember(uiState.dockBottomPaddingDp) {
+                mutableFloatStateOf(
+                    uiState.dockBottomPaddingDp.takeIf { it.isFinite() }?.coerceIn(0f, 100f) ?: 0f
+                )
+            }
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.padding),
+                title = stringResource(R.string.modifyDockBottomPadding_title),
+                summary = stringResource(R.string.modifyDockBottomPadding_summary, padding),
+                checked = uiState.modifyDockBottomPadding,
+                onCheckedChange = { onEvent(LauncherEvent.ModifyDockBottomPadding(it)) }
+            )
+            AnimatedVisibility(uiState.modifyDockBottomPadding) {
+                Slider(
+                    value = padding,
+                    onValueChange = { padding = it },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    valueRange = 0f..100f,
+                    onValueChangeFinished = { onEvent(LauncherEvent.DockBottomPaddingDp(padding)) }
+                )
+            }
+        }
     }
 }
 
 sealed interface LauncherEvent {
+    @JvmInline
+    value class ModifyDockBottomPadding(val value: Boolean) : LauncherEvent
+
+    @JvmInline
+    value class DockBottomPaddingDp(val value: Float) : LauncherEvent
+
     @JvmInline
     value class ShowMemoryUsageInRecents(val value: Boolean) : LauncherEvent
 
@@ -75,6 +113,14 @@ sealed interface LauncherEvent {
 fun SettingViewModel.onLauncherEvent(event: LauncherEvent) {
     updateData { preference ->
         when (event) {
+            is LauncherEvent.ModifyDockBottomPadding -> preference.copy(
+                other = preference.other.copy(modifyDockBottomPadding = event.value)
+            )
+
+            is LauncherEvent.DockBottomPaddingDp -> preference.copy(
+                other = preference.other.copy(dockBottomPaddingDp = event.value)
+            )
+
             is LauncherEvent.ShowMemoryUsageInRecents -> preference.copy(
                 other = preference.other.copy(
                     showMemoryUsageInRecents = event.value

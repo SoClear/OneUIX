@@ -6,6 +6,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
@@ -24,6 +25,7 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.getHookConfig
 import io.github.soclear.oneuix.hook.util.longVersionCode
 import io.github.soclear.oneuix.hook.util.reflect
@@ -34,10 +36,43 @@ import java.io.File
 import java.lang.ref.WeakReference
 import java.lang.reflect.Constructor
 import kotlin.math.roundToInt
+import androidx.core.view.isNotEmpty
 
 
 @SuppressLint("PrivateApi")
 object Launcher {
+    context(xposedModule: XposedModule)
+    fun setDockBottomPadding(paddingDp: Float) = afterAttachTry {
+        val clazz = classLoader.loadClass(
+            "com.honeyspace.ui.honeypots.hotseat.presentation.HotseatCellLayout"
+        )
+        xposedModule.hook(clazz.declaredMethods.single { it.name == "onLayout" }).intercept { chain ->
+            val result = chain.proceed()
+            val layout = chain.thisObject as ViewGroup
+            if (layout.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                layout.resources.configuration.smallestScreenWidthDp < 600 && layout.isNotEmpty()
+            ) {
+                val icon = layout.getChildAt(0)
+                val style = icon.reflect.call("getItemStyle") ?: return@intercept result
+                val position = style.reflect.call("getPosition") as Point
+                val balloon = layout.parent as View
+                val dock = balloon.parent as View
+                val bottom = balloon.top + layout.top + icon.top + position.y +
+                    (style.reflect.call("getItemSize") as Int)
+                val padding = (paddingDp * layout.resources.displayMetrics.density).roundToInt()
+                // Move the real dock bounds, not just padding or the drawn icons.
+                val params = dock.layoutParams as ViewGroup.MarginLayoutParams
+                val top = dock.rootView.height - padding - bottom
+                if (params.topMargin != top) {
+                    params.topMargin = top
+                    dock.layoutParams = params
+                }
+                dock.setPadding(dock.paddingLeft, dock.paddingTop, dock.paddingRight, 0)
+            }
+            result
+        }
+    }
+
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun showMemoryUsageInRecents() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {

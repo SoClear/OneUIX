@@ -46,6 +46,7 @@
     <string name="immersiveModeQsTile_title">Activer la tuile du mode immersif dans les paramètres rapides</string>
     <string name="rootImmersiveModeQsTile_summary">Nécessite un accès root. Ajoutez manuellement la tuile, puis appuyez dessus pour masquer ou réafficher la barre d\'état</string>
     <string name="outdoorModeQsTile_label">Mode Extérieur</string>
+    <string name="autoBrightnessQsTile_label">Luminosité automatique</string>
     <string name="setStatusBarClockFormat_title">Définir le format de l\'horloge de la barre d\'état</string>
     <string name="setStatusBarClockTextScale_title">Définir le facteur d\'échelle de l\'horloge de la barre d\'état</string>
     <string name="updateStatusBarClockEverySecond_title">Mettre à jour l\'heure de la barre d\'état chaque seconde</string>
@@ -77,6 +78,9 @@
     <string name="redirect_custom_tab_title">Forcer l\'ouverture dans Samsung Internet externe</string>
     <string name="redirect_custom_tab_summary">Quand Samsung Internet est défini comme navigateur par défaut, de nombreuses applications ouvrent les liens dans un onglet personnalisé Samsung Internet limité. Activez cette option pour quitter l\'application et ouvrir les liens dans le navigateur Samsung Internet complet.</string>
     <string name="blockGalaxyStoreAds_title">Bloquer les publicités du Galaxy Store</string>
+    <string name="galaxyStoreRegion_title">Opérateur SIM du Galaxy Store (MCC+MNC)</string>
+    <string name="galaxyStoreRegion_summary">Saisissez 5 ou 6 chiffres en conservant les zéros initiaux, puis appuyez sur Confirmer pour enregistrer. Laissez vide pour ne rien modifier. Redémarrez Galaxy Store pour appliquer.</string>
+    <string name="galaxyStoreRegion_reference">Consulter les codes de pays et opérateurs (UIT)</string>
     <string name="blockGalaxyStoreAds_summary">Bloque les pubs au démarrage, les recommandations et les pop-ups de limite d\'âge</string>
     <string name="supportAllCameraMenu_title">Afficher tous les menus de l\'appareil photo</string>
     <string name="supportAllCameraMenu_summary">Son de l\'obturateur, Auto HDR, Log, Filigrane avec cadre</string>
@@ -87,7 +91,10 @@
     <string name="autoExpandNotifications_title">Développer automatiquement les notifications</string>
     <string name="hideOngoingActivityMedia_title">Masquer l\'activité en cours des applications multimédias</string>
     <string name="hideOngoingActivityMedia_summary">Masquer la pastille d\'activité en cours dans la barre d\'état et la carte de notification multimédia lors de la lecture de musique en arrière-plan</string>
-    <string name="hideOngoingActivityMedia_packages_hint">Noms de packages, séparés par des virgules</string>
+    <string name="app_picker_title">Sélectionner des applications</string>
+    <string name="app_picker_search_hint">Rechercher un nom ou un package</string>
+    <string name="app_picker_selected_count">Applications sélectionnées : %1$d</string>
+    <string name="app_picker_empty">Aucune application correspondante</string>
     <string name="customPowerMenu_title">Personnaliser les actions du menu d\'alimentation</string>
     <string name="powerMenuActionVisible_summary">Visible, position %1$d</string>
     <string name="powerMenuActionHidden_summary">Masqué</string>
@@ -136,6 +143,7 @@
     <string name="supportOutdoorMode_title">Déverrouiller le mode Extérieur</string>
     <string name="disablePinVerifyPer72h_title">Désactiver la vérification du code PIN toutes les 72 heures</string>
     <string name="hideAODStatusBar_title">Masquer la barre d\'état sur l\'AOD</string>
+    <string name="hideAODChargingInfo_title">Masquer les informations de charge sur l\'AOD</string>
     <string name="aodLockSupportLunar_title">Afficher le calendrier lunaire chinois sur l\'AOD</string>
     <string name="enableChineseHolidayDisplay_title">Afficher les jours fériés chinois dans le calendrier</string>
     <string name="supportBlockMessage_title">Prendre en charge le blocage des SMS</string>
@@ -150,6 +158,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Paramètres -> À propos du téléphone -> Informations sur l\'état</string>
     <string name="noAIWatermark_title">Désactiver le filigrane IA</string>
     <string name="noAIWatermark_summary">Inclut l\'éditeur de photos et Studio création</string>
+    <string name="hideSamsungHealthDiscover_title">Masquer l’onglet Découvrir</string>
     <string name="bypassHealthMonitorCountryCheck_title">Contourner la vérification de pays Samsung Health Monitor</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Utiliser Health Monitor dans les pays non pris en charge</string>
     <string name="useSPenGoogleTranslate_title">Utiliser Google Traduction pour S Pen</string>
@@ -176,9 +185,11 @@
     <string name="liftFcmNetworkLimit_title">Lever la limite réseau FCM</string>
     <string name="liftFcmNetworkLimit_summary">Supprimer la restriction du firmware Chine (y compris Hong Kong) qui limite l\'accès réseau des notifications GMS/FCM</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">Garder l\'écran éteint au débranchement</string>
-    <string name="disableWritingToolkitGlobally_title">Désactiver globalement les outils d\'écriture</string>
-    <string name="disableWritingToolkitGlobally_summary">Supprime les outils d\'écriture Samsung des menus de sélection de texte de toutes les applications via le framework système</string>
+    <string name="disableWritingToolkit_title">Désactiver les outils d\'écriture</string>
+    <string name="disableWritingToolkit_summary">Ajoutez les applications sélectionnées à la portée du module et redémarrez-les pour retirer les outils d\'écriture Samsung de leurs menus de sélection de texte</string>
     <string name="disableFlagSecure_title">Désactiver FLAG_SECURE</string>
+    <string name="hideScreenshotDetection_title">Masquer les captures aux applications</string>
+    <string name="hideScreenshotDetection_summary">Ajoutez les applications sélectionnées à la portée du module et redémarrez-les. Bloque les rappels de capture et les changements reconnus comme captures. Les captures restent visibles et les autres notifications de photos sont conservées</string>
     <string name="disableFlagSecure_summary">Autoriser les captures et enregistrements d\'écran dans les fenêtres sécurisées</string>
     <string name="backup_config">Sauvegarder la config</string>
     <string name="restore_config">Restaurer la config</string>
@@ -193,4 +204,24 @@
     <string name="supportBixbyCustomWakeup_summary">Activer les phrases personnalisées et réessayer le téléchargement des modèles chinois. Activer Bixby et le réveil vocal dans la portée du module, puis redémarrer les deux applications.</string>
     <string name="bypassBixbyWakeWordRestrictions_title">Assouplir les restrictions des phrases</string>
     <string name="bypassBixbyWakeWordRestrictions_summary">Autoriser davantage de textes. L’enregistrement vocal et la validation des modèles restent nécessaires.</string>
+    <string name="nfc_filter_title">Filtrage des cartes NFC</string>
+    <string name="nfc_service">Service NFC</string>
+    <string name="nfc_filter_summary">Ajoutez NFC (com.android.nfc) à la portée du module et redémarrez le téléphone une fois. Les modifications de la liste prennent ensuite effet immédiatement. Touchez une carte enregistrée pour modifier sa note.</string>
+    <string name="nfc_mode_off">Désactivé</string>
+    <string name="nfc_mode_blacklist">Liste noire : ignorer les cartes de la liste</string>
+    <string name="nfc_mode_whitelist">Liste blanche : reconnaître uniquement les cartes de la liste</string>
+    <string name="nfc_scan_hint">Approchez une carte du téléphone pour lire son UID, ou saisissez-le manuellement, puis enregistrez. Les cartes filtrées restent lisibles ici.</string>
+    <string name="nfc_unavailable">Cet appareil ne prend pas en charge le NFC. Vous pouvez saisir les UID manuellement.</string>
+    <string name="nfc_disabled">Activez le NFC pour lire une carte, ou saisissez son UID manuellement.</string>
+    <string name="nfc_settings">Paramètres NFC</string>
+    <string name="nfc_uid_invalid">Saisissez des octets hexadécimaux complets, par exemple 92014119.</string>
+    <string name="nfc_note">Note (facultative)</string>
+    <string name="nfc_save">Enregistrer / mettre à jour</string>
+    <string name="nfc_delete">Supprimer</string>
+    <string name="alignStatusBarContentToTop_title">Aligner le contenu de la barre d’état en haut</string>
+    <string name="alignStatusBarContentToTop_summary">Mode portrait uniquement. Conserve la hauteur de la barre d’état et les marges des applications.</string>
+    <string name="hideLockscreenEmergencyButton_title">Masquer le bouton d’appel d’urgence sur l’écran de verrouillage</string>
+    <string name="hideLockscreenEmergencyButton_summary">Supprime le raccourci d’appel d’urgence de l’écran de déverrouillage et rend les appels d’urgence moins accessibles.</string>
+    <string name="modifyDockBottomPadding_title">Modifier la marge inférieure du dock de l’écran d’accueil</string>
+    <string name="modifyDockBottomPadding_summary">Téléphones en mode portrait : %1$.1f dp. Réglez sur 0 pour supprimer la marge inférieure. Peut chevaucher la zone des gestes.</string>
 </resources>

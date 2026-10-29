@@ -175,12 +175,11 @@ object Gallery {
 
                 fun handleSwap(
                     data: MutableList<Any>?,
-                    spaceMap: MutableMap<String, Any>?,
                     childDataMap: Any?,
                     onUpdateDataCount: (Int) -> Unit
                 ) {
                     val spaces = getSpacesFromChildDataMap(childDataMap)
-                    if (spaces != null && data != null && spaceMap != null) {
+                    if (spaces != null && data != null) {
                         val hiddenIds = getHiddenSharedAlbumIds()
 
                         synchronized(sharedAlbums) {
@@ -192,11 +191,11 @@ object Gallery {
                         }
 
                         if (hiddenIds.isNotEmpty()) {
+                            // 仅过滤显示列表，保留 mSpaceMap 供详情页按 ID 查询。
                             data.removeAll { item ->
                                 isSharing(item) && getSpaceId(item) in hiddenIds
                             }
                             spaces.removeAll { item -> getSpaceId(item) in hiddenIds }
-                            hiddenIds.forEach { spaceMap.remove(it) }
                         }
                         onUpdateDataCount(data.size)
                     }
@@ -211,12 +210,10 @@ object Gallery {
                             @Suppress("UNCHECKED_CAST")
                             val data = chain.args.getOrNull(1) as? MutableList<Any>
 
-                            @Suppress("UNCHECKED_CAST")
-                            val spaceMap = chain.args.getOrNull(2) as? MutableMap<String, Any>
                             val childDataMap = chain.args.getOrNull(4)
                             var updated = false
                             val newArgs = chain.args.toTypedArray()
-                            handleSwap(data, spaceMap, childDataMap) { newCount ->
+                            handleSwap(data, childDataMap) { newCount ->
                                 newArgs[5] = newCount
                                 updated = true
                             }
@@ -239,12 +236,10 @@ object Gallery {
                             @Suppress("UNCHECKED_CAST")
                             val data = chain.args.getOrNull(2) as? MutableList<Any>
 
-                            @Suppress("UNCHECKED_CAST")
-                            val spaceMap = chain.args.getOrNull(3) as? MutableMap<String, Any>
                             val childDataMap = chain.args.getOrNull(5)
                             var updated = false
                             val newArgs = chain.args.toTypedArray()
-                            handleSwap(data, spaceMap, childDataMap) { newCount ->
+                            handleSwap(data, childDataMap) { newCount ->
                                 newArgs[6] = newCount
                                 updated = true
                             }

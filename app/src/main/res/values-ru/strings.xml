@@ -46,6 +46,7 @@
     <string name="immersiveModeQsTile_title">Включить плитку иммерсивного режима в быстрых настройках</string>
     <string name="rootImmersiveModeQsTile_summary">Требуются Root-права. Добавьте плитку вручную; нажмите на неё, чтобы скрыть или восстановить строку состояния</string>
     <string name="outdoorModeQsTile_label">Режим “На улице”</string>
+    <string name="autoBrightnessQsTile_label">Автояркость</string>
     <string name="setStatusBarClockFormat_title">Формат даты и времени в строке состояния</string>
     <string name="setStatusBarClockTextScale_title">Масштаб часов в строке состояния</string>
     <string name="updateStatusBarClockEverySecond_title">Обновлять часы в строке состояния каждую секунду</string>
@@ -77,6 +78,9 @@
     <string name="redirect_custom_tab_title">Открывать ссылки во внешнем Samsung Internet</string>
     <string name="redirect_custom_tab_summary">Когда Samsung Internet выбран браузером по умолчанию, многие приложения открывают ссылки в ограниченной встроенной вкладке Samsung Internet. Включите эту функцию, чтобы принудительно выходить из приложения и открывать ссылки в полном браузере Samsung Internet.</string>
     <string name="blockGalaxyStoreAds_title">Удалить рекламу в Galaxy Store</string>
+    <string name="galaxyStoreRegion_title">SIM-оператор Galaxy Store (MCC+MNC)</string>
+    <string name="galaxyStoreRegion_summary">Введите 5 или 6 цифр, сохраняя начальные нули, затем нажмите «Подтвердить» для сохранения. Оставьте пустым для работы без изменений. Перезапустите Galaxy Store для применения.</string>
+    <string name="galaxyStoreRegion_reference">Справочник кодов стран и операторов (МСЭ)</string>
     <string name="blockGalaxyStoreAds_summary">Удаление рекламы на заставке, рекомендаций, всплывающих окон и ограничений по возрасту при установке</string>
     <string name="supportAllCameraMenu_title">Показать все меню камеры</string>
     <string name="supportAllCameraMenu_summary">Звук затвора, Auto HDR, Log, Рамка-водяной знак</string>
@@ -87,7 +91,10 @@
     <string name="autoExpandNotifications_title">Автоматически разворачивать уведомления</string>
     <string name="hideOngoingActivityMedia_title">Скрыть активность медиаприложений</string>
     <string name="hideOngoingActivityMedia_summary">Скрывать капсулу активности в строке состояния и медиауведомление при воспроизведении музыки в фоне</string>
-    <string name="hideOngoingActivityMedia_packages_hint">Имена пакетов через запятую</string>
+    <string name="app_picker_title">Выбор приложений</string>
+    <string name="app_picker_search_hint">Поиск по названию или имени пакета</string>
+    <string name="app_picker_selected_count">Выбрано приложений: %1$d</string>
+    <string name="app_picker_empty">Нет подходящих приложений</string>
     <string name="customPowerMenu_title">Настроить действия меню питания</string>
     <string name="powerMenuActionVisible_summary">Показано, позиция %1$d</string>
     <string name="powerMenuActionHidden_summary">Скрыто</string>
@@ -136,6 +143,7 @@
     <string name="supportOutdoorMode_title">Разблокировать режим “На улице”</string>
     <string name="disablePinVerifyPer72h_title">Отключить подтверждение ПИН-кода каждые 72 часа</string>
     <string name="hideAODStatusBar_title">Скрыть строку состояния на AOD</string>
+    <string name="hideAODChargingInfo_title">Скрыть информацию о зарядке на AOD</string>
     <string name="aodLockSupportLunar_title">Лунный календарь на AOD и экране блокировки</string>
     <string name="enableChineseHolidayDisplay_title">Китайские праздники в календаре</string>
     <string name="supportBlockMessage_title">Блокировка сообщений</string>
@@ -150,6 +158,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Настройки -> Сведения о телефоне -> Сведения о состоянии</string>
     <string name="noAIWatermark_title">Отключить ИИ-водяные знаки</string>
     <string name="noAIWatermark_summary">Включая Фоторедактор и Креативная студия</string>
+    <string name="hideSamsungHealthDiscover_title">Скрыть вкладку «Интересное»</string>
     <string name="bypassHealthMonitorCountryCheck_title">Обход проверки региона в Samsung Health Monitor</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Разрешить использование Health Monitor в неподдерживаемых странах</string>
     <string name="useSPenGoogleTranslate_title">Использовать Google Переводчик для S Pen</string>
@@ -176,9 +185,11 @@
     <string name="liftFcmNetworkLimit_title">Снять ограничение сети FCM</string>
     <string name="liftFcmNetworkLimit_summary">Убрать ограничение прошивки Китая (включая Гонконг), блокирующее сетевой доступ push GMS/FCM</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">Не включать экран при отключении зарядки</string>
-    <string name="disableWritingToolkitGlobally_title">Отключить инструменты для письма глобально</string>
-    <string name="disableWritingToolkitGlobally_summary">Удаляет инструменты для письма Samsung из меню выделения текста во всех приложениях через системный фреймворк</string>
+    <string name="disableWritingToolkit_title">Отключить инструменты для письма</string>
+    <string name="disableWritingToolkit_summary">Добавьте выбранные приложения в область действия модуля и перезапустите их, чтобы убрать инструменты для письма Samsung из меню выделения текста</string>
     <string name="disableFlagSecure_title">Отключить FLAG_SECURE</string>
+    <string name="hideScreenshotDetection_title">Скрывать снимки экрана от приложений</string>
+    <string name="hideScreenshotDetection_summary">Добавьте выбранные приложения в область действия модуля и перезапустите их. Блокируются уведомления о захвате экрана и распознанных снимках. Снимки видимы при выборе фото; уведомления об обычных фото сохраняются</string>
     <string name="disableFlagSecure_summary">Разрешить снимки и запись экрана в защищенных окнах</string>
     <string name="backup_config">Резервное копирование</string>
     <string name="restore_config">Восстановить конфиг</string>
@@ -193,4 +204,24 @@
     <string name="supportBixbyCustomWakeup_summary">Включить свои фразы и повторную загрузку китайских моделей. Добавьте Bixby и голосовое пробуждение в область действия модуля и перезапустите оба приложения.</string>
     <string name="bypassBixbyWakeWordRestrictions_title">Ослабить ограничения фраз</string>
     <string name="bypassBixbyWakeWordRestrictions_summary">Разрешить дополнительные тексты фраз. Запись голоса и проверка моделей по-прежнему необходимы.</string>
+    <string name="nfc_filter_title">Фильтр NFC-карт</string>
+    <string name="nfc_service">Служба NFC</string>
+    <string name="nfc_filter_summary">Добавьте NFC (com.android.nfc) в область действия модуля и один раз перезагрузите телефон. После этого изменения списка применяются сразу. Нажмите на сохранённую карту, чтобы изменить заметку.</string>
+    <string name="nfc_mode_off">Выключено</string>
+    <string name="nfc_mode_blacklist">Чёрный список: игнорировать карты из списка</string>
+    <string name="nfc_mode_whitelist">Белый список: распознавать только карты из списка</string>
+    <string name="nfc_scan_hint">Поднесите карту к телефону, чтобы прочитать UID, или введите его вручную, затем сохраните. Здесь можно читать и отфильтрованные карты.</string>
+    <string name="nfc_unavailable">Устройство не поддерживает NFC. UID можно ввести вручную.</string>
+    <string name="nfc_disabled">Включите NFC для чтения карты или введите её UID вручную.</string>
+    <string name="nfc_settings">Настройки NFC</string>
+    <string name="nfc_uid_invalid">Введите полные шестнадцатеричные байты, например 92014119.</string>
+    <string name="nfc_note">Заметка (необязательно)</string>
+    <string name="nfc_save">Сохранить / обновить</string>
+    <string name="nfc_delete">Удалить</string>
+    <string name="alignStatusBarContentToTop_title">Выровнять содержимое строки состояния по верхнему краю</string>
+    <string name="alignStatusBarContentToTop_summary">Только в портретном режиме. Высота строки состояния и отступы приложений сохраняются.</string>
+    <string name="hideLockscreenEmergencyButton_title">Скрыть кнопку экстренного вызова на экране блокировки</string>
+    <string name="hideLockscreenEmergencyButton_summary">Удаляет ярлык экстренного вызова с экрана разблокировки, затрудняя доступ к экстренному набору.</string>
+    <string name="modifyDockBottomPadding_title">Изменить нижний отступ док-панели главного экрана</string>
+    <string name="modifyDockBottomPadding_summary">Телефоны в портретном режиме: %1$.1f dp. Установите 0, чтобы убрать нижний отступ. Возможно перекрытие области жестов.</string>
 </resources>

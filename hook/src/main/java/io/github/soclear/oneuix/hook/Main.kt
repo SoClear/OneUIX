@@ -8,12 +8,12 @@ import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
-import io.github.soclear.oneuix.hook.systemui.Other
 import io.github.soclear.oneuix.hook.systemui.QS
 import io.github.soclear.oneuix.hook.systemui.StatusBar
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
+import io.github.soclear.oneuix.hook.systemui.Other as SystemUIOther
 
 class Main : XposedModule() {
     private var processName = ""
@@ -25,6 +25,18 @@ class Main : XposedModule() {
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = with(param) {
         if (!isFirstPackage) return@with
         val preference = PreferenceProvider.loadPreference() ?: return@with
+
+        if (preference.other.disableWritingToolkit &&
+            packageName in preference.other.disableWritingToolkitPackages
+        ) {
+            Other.disableWritingToolkit()
+        }
+
+        if (preference.other.hideScreenshotDetection &&
+            packageName in preference.other.hideScreenshotDetectionPackages
+        ) {
+            Other.hideScreenshotDetection()
+        }
 
         when (packageName) {
             Package.BIXBY_AGENT, Package.BIXBY_WAKEUP -> {
@@ -100,6 +112,12 @@ class Main : XposedModule() {
                 }
             }
 
+            Package.HEALTH -> {
+                if (preference.other.hideSamsungHealthDiscover) {
+                    SamsungHealth.hideDiscover()
+                }
+            }
+
             Package.HEALTH_MONITOR -> {
                 if (preference.other.bypassHealthMonitorCountryCheck) {
                     HealthMonitor.bypassCountryCheck()
@@ -115,6 +133,10 @@ class Main : XposedModule() {
             }
 
             Package.LAUNCHER -> {
+                if (preference.other.modifyDockBottomPadding) {
+                    Launcher.setDockBottomPadding(preference.other.dockBottomPaddingDp)
+                }
+
                 if (preference.other.showMemoryUsageInRecents) {
                     Launcher.showMemoryUsageInRecents()
                 }
@@ -147,6 +169,8 @@ class Main : XposedModule() {
                     Messaging.isSupportBlock()
                 }
             }
+
+            Package.NFC -> NFC.filterNfcCards()
 
             Package.NOTES -> {
                 if (preference.other.supportAllNotesFeatures) {
@@ -219,6 +243,9 @@ class Main : XposedModule() {
             }
 
             Package.STORE -> {
+                if (preference.other.setGalaxyStoreSimOperator) {
+                    GalaxyStore.setRegion(preference.other.galaxyStoreSimOperator)
+                }
                 if (preference.other.blockGalaxyStoreAds) {
                     GalaxyStore.blockGalaxyStoreAds()
                 }
@@ -253,6 +280,14 @@ class Main : XposedModule() {
                         preference.systemUI.statusBar.batteryIconHeightScale
                     } else null
                     StatusBar.setBatteryIconScale(widthScale, heightScale)
+                }
+
+                if (preference.systemUI.statusBar.alignStatusBarContentToTop) {
+                    StatusBar.alignContentToTop()
+                }
+
+                if (preference.systemUI.other.hideLockscreenEmergencyButton) {
+                    SystemUIOther.hideLockscreenEmergencyButton()
                 }
 
                 if (preference.systemUI.statusBar.hideBatteryPercentageSign) {
@@ -388,6 +423,10 @@ class Main : XposedModule() {
                     QS.showTraditionalChineseDateOnQS()
                 }
 
+                if (preference.systemUI.aod.hideAODChargingInfo) {
+                    AOD.hideAODChargingInfo()
+                }
+
                 if (preference.systemUI.aod.hideAODStatusBar) {
                     AOD.hideAODStatusBar()
                 }
@@ -425,7 +464,7 @@ class Main : XposedModule() {
                     DisableFlagSecure.hookSystemUI(classLoader)
                 }
                 if (preference.systemUI.other.disableScreenshotCaptureSound) {
-                    Other.disableScreenshotCaptureSound()
+                    SystemUIOther.disableScreenshotCaptureSound()
                 }
             }
 
@@ -481,10 +520,6 @@ class Main : XposedModule() {
 
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = with(param) {
         val preference = PreferenceProvider.loadPreference() ?: return@with
-
-        if (preference.android.disableWritingToolkitGlobally) {
-            Android.disableWritingToolkitGlobally()
-        }
 
         if (preference.android.disablePinVerifyPer72h) {
             Android.disablePinVerifyPer72h()

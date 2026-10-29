@@ -20,7 +20,8 @@ class TilePreferencesActivity : Activity() {
                 Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS)
             ).any { runCatching { startActivity(it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess }
 
-            OutdoorModeTileService::class.java.name -> runCatching {
+            OutdoorModeTileService::class.java.name,
+            AutoBrightnessTileService::class.java.name -> runCatching {
                 startActivity(Intent(Settings.ACTION_DISPLAY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
             }
         }

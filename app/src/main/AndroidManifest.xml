@@ -6,6 +6,9 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+    <uses-permission android:name="android.permission.NFC" />
+
     <uses-permission
         android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
@@ -24,31 +27,10 @@
     -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
-    <queries>
-        <package android:name="com.android.settings" />
-        <package android:name="com.android.systemui" />
-        <package android:name="com.samsung.android.app.notes" />
-        <package android:name="com.samsung.android.app.sketchbook" />
-        <package android:name="com.samsung.android.app.telephonyui" />
-        <package android:name="com.samsung.android.app.watchmanager" />
-        <package android:name="com.samsung.android.bixby.agent" />
-        <package android:name="com.samsung.android.bixby.wakeup" />
-        <package android:name="com.samsung.android.calendar" />
-        <package android:name="com.samsung.android.da.daagent" />
-        <package android:name="com.samsung.android.dialer" />
-        <package android:name="com.samsung.android.messaging" />
-        <package android:name="com.samsung.android.service.airviewdictionary" />
-        <package android:name="com.samsung.android.shealthmonitor" />
-        <package android:name="com.samsung.android.themecenter" />
-        <package android:name="com.samsung.android.video" />
-        <package android:name="com.sec.android.app.camera" />
-        <package android:name="com.sec.android.app.launcher" />
-        <package android:name="com.sec.android.app.samsungapps" />
-        <package android:name="com.sec.android.app.sbrowser" />
-        <package android:name="com.sec.android.daemonapp" />
-        <package android:name="com.sec.android.gallery3d" />
-        <package android:name="com.sec.android.mimage.photoretouching" />
-    </queries>
+    <!-- The app picker needs to list all installed apps, including system apps. -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="PackageVisibilityPolicy,QueryAllPackagesPermission" />
 
     <application
         android:allowBackup="true"
@@ -95,6 +77,16 @@
             android:exported="true"
             android:icon="@drawable/light_mode"
             android:label="@string/outdoorModeQsTile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".AutoBrightnessTileService"
+            android:exported="true"
+            android:icon="@drawable/brightness_auto"
+            android:label="@string/autoBrightnessQsTile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

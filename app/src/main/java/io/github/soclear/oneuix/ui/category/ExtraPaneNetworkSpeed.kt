@@ -3,14 +3,17 @@ package io.github.soclear.oneuix.ui.category
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -18,19 +21,21 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -108,20 +113,34 @@ fun ExtraPaneNetworkSpeed(
                         onCommit = { onEvent(SystemUIEvent.StatusBar.NetworkSpeedTextSize(it)) }
                     )
 
-                    val thresholdOffLabel =
-                        stringResource(id = R.string.networkSpeedThreshold_summary_off)
-                    SliderItem(
-                        title = stringResource(id = R.string.networkSpeedThreshold_title),
-                        value = statusBar.networkSpeedThreshold.toFloat(),
-                        valueRange = 0f..100f,
-                        steps = 99,
-                        display = {
-                            if (it <= 0f) thresholdOffLabel else "%.0f %s/s".format(
-                                it,
-                                speedUnitPrefix
+                    var thresholdInput by rememberSaveable(statusBar.networkSpeedThreshold) {
+                        mutableStateOf(statusBar.networkSpeedThreshold.toString())
+                    }
+                    ListItem(
+                        headlineContent = { Text(stringResource(R.string.networkSpeedThreshold_title)) },
+                        trailingContent = {
+                            Text(
+                                text = "${statusBar.networkSpeedThreshold} $speedUnitPrefix/s",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary
                             )
+                        }
+                    )
+                    OutlinedTextField(
+                        value = thresholdInput,
+                        onValueChange = { input ->
+                            val value = input.toIntOrNull()
+                            if (input.isEmpty() || (value != null && value >= 0)) {
+                                thresholdInput = input
+                                value?.let { onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(it)) }
+                            }
                         },
-                        onCommit = { onEvent(SystemUIEvent.StatusBar.NetworkSpeedThreshold(it.roundToInt())) }
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        supportingText = {
+                            Text("0: " + stringResource(R.string.networkSpeedThreshold_summary_off))
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                     )
 
                     SelectItem(

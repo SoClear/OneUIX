@@ -37,6 +37,7 @@
 - 解除 FCM 网络限制
 - 拔出充电器时不亮屏
 - 全局禁用三星写作工具包
+- 解除截屏和录屏限制
 
 #### 系统 UI
 
@@ -44,13 +45,15 @@
 
 - 修改状态栏左边距
 - 修改状态栏右边距
+- 状态栏内容置顶（保留原高度）
 - 设置电池图标宽度缩放倍数
 - 设置电池图标高度缩放倍数
 - 隐藏状态栏电池的百分号
 - 隐藏电池图标
 - 显示电量文字
 - 支持显示实时网速
-- 状态栏显示上传下载网速：横向或纵向分割、仅显示当前方向，箭头样式、大小、间距可调，可选比特/字节与 1000/1024 进制
+- 自定义网速布局、样式和单位
+- 设置网速显示阈值
 - 设置状态栏日期时间格式
 - 设置状态栏时间大小
 - 状态栏时间每秒更新
@@ -70,6 +73,7 @@
 - 开启快捷设置 5G 磁贴
 - 开启沉浸模式快捷设置磁贴
 - 户外模式快捷设置磁贴
+- 自动调节亮度快捷设置磁贴（需要 root 权限）
 - 隐藏快捷设置面板的媒体播放器 Bar
 - 隐藏快捷设置面板的附近设备和设备控制 Bar
 - 隐藏快捷设置面板的安全底部提示 Bar
@@ -85,14 +89,16 @@
 
 ##### 息屏提醒
 
+- 隐藏息屏提醒的充电信息
 - 隐藏息屏提醒的状态栏
 - 息屏提醒显示中国农历
 
 ##### 其他
 
 - 自定义关机菜单按钮（包括软重启）
+- 隐藏锁屏紧急呼叫按钮
 - 禁用截图声音
-- 隐藏音乐应用的实时活动
+- 隐藏所选音乐应用的实时活动和媒体通知
 - 允许所有旋转角度
 - 自动展开通知
 
@@ -101,7 +107,7 @@
 - 开发者选项显示强制最大刷新率选项
 - 解锁户外模式
 - 显示更多电池信息
-- 自定义充电上限（20–100%，设为 100% 关闭电池保护）
+- 自定义充电上限
 - 应用程序信息页面显示包信息
 - Wi-Fi 列表页显示当前连接速度
 - 支持任意字体
@@ -124,13 +130,18 @@
 #### Bixby
 
 - 解锁离线处理
-- 自定义唤醒短语，修复不受支持机型的中文模型下载
-- 放宽唤醒短语文本限制（仍需录音和模型校验）
-- 在模块作用域中启用 Bixby 和语音唤醒，修改选项后重启两个应用
+- 支持中文自定义唤醒短语
+- 放宽唤醒短语限制
+
+#### NFC
+
+- 支持 NFC 卡片黑名单和白名单
 
 #### 其他
 
+- 对所选应用隐藏截图行为
 - 去除应用商店的广告
+- 自定义应用商店 SIM 运营商代码（MCC+MNC）
 - 应用分身支持所有用户应用
 - 天气源设为中国天气
 - 最近任务页面显示内存信息
@@ -145,9 +156,11 @@
 - 主题和图标试用永不过期
 - 伪装浏览器国家/地区代码为美国
 - 禁用 AI 水印
+- 隐藏三星健康的“发现”页面
 - 绕过 Samsung Health Monitor 国家检查
 - S Pen 使用谷歌翻译
 - 隐藏应用屏幕搜索栏
+- 修改桌面底部栏下边距（手机竖屏）
 - 移除快捷方式图标右下角小角标
 - 手表连接模式（WearOS CN / WearOS Global）
 - 绕过手表配对区域检查
@@ -191,6 +204,7 @@
 - Lift FCM network limit
 - Keep screen off when unplugged
 - Disable Samsung Writing Toolkit globally
+- Remove screenshot and screen recording restrictions
 
 #### System UI
 
@@ -198,13 +212,15 @@
 
 - Modify status bar left padding
 - Modify status bar right padding
+- Align status bar content to the top without changing its height
 - Set battery icon width scale factor
 - Set battery icon height scale factor
 - Hide battery percentage sign in status bar
 - Hide battery icon
 - Show battery level text
 - Support displaying real-time network speed
-- Show upload and download speeds in status bar: split horizontally or vertically, or only active direction, with selectable markers, size, spacing, units and scale
+- Customize network speed layout, style and units
+- Set network speed display threshold
 - Set status bar date and time format
 - Set status bar clock size
 - Update status bar clock every second
@@ -224,6 +240,7 @@
 - Enable 5G Quick Settings tile
 - Enable Immersive mode Quick Settings tile
 - Outdoor mode Quick Settings tile
+- Auto brightness Quick Settings tile (requires root)
 - Hide Media Player bar in QS panel
 - Hide Nearby Devices and Device Control bar in QS panel
 - Hide Security footer bar in QS panel
@@ -239,14 +256,16 @@
 
 ##### Always On Display
 
+- Hide AOD charging information
 - Hide AOD status bar
 - Show Chinese Lunar calendar on AOD/Lock screen
 
 ##### Other
 
 - Customize power menu actions (including soft reboot)
+- Hide the lock screen emergency call button
 - Disable screenshot sound
-- Hide ongoing activity for media apps
+- Hide ongoing media activity and media notifications for selected apps
 - Allow all rotation angles
 - Auto expand notifications
 
@@ -255,7 +274,7 @@
 - Show 'Force peak refresh rate' in Developer options
 - Unlock Outdoor mode
 - Show more battery info
-- Set a custom charging limit (20–100%; 100% turns battery protection off)
+- Set a custom charging limit
 - Show package info on App Info page
 - Show current link speed in Wi-Fi list
 - Support any font
@@ -278,13 +297,18 @@
 #### Bixby
 
 - Unlock offline processing
-- Custom wake-up phrases, including Chinese model download fallback on unsupported devices
-- Relax phrase text restrictions while retaining voice recording and model validation
-- Enable Bixby Agent and Voice wake-up in the module scope and restart both apps after changing options
+- Support custom Chinese wake-up phrases
+- Relax wake-up phrase restrictions
+
+#### NFC
+
+- Support NFC card blacklist and whitelist
 
 #### Other
 
+- Hide screenshot activity from selected apps
 - Remove ads in Galaxy Store
+- Customize the SIM operator code (MCC+MNC) seen by Galaxy Store
 - Make all user apps available for app cloning
 - Set weather provider to China Weather
 - Show memory usage in Recents page
@@ -299,9 +323,11 @@
 - Never expire theme and icon trials
 - Spoof Browser Region to US
 - Disable AI watermark
+- Hide the Discover tab in Samsung Health
 - Bypass Samsung Health Monitor country check
 - Use Google Translate for S Pen
 - Hide search bar on app screen
+- Modify home screen dock bottom padding (phones in portrait mode)
 - Remove bottom-right shortcut badge
 - Watch connection mode (WearOS CN / WearOS Global)
 - Bypass watch pairing region checks

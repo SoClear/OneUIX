@@ -46,6 +46,7 @@
     <string name="immersiveModeQsTile_title">Enable Immersive mode Quick Settings tile</string>
     <string name="rootImmersiveModeQsTile_summary">Requires root access. Add the tile manually; tap it to hide or restore the status bar</string>
     <string name="outdoorModeQsTile_label">Outdoor mode</string>
+    <string name="autoBrightnessQsTile_label">Auto brightness</string>
     <string name="setStatusBarClockFormat_title">Set status bar date and time format</string>
     <string name="setStatusBarClockTextScale_title">Set status bar clock scale factor</string>
     <string name="updateStatusBarClockEverySecond_title">Update status bar clock every second</string>
@@ -77,6 +78,9 @@
     <string name="redirect_custom_tab_title">Force links to open in external Samsung Internet</string>
     <string name="redirect_custom_tab_summary">When Samsung Internet is set as the default browser, many apps open links in a limited in-app Samsung Internet Custom Tab. Enable this to force links out of the app and open them in the full Samsung Internet browser.</string>
     <string name="blockGalaxyStoreAds_title">Remove ads in Galaxy Store</string>
+    <string name="galaxyStoreRegion_title">Galaxy Store SIM operator (MCC+MNC)</string>
+    <string name="galaxyStoreRegion_summary">Enter 5 or 6 digits, keeping leading zeros, then tap Confirm to save. Leave blank for no modification. Restart Galaxy Store to apply.</string>
+    <string name="galaxyStoreRegion_reference">Look up country and operator codes (ITU)</string>
     <string name="blockGalaxyStoreAds_summary">Remove splash screen ads, recommended ads/pop-ups, and installation age restriction pop-ups</string>
     <string name="supportAllCameraMenu_title">Show all camera menus</string>
     <string name="supportAllCameraMenu_summary">Shutter sound, Auto HDR, Log, Frame watermark</string>
@@ -87,7 +91,10 @@
     <string name="autoExpandNotifications_title">Auto expand notifications</string>
     <string name="hideOngoingActivityMedia_title">Hide ongoing activity for media apps</string>
     <string name="hideOngoingActivityMedia_summary">Hide the ongoing activity chip in status bar and media notification card in notification shade when playing music in the background</string>
-    <string name="hideOngoingActivityMedia_packages_hint">Package names, separated by commas</string>
+    <string name="app_picker_title">Select apps</string>
+    <string name="app_picker_search_hint">Search app name or package name</string>
+    <string name="app_picker_selected_count">Selected apps: %1$d</string>
+    <string name="app_picker_empty">No matching apps</string>
     <string name="customPowerMenu_title">Customize power menu actions</string>
     <string name="powerMenuActionVisible_summary">Visible, position %1$d</string>
     <string name="powerMenuActionHidden_summary">Hidden</string>
@@ -136,6 +143,7 @@
     <string name="supportOutdoorMode_title">Unlock Outdoor mode</string>
     <string name="disablePinVerifyPer72h_title">Disable PIN verification every 72 hours</string>
     <string name="hideAODStatusBar_title">Hide AOD status bar</string>
+    <string name="hideAODChargingInfo_title">Hide AOD charging information</string>
     <string name="aodLockSupportLunar_title">Show Chinese Lunar calendar on AOD/Lock screen</string>
     <string name="enableChineseHolidayDisplay_title">Show Chinese holidays in Calendar</string>
     <string name="supportBlockMessage_title">Support message blocking</string>
@@ -150,6 +158,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Settings -> About phone -> Status information</string>
     <string name="noAIWatermark_title">Disable AI watermark</string>
     <string name="noAIWatermark_summary">Includes Photo Editor and Creative Studio</string>
+    <string name="hideSamsungHealthDiscover_title">Hide Discover tab</string>
     <string name="bypassHealthMonitorCountryCheck_title">Bypass Samsung Health Monitor country check</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="useSPenGoogleTranslate_title">Use Google Translate for S Pen</string>
@@ -176,9 +185,11 @@
     <string name="liftFcmNetworkLimit_title">Lift FCM network limit</string>
     <string name="liftFcmNetworkLimit_summary">Remove the China (including Hong Kong) firmware restriction that throttles GMS/FCM push network access</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">Keep screen off when unplugged</string>
-    <string name="disableWritingToolkitGlobally_title">Disable Writing Toolkit globally</string>
-    <string name="disableWritingToolkitGlobally_summary">Removes Samsung Writing Toolkit from text selection menus in all apps through the System Framework</string>
+    <string name="disableWritingToolkit_title">Disable Writing Toolkit</string>
+    <string name="disableWritingToolkit_summary">Add the selected apps to the module scope and restart them to remove Samsung Writing Toolkit from their text selection menus</string>
     <string name="disableFlagSecure_title">Disable FLAG_SECURE</string>
+    <string name="hideScreenshotDetection_title">Hide screenshots from apps</string>
+    <string name="hideScreenshotDetection_summary">Add the selected apps to the module scope and restart them. Block screenshot callbacks and recognized screenshot change notifications. Screenshots remain visible in photo pickers; other photo notifications are preserved</string>
     <string name="disableFlagSecure_summary">Allow screenshots and screen recording in secure windows</string>
     <string name="backup_config">Back up config</string>
     <string name="restore_config">Restore config</string>
@@ -193,4 +204,24 @@
     <string name="supportBixbyCustomWakeup_summary">Enable custom phrases and retry Chinese model downloads on unsupported devices. Enable Bixby Agent and Voice wake-up in the module scope, then restart both apps.</string>
     <string name="bypassBixbyWakeWordRestrictions_title">Relax wake-up phrase restrictions</string>
     <string name="bypassBixbyWakeWordRestrictions_summary">Allow additional phrase text. Voice recording and model validation still apply.</string>
+    <string name="nfc_filter_title">NFC card filter</string>
+    <string name="nfc_service">NFC service</string>
+    <string name="nfc_filter_summary">Add NFC (com.android.nfc) to the module scope and restart the phone once. List changes apply immediately. Tap a saved card to edit its note.</string>
+    <string name="nfc_mode_off">Off</string>
+    <string name="nfc_mode_blacklist">Blacklist: ignore listed cards</string>
+    <string name="nfc_mode_whitelist">Whitelist: only recognize listed cards</string>
+    <string name="nfc_scan_hint">Hold a card near the phone to read its UID, or enter it manually, then save. Cards can be read here even when filtered.</string>
+    <string name="nfc_unavailable">This device does not support NFC. You can still enter UIDs manually.</string>
+    <string name="nfc_disabled">Turn on NFC to read a card, or enter its UID manually.</string>
+    <string name="nfc_settings">NFC settings</string>
+    <string name="nfc_uid_invalid">Enter complete hexadecimal bytes, such as 92014119.</string>
+    <string name="nfc_note">Note (optional)</string>
+    <string name="nfc_save">Save / update</string>
+    <string name="nfc_delete">Delete</string>
+    <string name="alignStatusBarContentToTop_title">Align status bar content to the top</string>
+    <string name="alignStatusBarContentToTop_summary">Portrait mode only. Keeps the original status bar height and app insets.</string>
+    <string name="hideLockscreenEmergencyButton_title">Hide lock screen emergency call button</string>
+    <string name="hideLockscreenEmergencyButton_summary">Removes the emergency call shortcut from the unlock screen. This makes emergency dialing less accessible.</string>
+    <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
+    <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
 </resources>

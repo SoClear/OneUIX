@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.hook
 
 import android.content.Context
+import android.telephony.TelephonyManager
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
@@ -16,6 +17,13 @@ import java.lang.reflect.Modifier
 
 
 object GalaxyStore {
+    context(xposedModule: XposedModule)
+    fun setRegion(simOperator: String) {
+        if (!simOperator.matches(Regex("[0-9]{5,6}"))) return
+        xposedModule.hook(TelephonyManager::class.java.getDeclaredMethod("getSimOperator"))
+            .intercept { simOperator }
+    }
+
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun blockGalaxyStoreAds() {
         if (param.packageName != Package.STORE) {

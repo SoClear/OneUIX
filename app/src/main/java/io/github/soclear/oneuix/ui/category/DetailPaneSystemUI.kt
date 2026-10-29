@@ -36,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
-import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
@@ -54,6 +53,7 @@ private const val ESIM_ADAPTER_SIM_BOTH = 2
 fun DetailPaneSystemUI(
     uiState: Preference.SystemUI,
     onEvent: (SystemUIEvent) -> Unit,
+    onNavigateToAppPicker: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigateToNetworkSpeed: () -> Unit = {}
 ) {
@@ -540,6 +540,14 @@ fun DetailPaneSystemUI(
             }
         )
 
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.padding),
+            title = stringResource(R.string.alignStatusBarContentToTop_title),
+            summary = stringResource(R.string.alignStatusBarContentToTop_summary),
+            checked = uiState.statusBar.alignStatusBarContentToTop,
+            onCheckedChange = { onEvent(SystemUIEvent.StatusBar.AlignContentToTop(it)) }
+        )
+
         DividerText(R.string.qs)
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.format_letter_spacing),
@@ -733,6 +741,14 @@ fun DetailPaneSystemUI(
             DividerText(R.string.aod)
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.battery),
+                title = stringResource(id = R.string.hideAODChargingInfo_title),
+                checked = uiState.aod.hideAODChargingInfo,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.AOD.HideAODChargingInfo(it))
+                }
+            )
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.battery),
                 title = stringResource(id = R.string.hideAODStatusBar_title),
                 checked = uiState.aod.hideAODStatusBar,
                 onCheckedChange = {
@@ -750,54 +766,24 @@ fun DetailPaneSystemUI(
         }
 
         DividerText(R.string.notification)
-        Column {
-            var expanded by rememberSaveable { mutableStateOf(false) }
-            SwitchItem(
-                icon = ImageVector.vectorResource(id = R.drawable.music_note),
-                title = stringResource(id = R.string.hideOngoingActivityMedia_title),
-                summary = if (uiState.notification.hideOngoingActivityMedia && uiState.notification.hideOngoingActivityMediaPackages.isNotEmpty()) {
-                    uiState.notification.hideOngoingActivityMediaPackages
-                } else {
-                    stringResource(id = R.string.hideOngoingActivityMedia_summary)
-                },
-                clickable = true,
-                onClick = { expanded = !expanded },
-                checked = uiState.notification.hideOngoingActivityMedia,
-                onCheckedChange = {
-                    if (it && uiState.notification.hideOngoingActivityMediaPackages.isEmpty()) {
-                        expanded = true
-                    } else if (!it) {
-                        expanded = false
-                    }
-                    onEvent(SystemUIEvent.Notification.HideOngoingActivityMedia(it))
-                }
-            )
-            AnimatedVisibility(expanded && uiState.notification.hideOngoingActivityMedia) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                ) {
-                    var tempPackages by remember {
-                        mutableStateOf(uiState.notification.hideOngoingActivityMediaPackages)
-                    }
-                    OutlinedTextField(
-                        value = tempPackages,
-                        onValueChange = { tempPackages = it },
-                        modifier = Modifier.weight(1f),
-                        label = { Text(text = stringResource(id = R.string.hideOngoingActivityMedia_packages_hint)) },
-                        singleLine = true,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = {
-                            onEvent(SystemUIEvent.Notification.HideOngoingActivityMediaPackages(tempPackages))
-                        }
-                    ) {
-                        Text(text = stringResource(id = R.string.confirm))
-                    }
-                }
+        val selectedPackages = uiState.notification.hideOngoingActivityMediaPackages
+            .split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.music_note),
+            title = stringResource(id = R.string.hideOngoingActivityMedia_title),
+            summary = if (uiState.notification.hideOngoingActivityMedia && selectedPackages.isNotEmpty()) {
+                stringResource(R.string.app_picker_selected_count, selectedPackages.size)
+            } else {
+                stringResource(id = R.string.hideOngoingActivityMedia_summary)
+            },
+            clickable = true,
+            onClick = onNavigateToAppPicker,
+            checked = uiState.notification.hideOngoingActivityMedia,
+            onCheckedChange = {
+                onEvent(SystemUIEvent.Notification.HideOngoingActivityMedia(it))
+                if (it && selectedPackages.isEmpty()) onNavigateToAppPicker()
             }
-        }
+        )
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.notifications),
             title = stringResource(id = R.string.disableNotificationGrouping_title),
@@ -846,6 +832,13 @@ fun DetailPaneSystemUI(
             onCheckedChange = {
                 onEvent(SystemUIEvent.Other.DisableScreenshotCaptureSound(it))
             }
+        )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.block),
+            title = stringResource(R.string.hideLockscreenEmergencyButton_title),
+            summary = stringResource(R.string.hideLockscreenEmergencyButton_summary),
+            checked = uiState.other.hideLockscreenEmergencyButton,
+            onCheckedChange = { onEvent(SystemUIEvent.Other.HideLockscreenEmergencyButton(it)) }
         )
     }
 }
@@ -944,6 +937,9 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
 
 sealed interface SystemUIEvent {
     sealed interface StatusBar : SystemUIEvent {
+        @JvmInline
+        value class AlignContentToTop(val value: Boolean) : StatusBar
+
         @JvmInline
         value class ModifyStatusBarLeftPadding(val value: Boolean) : StatusBar
 
@@ -1111,6 +1107,9 @@ sealed interface SystemUIEvent {
 
     sealed interface AOD : SystemUIEvent {
         @JvmInline
+        value class HideAODChargingInfo(val value: Boolean) : AOD
+
+        @JvmInline
         value class HideAODStatusBar(val value: Boolean) : AOD
 
         @JvmInline
@@ -1132,6 +1131,9 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface Other : SystemUIEvent {
+        @JvmInline
+        value class HideLockscreenEmergencyButton(val value: Boolean) : Other
+
         @JvmInline
         value class CustomPowerMenu(val value: Boolean) : Other
 
@@ -1156,6 +1158,14 @@ fun SettingViewModel.onSystemUIEvent(event: SystemUIEvent) {
 private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.StatusBar.AlignContentToTop -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(
+                        alignStatusBarContentToTop = event.value
+                    )
+                )
+            )
+
             is SystemUIEvent.StatusBar.ModifyStatusBarLeftPadding -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
@@ -1632,6 +1642,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
 private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.AOD.HideAODChargingInfo -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        aod = preference.systemUI.aod.copy(
+                            hideAODChargingInfo = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.AOD.HideAODStatusBar -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
@@ -1704,6 +1724,14 @@ private fun SettingViewModel.onNotification(event: SystemUIEvent.Notification) {
 private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.Other.HideLockscreenEmergencyButton -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    other = preference.systemUI.other.copy(
+                        hideLockscreenEmergencyButton = event.value
+                    )
+                )
+            )
+
             is SystemUIEvent.Other.CustomPowerMenu -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
