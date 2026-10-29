@@ -224,4 +224,10 @@
     <string name="hideLockscreenEmergencyButton_summary">Удаляет ярлык экстренного вызова с экрана разблокировки, затрудняя доступ к экстренному набору.</string>
     <string name="modifyDockBottomPadding_title">Изменить нижний отступ док-панели главного экрана</string>
     <string name="modifyDockBottomPadding_summary">Телефоны в портретном режиме: %1$.1f dp. Установите 0, чтобы убрать нижний отступ. Возможно перекрытие области жестов.</string>
+    <string name="mediaPage_title">Приложение на медиастранице (экспериментально)</string>
+    <string name="mediaPage_summary">После изменения переключателя перезапустите One UI Home. Выберите OneUIX в настройках медиастраницы, затем нажмите здесь для выбора приложения. Нужен root-доступ. Используйте системные жесты «Назад» и «Домой». Некоторые приложения могут быть несовместимы.</string>
+    <string name="mediaPage_selectApp">Выбрать приложение</string>
+    <string name="mediaPage_starting">Запуск… Разрешите OneUIX root-доступ, если появится запрос.</string>
+    <string name="mediaPage_unavailable">Приложение недоступно или не имеет точки запуска.</string>
+    <string name="mediaPage_rootFailed">Root-процесс завершился (%1$d). Проверьте root-доступ, затем выйдите со страницы и откройте её снова.</string>
 </resources>

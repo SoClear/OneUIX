@@ -224,4 +224,10 @@
     <string name="hideLockscreenEmergencyButton_summary">Removes the emergency call shortcut from the unlock screen. This makes emergency dialing less accessible.</string>
     <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
     <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
+    <string name="mediaPage_title">App media page (experimental)</string>
+    <string name="mediaPage_summary">Restart One UI Home after changing this switch. Select OneUIX in its Media page settings, then tap here to choose an app. Root access is required. Use system Back and Home gestures. Some apps may not support embedding.</string>
+    <string name="mediaPage_selectApp">Choose an app</string>
+    <string name="mediaPage_starting">Starting app… Allow OneUIX root access if prompted.</string>
+    <string name="mediaPage_unavailable">This app is unavailable or has no launcher activity.</string>
+    <string name="mediaPage_rootFailed">Root helper exited (%1$d). Check root access, then leave and reopen the page.</string>
 </resources>

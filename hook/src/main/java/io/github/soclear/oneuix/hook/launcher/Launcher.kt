@@ -1,4 +1,4 @@
-package io.github.soclear.oneuix.hook
+package io.github.soclear.oneuix.hook.launcher
 
 import android.annotation.SuppressLint
 import android.app.Activity

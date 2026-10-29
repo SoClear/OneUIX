@@ -4,6 +4,8 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.launcher.Launcher
+import io.github.soclear.oneuix.hook.launcher.MediaPage
 import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.ESIM
 import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
@@ -133,6 +135,10 @@ class Main : XposedModule() {
             }
 
             Package.LAUNCHER -> {
+                if (preference.other.embedAppInMediaPage) {
+                    MediaPage.embedAppInMediaPage()
+                }
+
                 if (preference.other.modifyDockBottomPadding) {
                     Launcher.setDockBottomPadding(preference.other.dockBottomPaddingDp)
                 }

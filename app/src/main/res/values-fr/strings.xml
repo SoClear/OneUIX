@@ -224,4 +224,10 @@
     <string name="hideLockscreenEmergencyButton_summary">Supprime le raccourci d’appel d’urgence de l’écran de déverrouillage et rend les appels d’urgence moins accessibles.</string>
     <string name="modifyDockBottomPadding_title">Modifier la marge inférieure du dock de l’écran d’accueil</string>
     <string name="modifyDockBottomPadding_summary">Téléphones en mode portrait : %1$.1f dp. Réglez sur 0 pour supprimer la marge inférieure. Peut chevaucher la zone des gestes.</string>
+    <string name="mediaPage_title">Page média avec application (expérimental)</string>
+    <string name="mediaPage_summary">Redémarrez One UI Home après avoir changé cet interrupteur. Sélectionnez OneUIX dans les paramètres de sa page média, puis touchez ici pour choisir une application. Un accès root est requis. Utilisez les gestes système Retour et Accueil. Certaines applications peuvent être incompatibles.</string>
+    <string name="mediaPage_selectApp">Choisir une application</string>
+    <string name="mediaPage_starting">Démarrage… Autorisez l’accès root à OneUIX si nécessaire.</string>
+    <string name="mediaPage_unavailable">Application indisponible ou sans activité de lancement.</string>
+    <string name="mediaPage_rootFailed">Le processus root s’est arrêté (%1$d). Vérifiez les droits root, puis quittez et rouvrez la page.</string>
 </resources>

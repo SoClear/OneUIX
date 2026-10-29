@@ -180,6 +180,8 @@ data class Preference(
         val hideSamsungHealthDiscover: Boolean = false,
         val bypassHealthMonitorCountryCheck: Boolean = false,
         val useSPenGoogleTranslate: Boolean = false,
+        val mediaPagePackage: String = "",
+        val embedAppInMediaPage: Boolean = false,
         val hideAppsSearchBar: Boolean = false,
         val removeShortcutBadge: Boolean = false,
         val modifyDockBottomPadding: Boolean = false,

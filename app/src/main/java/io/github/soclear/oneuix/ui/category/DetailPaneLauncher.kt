@@ -27,6 +27,7 @@ fun DetailPaneLauncher(
     modifier: Modifier = Modifier
 ) {
     PackagePane(modifier) {
+        MediaPageSettings(uiState, onEvent)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.memory),
@@ -89,6 +90,12 @@ fun DetailPaneLauncher(
 
 sealed interface LauncherEvent {
     @JvmInline
+    value class EmbedAppInMediaPage(val value: Boolean) : LauncherEvent
+
+    @JvmInline
+    value class MediaPagePackage(val value: String) : LauncherEvent
+
+    @JvmInline
     value class ModifyDockBottomPadding(val value: Boolean) : LauncherEvent
 
     @JvmInline
@@ -112,44 +119,16 @@ sealed interface LauncherEvent {
 
 fun SettingViewModel.onLauncherEvent(event: LauncherEvent) {
     updateData { preference ->
-        when (event) {
-            is LauncherEvent.ModifyDockBottomPadding -> preference.copy(
-                other = preference.other.copy(modifyDockBottomPadding = event.value)
-            )
-
-            is LauncherEvent.DockBottomPaddingDp -> preference.copy(
-                other = preference.other.copy(dockBottomPaddingDp = event.value)
-            )
-
-            is LauncherEvent.ShowMemoryUsageInRecents -> preference.copy(
-                other = preference.other.copy(
-                    showMemoryUsageInRecents = event.value
-                )
-            )
-
-            is LauncherEvent.RecentsGridThreeRows -> preference.copy(
-                other = preference.other.copy(
-                    recentsGridThreeRows = event.value
-                )
-            )
-
-            is LauncherEvent.HideRecentsCloseAllButton -> preference.copy(
-                other = preference.other.copy(
-                    hideRecentsCloseAllButton = event.value
-                )
-            )
-
-            is LauncherEvent.HideAppsSearchBar -> preference.copy(
-                other = preference.other.copy(
-                    hideAppsSearchBar = event.value
-                )
-            )
-
-            is LauncherEvent.RemoveShortcutBadge -> preference.copy(
-                other = preference.other.copy(
-                    removeShortcutBadge = event.value
-                )
-            )
-        }
+        preference.copy(other = when (event) {
+            is LauncherEvent.EmbedAppInMediaPage -> preference.other.copy(embedAppInMediaPage = event.value)
+            is LauncherEvent.MediaPagePackage -> preference.other.copy(mediaPagePackage = event.value)
+            is LauncherEvent.ModifyDockBottomPadding -> preference.other.copy(modifyDockBottomPadding = event.value)
+            is LauncherEvent.DockBottomPaddingDp -> preference.other.copy(dockBottomPaddingDp = event.value)
+            is LauncherEvent.ShowMemoryUsageInRecents -> preference.other.copy(showMemoryUsageInRecents = event.value)
+            is LauncherEvent.RecentsGridThreeRows -> preference.other.copy(recentsGridThreeRows = event.value)
+            is LauncherEvent.HideRecentsCloseAllButton -> preference.other.copy(hideRecentsCloseAllButton = event.value)
+            is LauncherEvent.HideAppsSearchBar -> preference.other.copy(hideAppsSearchBar = event.value)
+            is LauncherEvent.RemoveShortcutBadge -> preference.other.copy(removeShortcutBadge = event.value)
+        })
     }
 }

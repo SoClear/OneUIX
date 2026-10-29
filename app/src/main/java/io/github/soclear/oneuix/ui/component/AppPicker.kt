@@ -56,7 +56,10 @@ fun AppPicker(
     selectedPackages: Set<String>,
     onSelectionChange: (Set<String>) -> Unit,
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    singleSelection: Boolean = false,
+    launchableOnly: Boolean = false,
+    excludedPackages: Set<String> = emptySet(),
 ) {
     val packageManager = LocalContext.current.applicationContext.packageManager
     var query by rememberSaveable { mutableStateOf("") }
@@ -71,11 +74,13 @@ fun AppPicker(
     }
 
     val isWindowFocused = LocalWindowInfo.current.isWindowFocused
-    LaunchedEffect(isWindowFocused) {
+    LaunchedEffect(isWindowFocused, launchableOnly, excludedPackages) {
         // Reload when returning from the app-list permission dialog.
         if (isWindowFocused) {
             apps = withContext(Dispatchers.IO) {
                 packageManager.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
+                    .filter { it.packageName !in excludedPackages &&
+                        (!launchableOnly || (it.enabled && packageManager.getLaunchIntentForPackage(it.packageName) != null)) }
                     .map { PickerApp(it, it.loadLabel(packageManager).toString()) }
                     .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.label })
             }
@@ -132,7 +137,8 @@ fun AppPicker(
                                     role = Role.Checkbox,
                                     onValueChange = { selected ->
                                         onSelectionChange(
-                                            if (selected) selectedPackages + packageName
+                                            if (singleSelection) setOf(packageName)
+                                            else if (selected) selectedPackages + packageName
                                             else selectedPackages - packageName
                                         )
                                     }

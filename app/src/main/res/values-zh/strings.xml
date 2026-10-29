@@ -224,4 +224,10 @@
     <string name="hideLockscreenEmergencyButton_summary">移除解锁界面的紧急呼叫快捷入口，会降低紧急拨号的便捷性。</string>
     <string name="modifyDockBottomPadding_title">修改桌面底部栏下边距</string>
     <string name="modifyDockBottomPadding_summary">手机竖屏：%1$.1f dp，设为 0 移除底部留白，可能与手势区域重叠。</string>
+    <string name="mediaPage_title">应用负一屏（实验性）</string>
+    <string name="mediaPage_summary">更改开关后重启三星桌面，在“媒体页面”中选择 OneUIX，再点此选择应用。需要授予 OneUIX Root 权限。使用系统返回和主屏幕手势操作，部分应用可能不兼容。</string>
+    <string name="mediaPage_selectApp">选择应用</string>
+    <string name="mediaPage_starting">正在启动应用… 如弹出 Root 授权，请允许 OneUIX。</string>
+    <string name="mediaPage_unavailable">应用不可用，或没有桌面启动入口。</string>
+    <string name="mediaPage_rootFailed">Root 进程已退出（%1$d）。请检查 Root 授权，退出负一屏后重新进入。</string>
 </resources>

@@ -53,6 +53,10 @@
             </intent-filter>
         </activity>
         <service
+            android:name=".MediaPageService"
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET" />
+        <service
             android:name=".FiveGTileService"
             android:exported="true"
             android:icon="@drawable/five_g"
