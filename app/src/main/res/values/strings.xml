@@ -160,7 +160,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Settings -> About phone -> Status information</string>
     <string name="noAIWatermark_title">Disable AI watermark</string>
     <string name="noAIWatermark_summary">Includes Photo Editor and Creative Studio</string>
-    <string name="hideSamsungHealthDiscover_title">Hide Discover tab</string>
+    <string name="hideSamsungHealthDiscover_title">Hide Discover and Promotions</string>
     <string name="bypassHealthMonitorCountryCheck_title">Bypass Samsung Health Monitor country check</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="useSPenGoogleTranslate_title">Use Google Translate for S Pen</string>

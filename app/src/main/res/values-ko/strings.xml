@@ -160,7 +160,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">설정 -&gt; 휴대전화 정보 -&gt; 상태 정보</string>
     <string name="noAIWatermark_title">포토 에디터 AI 워터마크 비활성화</string>
     <string name="noAIWatermark_summary">포토 에디터 및 크리에이티브 스튜디오 포함</string>
-    <string name="hideSamsungHealthDiscover_title">발견 탭 숨기기</string>
+    <string name="hideSamsungHealthDiscover_title">발견 및 프로모션 숨기기</string>
     <string name="bypassHealthMonitorCountryCheck_title">삼성 헬스 모니터 국가 제한 우회</string>
     <string name="bypassHealthMonitorCountryCheck_summary">지원되지 않는 국가에서도 삼성 헬스 모니터 앱을 사용할 수 있도록 허용합니다</string>
     <string name="useSPenGoogleTranslate_title">S펜 번역에 구글 번역 사용</string>

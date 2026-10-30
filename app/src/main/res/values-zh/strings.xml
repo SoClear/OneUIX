@@ -160,7 +160,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">设置->关于手机->状态信息</string>
     <string name="noAIWatermark_title">禁用 AI 水印</string>
     <string name="noAIWatermark_summary">包括图片编辑器和创意工作室</string>
-    <string name="hideSamsungHealthDiscover_title">隐藏“发现”页面</string>
+    <string name="hideSamsungHealthDiscover_title">隐藏“发现”和“推广”</string>
     <string name="bypassHealthMonitorCountryCheck_title">绕过 Samsung Health Monitor 国家检查</string>
     <string name="bypassHealthMonitorCountryCheck_summary">在不支持的国家/地区使用 Health Monitor</string>
     <string name="useSPenGoogleTranslate_title">S Pen 使用谷歌翻译</string>

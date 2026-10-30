@@ -160,7 +160,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Настройки -> Сведения о телефоне -> Сведения о состоянии</string>
     <string name="noAIWatermark_title">Отключить ИИ-водяные знаки</string>
     <string name="noAIWatermark_summary">Включая Фоторедактор и Креативная студия</string>
-    <string name="hideSamsungHealthDiscover_title">Скрыть вкладку «Интересное»</string>
+    <string name="hideSamsungHealthDiscover_title">Скрыть «Интересное» и «Промоакции»</string>
     <string name="bypassHealthMonitorCountryCheck_title">Обход проверки региона в Samsung Health Monitor</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Разрешить использование Health Monitor в неподдерживаемых странах</string>
     <string name="useSPenGoogleTranslate_title">Использовать Google Переводчик для S Pen</string>
