@@ -21,7 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Hide percentage sign</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Hide charging icon</string>
     <string name="supportRealTimeNetworkSpeed_title">Support displaying real-time network speed</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Settings -> Notifications -> Advanced settings -> Show real-time network speed\nClick to enter more settings</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Enable network speed here. Tap for more settings.</string>
     <string name="networkSpeedLayout_title">Network speed layout</string>
     <string name="networkSpeedLayout_systemDefault">System default</string>
     <string name="networkSpeedLayout_splitHorizontal">Split horizontally, side by side</string>
@@ -234,4 +234,7 @@
     <string name="mediaPage_starting">Starting app… Allow OneUIX root access if prompted.</string>
     <string name="mediaPage_unavailable">This app is unavailable or has no launcher activity.</string>
     <string name="mediaPage_rootFailed">Root helper exited (%1$d). Check root access, then leave and reopen the page.</string>
+    <string name="networkSpeedShowPerSecond_title">Show /s</string>
+    <string name="networkSpeedRefreshInterval_title">Refresh interval</string>
+    <string name="networkSpeedPaddingEnd_title">Spacing to the next icon</string>
 </resources>

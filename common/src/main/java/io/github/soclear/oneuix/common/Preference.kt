@@ -35,6 +35,7 @@ data class Preference(
     ) {
         @Serializable
         data class StatusBar(
+            val networkSpeed: NetWorkSpeed = NetWorkSpeed(),
             val modifyStatusBarLeftPadding: Boolean = false,
             val statusBarLeftPaddingDp: Float = 0f,
             val modifyStatusBarRightPadding: Boolean = false,
@@ -49,16 +50,6 @@ data class Preference(
             val addBatteryLevelText: Boolean = false,
             val hideBatteryLevelTextPercentageSign: Boolean = false,
             val hideBatteryLevelTextChargingIcon: Boolean = false,
-            val supportRealTimeNetworkSpeed: Boolean = true,
-            val networkSpeedLayout: Int = 0,
-            val showNetworkSpeedArrows: Boolean = true,
-            val networkSpeedMarker: Int = 0,
-            val networkSpeedUnit: Int = 0,
-            val networkSpeedTextSizeSp: Float = 0f,
-            val networkSpeedMarkerSizeSp: Float = 0f,
-            val networkSpeedMarkerGap: Float = 1f,
-            val networkSpeedLineSpacingDp: Float = 0f,
-            val networkSpeedThreshold: Int = 0,
             val setStatusBarClockFormat: Boolean = false,
             val statusBarClockFormat: String = "HH:mm",
             val setStatusBarClockTextScale: Boolean = false,
@@ -74,7 +65,55 @@ data class Preference(
             val customCarrierName: String = "",
             val hideLockscreenStatusBar: Boolean = false,
             val restoreBluetoothStatusBarIcon: Boolean = false,
-        )
+        ) {
+            @Serializable
+            data class NetWorkSpeed(
+                val supportRealTime: Boolean = true,
+                val layout: Layout = Layout.SYSTEM,
+                val showArrows: Boolean = true,
+                val marker: Marker = Marker.ARROW,
+                val unit: Unit = Unit.BYTES_BINARY,
+                val showPerSecond: Boolean = true,
+                val textSizeSp: Float = 0f,
+                val markerSizeSp: Float = 0f,
+                val markerGap: Float = 1f,
+                val lineSpacingDp: Float = 0f,
+                val threshold: Int = 0,
+                val refreshInterval: RefreshInterval = RefreshInterval.ONE_SECOND,
+                val paddingEndDp: Float = 0f,
+            ) {
+                enum class Layout { SYSTEM, SPLIT_HORIZONTAL, SPLIT_VERTICAL, ACTIVE_DIRECTION }
+
+                enum class Marker(val up: String, val down: String) {
+                    ARROW("↑", "↓"),
+                    TRIANGLE("▲", "▼"),
+                    OUTLINE_TRIANGLE("△", "▽"),
+                    OUTLINE_ARROW("⇧", "⇩"),
+                    DASHED_ARROW("⇡", "⇣"),
+                    CHEVRON("⌃", "⌄"),
+                    BOTH_DIRECTIONS("↕", "↕"),
+                    ASCII("^", "v"),
+                    BLOCK_ARROW("⬆", "⬇"),
+                }
+
+                enum class Unit(val bits: Boolean, val base: Int, val kiloPrefix: String) {
+                    BYTES_BINARY(false, 1024, "K"),
+                    BYTES_DECIMAL(false, 1000, "K"),
+                    BITS_DECIMAL(true, 1000, "Kb"),
+                    BITS_BINARY(true, 1024, "Kib"),
+                }
+
+                enum class RefreshInterval(val milliseconds: Long) {
+                    QUARTER_SECOND(250),
+                    HALF_SECOND(500),
+                    ONE_SECOND(1000),
+                    TWO_SECONDS(2000),
+                    THREE_SECONDS(3000),
+                    FOUR_SECONDS(4000),
+                    FIVE_SECONDS(5000),
+                }
+            }
+        }
 
         @Serializable
         data class QS(

@@ -21,7 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Скрыть символ процента</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Скрыть иконку зарядки</string>
     <string name="supportRealTimeNetworkSpeed_title">Отображение скорости сети в реальном времени</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Настройки -> Уведомления -> Дополнительные параметры -> Скорость сети в реальном времени\nНажмите, чтобы открыть дополнительные настройки</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Включите скорость сети здесь. Нажмите для дополнительных настроек.</string>
     <string name="networkSpeedLayout_title">Макет отображения скорости</string>
     <string name="networkSpeedLayout_systemDefault">По умолчанию</string>
     <string name="networkSpeedLayout_splitHorizontal">Горизонтально, рядом</string>
@@ -234,4 +234,7 @@
     <string name="mediaPage_starting">Запуск… Разрешите OneUIX root-доступ, если появится запрос.</string>
     <string name="mediaPage_unavailable">Приложение недоступно или не имеет точки запуска.</string>
     <string name="mediaPage_rootFailed">Root-процесс завершился (%1$d). Проверьте root-доступ, затем выйдите со страницы и откройте её снова.</string>
+    <string name="networkSpeedShowPerSecond_title">Показывать /s</string>
+    <string name="networkSpeedRefreshInterval_title">Интервал обновления</string>
+    <string name="networkSpeedPaddingEnd_title">Отступ до следующего значка</string>
 </resources>

@@ -8,6 +8,7 @@ plugins {
 
 android {
     namespace = "io.github.soclear.oneuix"
+    ndkVersion = "30.0.16248370"
     compileSdk {
         version = release(37)
     }

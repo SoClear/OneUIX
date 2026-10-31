@@ -2,16 +2,16 @@ package io.github.soclear.oneuix.hook
 
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
-import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.launcher.Launcher
 import io.github.soclear.oneuix.hook.launcher.MediaPage
 import io.github.soclear.oneuix.hook.systemui.AOD
-import io.github.soclear.oneuix.hook.systemui.ESIM
-import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
+import io.github.soclear.oneuix.hook.systemui.statusbar.ESIM
+import io.github.soclear.oneuix.hook.systemui.statusbar.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
-import io.github.soclear.oneuix.hook.systemui.StatusBar
+import io.github.soclear.oneuix.hook.systemui.statusbar.StatusBar
+import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
@@ -212,7 +212,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.settings.showWiFiLinkSpeed) {
-                    Network.showWiFiLinkSpeed()
+                    Settings.showWiFiLinkSpeed()
                 }
 
                 if (preference.settings.supportAnyFont) {
@@ -221,10 +221,6 @@ class Main : XposedModule() {
 
                 if (preference.android.supportAppJumpBlock) {
                     CoreRune.supportAppJumpBlockSettings()
-                }
-
-                if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
-                    Network.supportRealTimeNetworkSpeed()
                 }
 
                 if (preference.settings.supportAutoPowerOnOff) {
@@ -315,12 +311,11 @@ class Main : XposedModule() {
                     )
                 }
 
-                if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
-                    Network.supportRealTimeNetworkSpeed()
-                }
-
-                if (preference.systemUI.statusBar.networkSpeedLayout != NetworkSpeedOption.Layout.SYSTEM.ordinal) {
-                    Network.showCustomNetworkSpeed(preference.systemUI.statusBar)
+                with(preference.systemUI.statusBar.networkSpeed) {
+                    if (supportRealTime) {
+                        NetWorkSpeed.supportRealTime()
+                        NetWorkSpeed.configure(this)
+                    }
                 }
 
                 if (preference.systemUI.statusBar.setStatusBarClockFormat) {
@@ -357,7 +352,7 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.statusBar.modifyStatusBarMaxNotificationIcons) {
                     val max = preference.systemUI.statusBar.statusBarMaxNotificationIcons
-                    Notification.setStatusBarMaxNotificationIcons(max)
+                    StatusBar.setStatusBarMaxNotificationIcons(max)
                 }
 
                 if (preference.systemUI.statusBar.setCustomCarrierName) {
@@ -392,7 +387,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.systemUI.qs.turnOn5gQsTile) {
-                    Network.turnOn5gQsTile()
+                    QS.turnOn5gQsTile()
                 }
 
                 run {
@@ -490,7 +485,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.systemUI.qs.turnOn5gQsTile) {
-                    Network.turnOn5gQsTile()
+                    QS.turnOn5gQsTile()
                 }
             }
 

@@ -21,7 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">백분율 기호 숨기기</string>
     <string name="hideBatteryLevelTextChargingIcon_title">충전 아이콘 숨기기</string>
     <string name="supportRealTimeNetworkSpeed_title">실시간 네트워크 속도 표시</string>
-    <string name="supportRealTimeNetworkSpeed_summary">설정 -&gt; 알림 -&gt; 고급 설정 -&gt; 실시간 네트워크 속도 표시\n탭하여 추가 설정으로 이동</string>
+    <string name="supportRealTimeNetworkSpeed_summary">여기에서 네트워크 속도 표시를 켜세요. 탭하여 추가 설정으로 이동합니다.</string>
     <string name="networkSpeedLayout_title">네트워크 속도 표시 레이아웃</string>
     <string name="networkSpeedLayout_systemDefault">시스템 기본값</string>
     <string name="networkSpeedLayout_splitHorizontal">가로 나란히 표시</string>
@@ -234,4 +234,7 @@
     <string name="mediaPage_starting">앱 시작 중… 요청이 표시되면 OneUIX에 루트 권한을 허용하세요.</string>
     <string name="mediaPage_unavailable">앱을 사용할 수 없거나 실행 화면이 없습니다.</string>
     <string name="mediaPage_rootFailed">루트 프로세스가 종료되었습니다(%1$d). 루트 권한을 확인한 다음 페이지를 나갔다가 다시 여세요.</string>
+    <string name="networkSpeedShowPerSecond_title">/s 표시</string>
+    <string name="networkSpeedRefreshInterval_title">새로고침 간격</string>
+    <string name="networkSpeedPaddingEnd_title">다음 아이콘과의 간격</string>
 </resources>

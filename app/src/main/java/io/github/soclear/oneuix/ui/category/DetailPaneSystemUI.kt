@@ -39,6 +39,7 @@ import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
+import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
@@ -277,9 +278,9 @@ fun DetailPaneSystemUI(
             summary = stringResource(id = R.string.supportRealTimeNetworkSpeed_summary),
             clickable = true,
             onClick = onNavigateToNetworkSpeed,
-            checked = uiState.statusBar.supportRealTimeNetworkSpeed,
+            checked = uiState.statusBar.networkSpeed.supportRealTime,
             onCheckedChange = {
-                onEvent(SystemUIEvent.StatusBar.SupportRealTimeNetworkSpeed(it))
+                onEvent(SystemUIEvent.StatusBar.NetWorkSpeedChange(uiState.statusBar.networkSpeed.copy(supportRealTime = it)))
             }
         )
         Column {
@@ -993,34 +994,7 @@ sealed interface SystemUIEvent {
         value class HideBatteryLevelTextChargingIcon(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class SupportRealTimeNetworkSpeed(val value: Boolean) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedLayout(val value: Int) : StatusBar
-
-        @JvmInline
-        value class ShowNetworkSpeedArrows(val value: Boolean) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarker(val value: Int) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedUnit(val value: Int) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedTextSize(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarkerSize(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarkerGap(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedLineSpacing(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedThreshold(val value: Int) : StatusBar
+        value class NetWorkSpeedChange(val value: NetWorkSpeed) : StatusBar
 
         @JvmInline
         value class SetStatusBarClockFormat(val value: Boolean) : StatusBar
@@ -1322,26 +1296,11 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                 )
             }
 
-            is SystemUIEvent.StatusBar.SupportRealTimeNetworkSpeed -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        statusBar = preference.systemUI.statusBar.copy(
-                            supportRealTimeNetworkSpeed = event.value
-                        )
-                    )
+            is SystemUIEvent.StatusBar.NetWorkSpeedChange -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(networkSpeed = event.value)
                 )
-            }
-
-
-            is SystemUIEvent.StatusBar.NetworkSpeedLayout -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLayout = event.value)))
-            is SystemUIEvent.StatusBar.ShowNetworkSpeedArrows -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(showNetworkSpeedArrows = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarker -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarker = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedUnit -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedUnit = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedTextSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedTextSizeSp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarkerSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerSizeSp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarkerGap -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerGap = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedLineSpacing -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLineSpacingDp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedThreshold -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedThreshold = event.value)))
+            )
 
             is SystemUIEvent.StatusBar.SetStatusBarClockFormat -> {
                 preference.copy(

@@ -1,4 +1,4 @@
-package io.github.soclear.oneuix.hook.systemui
+package io.github.soclear.oneuix.hook.systemui.statusbar
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -17,11 +17,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.github.libxposed.api.XposedModule
+import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
+import java.lang.reflect.Modifier
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
@@ -484,5 +487,145 @@ object StatusBar {
                     result
                 }
             }
+    }
+
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun setStatusBarMaxNotificationIcons(max: Int) = afterAttach {
+        if (param.packageName != Package.SYSTEMUI ||
+            max < 0 ||
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+        ) return@afterAttach
+
+        if (ONE_UI_VERSION >= 80500) {
+            setLockscreenMaxNotificationIcons(max)
+            try {
+                val notificationIconContainerClass = param.classLoader
+                    .loadClass("com.android.systemui.statusbar.phone.NotificationIconContainer")
+                xposedModule.hook(
+                    notificationIconContainerClass.getDeclaredMethod(
+                        "shouldForceOverflow",
+                        Int::class.javaPrimitiveType,
+                        Float::class.javaPrimitiveType,
+                        Int::class.javaPrimitiveType
+                    )
+                ).intercept { chain ->
+                    val newArgs = chain.args.toTypedArray()
+                    newArgs[2] = max
+                    chain.proceed(newArgs)
+                }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
+
+            try {
+                param.classLoader
+                    .loadClass("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerStatusBarViewModel")
+                    .declaredConstructors
+                    .forEach {
+                        xposedModule.hook(it).intercept { chain ->
+                            val result = chain.proceed()
+                            chain.thisObject.reflect["maxIcons"] = Int.MAX_VALUE
+                            result
+                        }
+                    }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
+            return@afterAttach
+        }
+        try {
+            val notificationIconContainerClass = param.classLoader
+                .loadClass("com.android.systemui.statusbar.phone.NotificationIconContainer")
+            xposedModule.hook(
+                notificationIconContainerClass.getDeclaredMethod(
+                    "shouldForceOverflow",
+                    Int::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType,
+                    Float::class.javaPrimitiveType,
+                    Int::class.javaPrimitiveType
+                )
+            ).intercept { chain ->
+                val newArgs = chain.args.toTypedArray()
+                newArgs[3] = max
+                chain.proceed(newArgs)
+            }
+
+            xposedModule.hook(
+                notificationIconContainerClass.getDeclaredMethod("initResources")
+            ).intercept { chain ->
+                val result = chain.proceed()
+                chain.thisObject.reflect["mMaxStaticIcons"] = Int.MAX_VALUE
+                result
+            }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
+
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    private fun setLockscreenMaxNotificationIcons(max: Int) {
+        try {
+            val hookedLoaders = mutableSetOf<ClassLoader>()
+            xposedModule.hook(
+                param.classLoader
+                    .loadClass("com.android.systemui.facewidget.plugin.FaceWidgetNotificationControllerWrapper")
+                    .getDeclaredMethod(
+                        "initPlugin",
+                        param.classLoader.loadClass("com.android.systemui.plugins.keyguardstatusview.PluginNotificationController"),
+                        Context::class.java
+                    )
+            ).intercept { chain ->
+                val result = chain.proceed()
+                val loader = (chain.args[1] as? Context)?.classLoader ?: return@intercept result
+                if (loader in hookedLoaders) return@intercept result
+                try {
+                    val controllerClass = loader
+                        .loadClass("com.samsung.android.app.facewidget.nio.FaceWidgetKeyguardNIOController")
+                        .superclass ?: return@intercept result
+                    // The base controller is obfuscated; its icon update signature is not.
+                    val updateIcons = controllerClass.declaredMethods.single {
+                        Modifier.isStatic(it.modifiers) && it.returnType == Void.TYPE &&
+                                it.parameterTypes.contentEquals(arrayOf(controllerClass, ArrayList::class.java))
+                    }
+                    val containerField = controllerClass.getDeclaredField("mNotificationContainer")
+                        .apply { isAccessible = true }
+                    val thresholdField = controllerClass.getDeclaredField("mLockStarThreshold")
+                        .apply { isAccessible = true }
+                    val activeContainer = ThreadLocal<Any>()
+                    val getType = loader
+                        .loadClass("com.samsung.android.uniform.widget.notification.NotificationIconsOnlyContainer")
+                        .getDeclaredMethod("getNIOType")
+                    xposedModule.hook(getType).intercept { typeChain ->
+                        val type = typeChain.proceed()
+                        if (activeContainer.get() === typeChain.thisObject) 5 else type
+                    }
+                    xposedModule.hook(updateIcons).intercept update@{ updateChain ->
+                        val controller = updateChain.args[0] ?: return@update updateChain.proceed()
+                        val container = containerField.get(controller)
+                        val type = container?.reflect?.call("getNIOType")
+                        // Keep the dot and preview styles intact. Only borrow LockStar's
+                        // configurable cap while rendering icons, never change the real type.
+                        if (type != 0 && type != 2 && type != 3 && type != 5) {
+                            return@update updateChain.proceed()
+                        }
+                        val threshold = thresholdField.getInt(controller)
+                        thresholdField.setInt(controller, max)
+                        activeContainer.set(container)
+                        try {
+                            updateChain.proceed()
+                        } finally {
+                            activeContainer.remove()
+                            thresholdField.setInt(controller, threshold)
+                        }
+                    }
+                    hookedLoaders.add(loader)
+                } catch (t: Throwable) {
+                    xlog(t)
+                }
+                result
+            }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
     }
 }

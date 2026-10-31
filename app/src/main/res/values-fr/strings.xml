@@ -21,7 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Masquer le symbole de pourcentage</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Masquer l\'icône de charge</string>
     <string name="supportRealTimeNetworkSpeed_title">Afficher la vitesse du réseau en temps réel</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Paramètres -> Notifications -> Paramètres avancés -> Afficher la vitesse du réseau\nAppuyez pour accéder à plus de paramètres</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Activez la vitesse du réseau ici. Appuyez pour plus de paramètres.</string>
     <string name="networkSpeedLayout_title">Disposition de la vitesse réseau</string>
     <string name="networkSpeedLayout_systemDefault">Par défaut du système</string>
     <string name="networkSpeedLayout_splitHorizontal">Séparé horizontalement, côte à côte</string>
@@ -234,4 +234,7 @@
     <string name="mediaPage_starting">Démarrage… Autorisez l’accès root à OneUIX si nécessaire.</string>
     <string name="mediaPage_unavailable">Application indisponible ou sans activité de lancement.</string>
     <string name="mediaPage_rootFailed">Le processus root s’est arrêté (%1$d). Vérifiez les droits root, puis quittez et rouvrez la page.</string>
+    <string name="networkSpeedShowPerSecond_title">Afficher /s</string>
+    <string name="networkSpeedRefreshInterval_title">Intervalle de rafraîchissement</string>
+    <string name="networkSpeedPaddingEnd_title">Espacement avec la prochaine icône</string>
 </resources>

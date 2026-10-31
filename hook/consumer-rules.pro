@@ -6,3 +6,7 @@
 
 # Preserve the component name across APK updates.
 -keepnames class io.github.soclear.oneuix.RebootActivity
+
+-keepclasseswithmembers,includedescriptorclasses class io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed {
+    native <methods>;
+}

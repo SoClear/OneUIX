@@ -16,6 +16,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
+import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
@@ -777,6 +778,57 @@ object QS {
                 it.text = progress
             }
             result
+        }
+    }
+
+    @SuppressLint("PrivateApi")
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun turnOn5gQsTile() {
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return
+        }
+        if (param.packageName == Package.SYSTEMUI ||
+            param.packageName == Package.TELEPHONYUI
+        ) {
+            try {
+                val semCscFeatureClass =
+                    param.classLoader.loadClass("com.samsung.android.feature.SemCscFeature")
+                semCscFeatureClass.declaredMethods
+                    .filter { it.name == "getString" }
+                    .forEach { method ->
+                        xposedModule.hook(method).intercept { chain ->
+                            val result = chain.proceed()
+                            if (chain.args.firstOrNull() == "CscFeature_SystemUI_ConfigDefQuickSettingItem") {
+                                val quickSettingItem = result as? String ?: ""
+                                if (!quickSettingItem.contains("TurnOn5g")) {
+                                    "$quickSettingItem,TurnOn5g"
+                                } else {
+                                    quickSettingItem
+                                }
+                            } else {
+                                result
+                            }
+                        }
+                    }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
+        }
+        if (param.packageName == Package.SYSTEMUI) {
+            try {
+                val qsTileHostClass = param.classLoader.loadClass("com.android.systemui.qs.QSTileHost")
+                val isAvailableCustomTileMethod =
+                    qsTileHostClass.getDeclaredMethod("isAvailableCustomTile", String::class.java)
+                xposedModule.hook(isAvailableCustomTileMethod).intercept { chain ->
+                    if (chain.args.firstOrNull() == "TurnOn5g") {
+                        true
+                    } else {
+                        chain.proceed()
+                    }
+                }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
         }
     }
 }
