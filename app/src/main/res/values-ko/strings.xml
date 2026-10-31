@@ -153,6 +153,8 @@
     <string name="aodLockSupportLunar_title">AOD/잠금 화면에 음력 표시</string>
     <string name="enableChineseHolidayDisplay_title">캘린더에 중국 공휴일 표시</string>
     <string name="supportBlockMessage_title">메시지 차단 기능 지원</string>
+    <string name="unlockRcs_title">RCS 제한 해제</string>
+    <string name="unlockRcs_summary">채팅 설정을 표시하고 로컬 RCS 지원 확인을 우회합니다. 이동통신사의 RCS 서비스가 필요합니다. 변경 후 삼성 메시지를 다시 시작하세요.</string>
     <string name="setThemeTrialNeverExpired_title">유료 테마 및 아이콘 체험판 시간 제한 해제</string>
     <string name="spoofBrowserCountryCodeToUS_title">브라우저 지역을 미국(US)으로 변조</string>
     <string name="spoofBrowserCountryCodeToUS_summary">검색 엔진 및 광고 차단 기능 커스텀용</string>

@@ -217,6 +217,7 @@ data class Preference(
         val supportAllNotesFeatures: Boolean = true,
         val enableChineseHolidayDisplay: Boolean = false,
         val supportBlockMessage: Boolean = true,
+        val unlockRcs: Boolean = false,
         val setThemeTrialNeverExpired: Boolean = true,
         val spoofBrowserCountryCodeToUS: Boolean = false,
         val noAIWatermark: Boolean = true,

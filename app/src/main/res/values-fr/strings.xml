@@ -153,6 +153,8 @@
     <string name="aodLockSupportLunar_title">Afficher le calendrier lunaire chinois sur l\'AOD</string>
     <string name="enableChineseHolidayDisplay_title">Afficher les jours fériés chinois dans le calendrier</string>
     <string name="supportBlockMessage_title">Prendre en charge le blocage des SMS</string>
+    <string name="unlockRcs_title">Débloquer RCS</string>
+    <string name="unlockRcs_summary">Afficher les paramètres de chat et contourner les vérifications locales de prise en charge RCS. Le service RCS de votre opérateur reste nécessaire. Redémarrez Samsung Messages après toute modification.</string>
     <string name="setThemeTrialNeverExpired_title">Les essais de thèmes et d\'icônes n\'expirent jamais</string>
     <string name="spoofBrowserCountryCodeToUS_title">Simuler la région du navigateur (États-Unis)</string>
     <string name="spoofBrowserCountryCodeToUS_summary">Personnaliser les moteurs de recherche et le bloqueur de publicités</string>

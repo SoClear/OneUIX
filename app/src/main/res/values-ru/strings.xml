@@ -153,6 +153,8 @@
     <string name="aodLockSupportLunar_title">Лунный календарь на AOD и экране блокировки</string>
     <string name="enableChineseHolidayDisplay_title">Китайские праздники в календаре</string>
     <string name="supportBlockMessage_title">Блокировка сообщений</string>
+    <string name="unlockRcs_title">Снять ограничения RCS</string>
+    <string name="unlockRcs_summary">Показать настройки чата и обойти локальные проверки поддержки RCS. Услуга RCS оператора всё ещё необходима. После изменения перезапустите Samsung Messages.</string>
     <string name="setThemeTrialNeverExpired_title">Бесконечный пробный период тем и значков</string>
     <string name="spoofBrowserCountryCodeToUS_title">Настройка поисковой системы браузера</string>
     <string name="spoofBrowserCountryCodeToUS_summary">Эксклюзивно для китайских прошивок, поддержка Google и Bing</string>

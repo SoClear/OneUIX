@@ -23,12 +23,22 @@ fun DetailPaneMessaging(
             checked = uiState.supportBlockMessage,
             onCheckedChange = { onEvent(MessagingEvent.SupportBlockMessage(it)) }
         )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.sms),
+            title = stringResource(id = R.string.unlockRcs_title),
+            summary = stringResource(id = R.string.unlockRcs_summary),
+            checked = uiState.unlockRcs,
+            onCheckedChange = { onEvent(MessagingEvent.UnlockRcs(it)) }
+        )
     }
 }
 
 sealed interface MessagingEvent {
     @JvmInline
     value class SupportBlockMessage(val value: Boolean) : MessagingEvent
+
+    @JvmInline
+    value class UnlockRcs(val value: Boolean) : MessagingEvent
 }
 
 fun SettingViewModel.onMessagingEvent(event: MessagingEvent) {
@@ -37,6 +47,11 @@ fun SettingViewModel.onMessagingEvent(event: MessagingEvent) {
             is MessagingEvent.SupportBlockMessage -> preference.copy(
                 other = preference.other.copy(
                     supportBlockMessage = event.value
+                )
+            )
+            is MessagingEvent.UnlockRcs -> preference.copy(
+                other = preference.other.copy(
+                    unlockRcs = event.value
                 )
             )
         }

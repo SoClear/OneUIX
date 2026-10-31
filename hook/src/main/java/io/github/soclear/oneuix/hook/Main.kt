@@ -174,6 +174,9 @@ class Main : XposedModule() {
                 if (preference.other.supportBlockMessage) {
                     Messaging.isSupportBlock()
                 }
+                if (preference.other.unlockRcs) {
+                    Messaging.unlockRcs()
+                }
             }
 
             Package.NFC -> NFC.filterNfcCards()

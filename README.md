@@ -154,6 +154,7 @@
 - 支持三星笔记的所有功能
 - 日历中显示中国节假日
 - 支持拦截短信
+- 解除三星信息的本地 RCS 限制（仍需运营商支持）
 - 主题和图标试用永不过期
 - 伪装浏览器国家/地区代码为美国
 - 禁用 AI 水印
@@ -322,6 +323,7 @@
 - Support all Samsung Notes features
 - Show Chinese holidays in Calendar
 - Support message blocking
+- Bypass local RCS restrictions in Samsung Messages (carrier support required)
 - Never expire theme and icon trials
 - Spoof Browser Region to US
 - Disable AI watermark

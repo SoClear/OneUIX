@@ -153,6 +153,8 @@
     <string name="aodLockSupportLunar_title">息屏提醒显示中国农历</string>
     <string name="enableChineseHolidayDisplay_title">日历中显示中国节假日</string>
     <string name="supportBlockMessage_title">支持拦截短信</string>
+    <string name="unlockRcs_title">解除 RCS 限制</string>
+    <string name="unlockRcs_summary">显示聊天设置，绕过本地 RCS 支持检查。仍需运营商提供 RCS 服务，修改后请重启三星信息。</string>
     <string name="setThemeTrialNeverExpired_title">主题和图标试用永不过期</string>
     <string name="spoofBrowserCountryCodeToUS_title">伪装浏览器国家/地区代码为美国</string>
     <string name="spoofBrowserCountryCodeToUS_summary">自定义搜索引擎、广告拦截器</string>
