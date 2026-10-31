@@ -572,6 +572,17 @@ fun DetailPaneSystemUI(
             }
         )
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (ONE_UI_VERSION in 60100 until 70000) {
+                SwitchItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
+                    title = stringResource(id = R.string.hideQuickQsTiles_title),
+                    summary = stringResource(id = R.string.hideQuickQsTiles_summary),
+                    checked = uiState.qs.hideQuickQsTiles,
+                    onCheckedChange = {
+                        onEvent(SystemUIEvent.QS.HideQuickQsTiles(it))
+                    }
+                )
+            }
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
                 title = stringResource(id = R.string.hideDeviceControlQsTile_title),
@@ -1050,6 +1061,9 @@ sealed interface SystemUIEvent {
         value class SetQsClockMonospaced(val value: Boolean) : QS
 
         @JvmInline
+        value class HideQuickQsTiles(val value: Boolean) : QS
+
+        @JvmInline
         value class HideDeviceControlQsTile(val value: Boolean) : QS
 
         @JvmInline
@@ -1466,6 +1480,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             setQsClockMonospaced = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.HideQuickQsTiles -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            hideQuickQsTiles = event.value
                         )
                     )
                 )

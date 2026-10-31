@@ -65,6 +65,8 @@
     <string name="hideQsBarSecurityFooter_summary">예: \'개인용 앱이 VPN을 통해 인터넷에 연결되어 있습니다\' 알림 등</string>
     <string name="hideQsBarDataUsage_title">빠른 설정창에서 데이터 사용량 바 숨기기</string>
     <string name="hideQsBarSmartViewAndModes_title">빠른 설정창에서 Smart View 및 모드 바 숨기기</string>
+    <string name="hideQuickQsTiles_title">접힌 알림 패널에서 빠른 설정 타일 숨기기</string>
+    <string name="hideQuickQsTiles_summary">One UI 6.1: 완전히 펼친 빠른 설정 패널에서만 타일 표시</string>
     <string name="hideDeviceControlQsTile_title">빠른 설정에서 기기 제어 숨기기</string>
     <string name="hideSmartViewQsTile_title">빠른 설정에서 Smart View 숨기기</string>
     <string name="quickQsTileCount_title">축소된 빠른 설정 버튼 수</string>

@@ -23,6 +23,7 @@ import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
+import java.util.function.DoubleSupplier
 import kotlin.math.roundToInt
 
 @SuppressLint("PrivateApi")
@@ -35,6 +36,35 @@ object QS {
         SmartViewAndModes,
     }
 
+
+    context(xposedModule: XposedModule)
+    fun hideQuickQsTiles() = afterAttachTry(
+        Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE && ONE_UI_VERSION in 60100 until 70000
+    ) {
+        val controllerClass = classLoader.loadClass("com.android.systemui.qs.SecQuickQSPanelController")
+        val resourcePickerClass = classLoader.loadClass("com.android.systemui.qs.SecQSPanelResourcePicker")
+        val bottomMarginMethod = resourcePickerClass.getDeclaredMethod(
+            "getQuickQSCommonBottomMargin", Context::class.java
+        )
+        // Called once by SecQSPanelControllerBase.onInit, before the first measurement.
+        val createLayoutMethod = controllerClass.getDeclaredMethod("getOrCreateTileLayout")
+        xposedModule.hook(createLayoutMethod).intercept { chain ->
+            val tileLayout = chain.proceed() as View
+            val panel = chain.thisObject.reflect["mView"] as View
+            val heightSupplier = panel.reflect["mMeasuredHeightSupplier"] as DoubleSupplier
+
+            // Keep the layout for QsOpenAnimator's open_anim lookup; GONE also removes its margin.
+            tileLayout.visibility = View.GONE
+            // The supplier independently adds the QQS row's bottom margin, even when it is GONE.
+            // Preserve the heights of collapsed brightness/media/device bars and read the margin
+            // on every measurement so density and orientation changes still use current resources.
+            panel.reflect["mMeasuredHeightSupplier"] = DoubleSupplier {
+                val bottomMargin = bottomMarginMethod.invoke(null, panel.context) as Int
+                (heightSupplier.asDouble - bottomMargin).coerceAtLeast(0.0)
+            }
+            tileLayout
+        }
+    }
 
     context(xposedModule: XposedModule)
     fun hideDeviceControlQsTile() = afterAttachTry(Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

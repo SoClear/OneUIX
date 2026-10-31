@@ -378,6 +378,10 @@ class Main : XposedModule() {
                     QS.setQuickQsTileCount(preference.systemUI.qs.quickQsTileCount)
                 }
 
+                if (preference.systemUI.qs.hideQuickQsTiles) {
+                    QS.hideQuickQsTiles()
+                }
+
                 if (preference.systemUI.qs.hideDeviceControlQsTile) {
                     QS.hideDeviceControlQsTile()
                 }

@@ -69,6 +69,7 @@
 
 - 快捷设置时间设为等宽字体
 - 隐藏快捷设置的设备控制
+- 隐藏折叠通知栏的快捷开关行（One UI 6.1）
 - 隐藏快捷设置的 Smart View
 - 开启快捷设置 5G 磁贴
 - 开启沉浸模式快捷设置磁贴
@@ -236,6 +237,7 @@
 
 - Set Quick Settings clock to monospaced font
 - Hide Device Control in Quick Settings
+- Hide Quick Settings tiles in the collapsed notification panel (One UI 6.1)
 - Hide Smart View in Quick Settings
 - Enable 5G Quick Settings tile
 - Enable Immersive mode Quick Settings tile

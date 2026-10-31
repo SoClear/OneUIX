@@ -65,6 +65,8 @@
     <string name="hideQsBarSecurityFooter_summary">Exemple : Vos applications personnelles sont connectées à Internet via \"VPN\"</string>
     <string name="hideQsBarDataUsage_title">Masquer la barre d\'utilisation des données dans les paramètres rapides</string>
     <string name="hideQsBarSmartViewAndModes_title">Masquer la barre Smart View et Modes dans les paramètres rapides</string>
+    <string name="hideQuickQsTiles_title">Masquer les tuiles dans le panneau réduit</string>
+    <string name="hideQuickQsTiles_summary">One UI 6.1 : afficher les tuiles uniquement dans le panneau des paramètres rapides entièrement déployé</string>
     <string name="hideDeviceControlQsTile_title">Masquer le contrôle des appareils dans les paramètres rapides</string>
     <string name="hideSmartViewQsTile_title">Masquer Smart View dans les paramètres rapides</string>
     <string name="quickQsTileCount_title">Nombre de tuiles du panneau rapide réduit</string>

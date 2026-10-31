@@ -65,6 +65,8 @@
     <string name="hideQsBarSecurityFooter_summary">例如：您的个人应用已通过“VPN”连接到互联网</string>
     <string name="hideQsBarDataUsage_title">隐藏快捷设置面板的已用流量 Bar</string>
     <string name="hideQsBarSmartViewAndModes_title">隐藏快捷设置面板的 Smart View 和模式 Bar</string>
+    <string name="hideQuickQsTiles_title">隐藏折叠通知栏的快捷开关行</string>
+    <string name="hideQuickQsTiles_summary">One UI 6.1：快捷开关仅在完全展开的快捷设置面板中显示</string>
     <string name="hideDeviceControlQsTile_title">隐藏快捷设置的设备控制</string>
     <string name="hideSmartViewQsTile_title">隐藏快捷设置的Smart View</string>
     <string name="quickQsTileCount_title">收起状态快捷开关数量</string>

@@ -119,6 +119,7 @@ data class Preference(
         data class QS(
             val quickQsTileCount: Int = 0,
             val setQsClockMonospaced: Boolean = false,
+            val hideQuickQsTiles: Boolean = false,
             val hideDeviceControlQsTile: Boolean = false,
             val hideSmartViewQsTile: Boolean = false,
             val turnOn5gQsTile: Boolean = false,
