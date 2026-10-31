@@ -92,7 +92,7 @@ class MediaPageService : Service() {
                 }
                 6 -> {
                     val state = data.readInt()
-                    main.post { if (state >= 4) settle(false, false); if (state == 5) detach() }
+                    main.post { if (state >= 4) settle(open = false, animate = false); if (state == 5) detach() }
                 }
                 7, 8 -> {
                     val mode = data.readInt()
