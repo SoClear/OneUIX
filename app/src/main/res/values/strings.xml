@@ -67,6 +67,8 @@
     <string name="hideQsBarSmartViewAndModes_title">Hide Smart View and Modes bar in QS panel</string>
     <string name="hideDeviceControlQsTile_title">Hide Device Control in Quick Settings</string>
     <string name="hideSmartViewQsTile_title">Hide Smart View in Quick Settings</string>
+    <string name="quickQsTileCount_title">Collapsed Quick Settings tile count</string>
+    <string name="quickQsTileCount_default">System default</string>
     <string name="alwaysExpandQsTileChunk_title">Always expand Quick Settings tile chunk</string>
     <string name="alwaysShowTimeDateOnQs_title">Always show time and date in QS panel</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modify maximum number of notification icons in status bar</string>

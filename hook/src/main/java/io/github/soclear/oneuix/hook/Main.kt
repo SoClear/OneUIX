@@ -379,6 +379,10 @@ class Main : XposedModule() {
                     QS.setQsClockStyle(monospaced, modifyTextSize, textSize)
                 }
 
+                if (preference.systemUI.qs.quickQsTileCount != 0) {
+                    QS.setQuickQsTileCount(preference.systemUI.qs.quickQsTileCount)
+                }
+
                 if (preference.systemUI.qs.hideDeviceControlQsTile) {
                     QS.hideDeviceControlQsTile()
                 }

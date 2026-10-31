@@ -78,6 +78,7 @@ data class Preference(
 
         @Serializable
         data class QS(
+            val quickQsTileCount: Int = 0,
             val setQsClockMonospaced: Boolean = false,
             val hideDeviceControlQsTile: Boolean = false,
             val hideSmartViewQsTile: Boolean = false,

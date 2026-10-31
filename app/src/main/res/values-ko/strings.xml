@@ -67,6 +67,8 @@
     <string name="hideQsBarSmartViewAndModes_title">빠른 설정창에서 Smart View 및 모드 바 숨기기</string>
     <string name="hideDeviceControlQsTile_title">빠른 설정에서 기기 제어 숨기기</string>
     <string name="hideSmartViewQsTile_title">빠른 설정에서 Smart View 숨기기</string>
+    <string name="quickQsTileCount_title">축소된 빠른 설정 버튼 수</string>
+    <string name="quickQsTileCount_default">시스템 기본값</string>
     <string name="alwaysExpandQsTileChunk_title">빠른 설정 버튼 영역 항상 확장</string>
     <string name="alwaysShowTimeDateOnQs_title">빠른 설정창에 항상 시간과 날짜 표시</string>
     <string name="setStatusBarMaxNotificationIcons_title">상태바 알림 아이콘 최대 개수 수정</string>

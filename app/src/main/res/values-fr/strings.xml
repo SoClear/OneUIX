@@ -67,6 +67,8 @@
     <string name="hideQsBarSmartViewAndModes_title">Masquer la barre Smart View et Modes dans les paramètres rapides</string>
     <string name="hideDeviceControlQsTile_title">Masquer le contrôle des appareils dans les paramètres rapides</string>
     <string name="hideSmartViewQsTile_title">Masquer Smart View dans les paramètres rapides</string>
+    <string name="quickQsTileCount_title">Nombre de tuiles du panneau rapide réduit</string>
+    <string name="quickQsTileCount_default">Par défaut du système</string>
     <string name="alwaysExpandQsTileChunk_title">Toujours développer les tuiles des paramètres rapides</string>
     <string name="alwaysShowTimeDateOnQs_title">Toujours afficher l\'heure et la date dans les paramètres rapides</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modifier le nombre maximum d\'icônes de notification (Barre d\'état)</string>

@@ -549,6 +549,19 @@ fun DetailPaneSystemUI(
         )
 
         DividerText(R.string.qs)
+        if (ONE_UI_VERSION >= 80000) {
+            val tileCounts = listOf(0, 7, 8, 9)
+            SelectItem(
+                icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
+                title = stringResource(id = R.string.quickQsTileCount_title),
+                entries = listOf(stringResource(id = R.string.quickQsTileCount_default)) +
+                    tileCounts.drop(1).map { it.toString() },
+                selectedIndex = tileCounts.indexOf(uiState.qs.quickQsTileCount),
+                onSelectedIndexChange = {
+                    onEvent(SystemUIEvent.QS.QuickQsTileCount(tileCounts[it]))
+                }
+            )
+        }
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.format_letter_spacing),
             title = stringResource(id = R.string.setQsClockMonospaced_title),
@@ -1057,6 +1070,9 @@ sealed interface SystemUIEvent {
 
     sealed interface QS : SystemUIEvent {
         @JvmInline
+        value class QuickQsTileCount(val value: Int) : QS
+
+        @JvmInline
         value class SetQsClockMonospaced(val value: Boolean) : QS
 
         @JvmInline
@@ -1476,6 +1492,16 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
 private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.QS.QuickQsTileCount -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            quickQsTileCount = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.QS.SetQsClockMonospaced -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
