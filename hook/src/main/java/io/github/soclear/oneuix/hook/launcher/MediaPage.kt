@@ -1,11 +1,13 @@
 package io.github.soclear.oneuix.hook.launcher
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Parcel
 import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.content.ComponentName
 import android.content.Context
@@ -28,9 +30,10 @@ import java.io.File
 object MediaPage {
     private const val SAMSUNG = "com.samsung.android.app.spage"
     private const val BIND = "$SAMSUNG.action.BIND_PAGE_OVERLAY"
-    private val modulePackage = BuildConfig.MODULE_APPLICATION_ID
+    private const val MODULE_PACKAGE = BuildConfig.MODULE_APPLICATION_ID
     @Volatile private var selected = false
 
+    @SuppressLint("DuplicateCreateDexKit") // Only created when the cached hook config needs rebuilding.
     context(module: XposedModule)
     fun embedAppInMediaPage() = afterAttachTry {
         val config = getHookConfig(File(filesDir, "MediaPageHook.json")) {
@@ -48,8 +51,11 @@ object MediaPage {
                 val callback = bridge.findMethod {
                     matcher { name = "onTransact"; usingEqStrings("onOverlayStateChanged state = ") }
                 }.singleOrNull() ?: return@use null
+                val recent = bridge.findMethod {
+                    matcher { name = "getRecentTasks"; usingEqStrings("com.android.wm.shell.recents.IRecentTasks") }
+                }.singleOrNull()
                 Config(longVersionCode, update.toDexMethod().serialize(), setup.toDexMethod().serialize(),
-                    callback.toDexMethod().serialize())
+                    callback.toDexMethod().serialize(), recent?.toDexMethod()?.serialize())
             }
         } ?: return@afterAttachTry
         val update = DexMethod(config.update).getMethodInstance(classLoader)
@@ -67,9 +73,10 @@ object MediaPage {
         val normalize = controller.declaredMethods.single {
             it.returnType == Void.TYPE && it.parameterTypes.contentEquals(arrayOf(String::class.java))
         }
-        val component = ComponentName(modulePackage, "io.github.soclear.oneuix.MainActivity")
-        val resources = packageManager.getResourcesForApplication(modulePackage)
-        val preview = resources.getIdentifier("media_page_preview", "drawable", modulePackage)
+        val component = ComponentName(MODULE_PACKAGE, "io.github.soclear.oneuix.MainActivity")
+        val resources = packageManager.getResourcesForApplication(MODULE_PACKAGE)
+        @SuppressLint("DiscouragedApi") // The drawable belongs to the module APK, not the launcher.
+        val preview = resources.getIdentifier("media_page_preview", "drawable", MODULE_PACKAGE)
         check(preview != 0)
         val resourceClass = classLoader.loadClass("com.honeyspace.common.data.minusonepage.ResourceData")
         val entry = resourceClass.getConstructor(
@@ -77,17 +84,34 @@ object MediaPage {
             Boolean::class.javaPrimitiveType
         ).newInstance(component, "OneUIX", preview, false)
 
+        // Samsung includes the most recent task even when EXCLUDE_FROM_RECENTS is set.
+        val displays = getSystemService(android.hardware.display.DisplayManager::class.java)
+        config.recentTasks?.let { descriptor ->
+            val method = DexMethod(descriptor).getMethodInstance(classLoader)
+            val taskList = method.returnType.componentType!!.methods.find { it.name == "getTaskInfoList" }
+            module.hook(method).intercept { chain ->
+                @Suppress("UNCHECKED_CAST")
+                val tasks = chain.proceed() as Array<Any>
+                val visible = tasks.filter { group ->
+                    val infos = taskList?.invoke(group) as List<*>? ?: listOf(group.reflect.call("getTaskInfo1"))
+                    infos.none { displays.getDisplay(it!!.reflect.getNonNull("displayId"))?.name == "OneUIX app page" }
+                }
+                tasks.copyOf(visible.size).apply { visible.forEachIndexed { i, task -> this[i] = task } }
+            }
+        }
+
         // The launcher owns physical display 0's bars, even while the app focuses another display.
         val main = Handler(Looper.getMainLooper())
         var activity: Activity? = null
         var full = false
         var savedFlags = 0
         var savedBars = 0
-        var savedBehavior = 0
+        var savedTransientBars = false
         fun fullscreen(value: Boolean) {
             if (full == value) return
             full = value
             activity?.window?.apply {
+                @Suppress("DEPRECATION") // Preserve the launcher's legacy window flags as well as its insets.
                 val flag = WindowManager.LayoutParams.FLAG_FULLSCREEN
                 val bars = WindowInsets.Type.systemBars()
                 val insets = decorView.windowInsetsController
@@ -95,13 +119,14 @@ object MediaPage {
                     savedFlags = attributes.flags and flag
                     savedBars = listOf(WindowInsets.Type.statusBars(), WindowInsets.Type.navigationBars())
                         .filter { decorView.rootWindowInsets?.isVisible(it) == true }.fold(0, Int::or)
-                    savedBehavior = insets?.systemBarsBehavior ?: 0
+                    savedTransientBars = insets?.systemBarsBehavior == WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                     addFlags(flag)
-                    insets?.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    insets?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                     insets?.hide(bars)
                 } else {
                     setFlags(savedFlags, flag)
-                    insets?.systemBarsBehavior = savedBehavior
+                    insets?.systemBarsBehavior = if (savedTransientBars)
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE else WindowInsetsController.BEHAVIOR_DEFAULT
                     insets?.hide(bars and savedBars.inv())
                     insets?.show(savedBars)
                 }
@@ -147,28 +172,28 @@ object MediaPage {
         // The stock controller normalizes every non-Google package to Samsung. Preserve ours,
         // but reuse its Samsung mover so scrolling and Home/Recents remain native.
         module.hook(normalize).intercept { chain ->
-            val own = chain.args[0] == modulePackage
+            val own = chain.args[0] == MODULE_PACKAGE
             selected = own
             if (!own) main.post { fullscreen(false) }
             val result = chain.proceed()
-            if (own) provider.set(chain.thisObject, modulePackage)
+            if (own) provider.set(chain.thisObject, MODULE_PACKAGE)
             result
         }
         module.hook(setup).intercept { chain ->
-            val own = provider.get(chain.thisObject) == modulePackage
+            val own = provider.get(chain.thisObject) == MODULE_PACKAGE
             if (own) provider.set(chain.thisObject, SAMSUNG)
             try {
                 chain.proceed()
             } finally {
-                if (own) provider.set(chain.thisObject, modulePackage)
+                if (own) provider.set(chain.thisObject, MODULE_PACKAGE)
             }
         }
         module.hook(bind).intercept { chain ->
             val intent = chain.args[0] as Intent
             if (selected && intent.action == BIND && intent.`package` == SAMSUNG) {
                 chain.proceed(arrayOf(
-                    Intent(intent).setComponent(ComponentName(modulePackage,
-                        "io.github.soclear.oneuix.MediaPageService")).setPackage(modulePackage),
+                    Intent(intent).setComponent(ComponentName(MODULE_PACKAGE,
+                        "io.github.soclear.oneuix.MediaPageService")).setPackage(MODULE_PACKAGE),
                     chain.args[1], chain.args[2]
                 ))
             } else chain.proceed()
@@ -181,5 +206,6 @@ object MediaPage {
         val update: String,
         val setup: String,
         val callback: String,
+        val recentTasks: String?,
     ) : HookConfig
 }

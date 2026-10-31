@@ -19,16 +19,21 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcel;
+import android.util.Log;
 import android.view.InputEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 
 /** UID-0 app_process owns only this session's virtual display. Target apps keep their own UIDs. */
 @android.annotation.SuppressLint({"BlockedPrivateApi", "PrivateApi", "DiscouragedPrivateApi", "WrongConstant"})
 public final class EmbeddedAppServer extends Binder implements DisplayManager.DisplayListener {
     private static final String PROTOCOL = "io.github.soclear.oneuix.EmbeddedApp";
+    private static final String TAG = "OneUIX.EmbeddedApp";
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Context context;
     private final int clientUid;
@@ -40,20 +45,16 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
     private volatile int id = -1;
     private volatile boolean attached;
     private volatile Matrix inputTransform = new Matrix();
-    private int width, height, rotation;
+    private int width, height;
     private final Runnable checkTasks = () -> run(() -> {
         if (attached && id != -1 && tasks().stream().noneMatch(this::owns)) notifyClient(3, null);
     });
-    private final TaskStackListener taskListener = new TaskStackListener() {
-        @Override public void onTaskStackChanged() {
-            main.removeCallbacks(checkTasks); main.postDelayed(checkTasks, 300);
-        }
-    };
 
+    @SuppressWarnings("JavaReflectionMemberAccess") // These hidden framework members are available in app_process.
     private EmbeddedAppServer(Context base, int uid) throws Exception {
         context = new ContextWrapper(base) {
-            @Override public String getPackageName() { return "com.android.shell"; }
-            @Override public String getOpPackageName() { return "com.android.shell"; }
+            @NonNull @Override public String getPackageName() { return "com.android.shell"; }
+            @NonNull @Override public String getOpPackageName() { return "com.android.shell"; }
         };
         clientUid = uid;
         displays = DisplayManager.class.getConstructor(Context.class).newInstance(context);
@@ -65,10 +66,18 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
         input = call(inputClass, "getInstance");
         inject = inputClass.getMethod("injectInputEvent", InputEvent.class, int.class);
         setDisplay = InputEvent.class.getDeclaredMethod("setDisplayId", int.class);
+        TaskStackListener taskListener = new TaskStackListener() {
+            @Override
+            public void onTaskStackChanged() {
+                main.removeCallbacks(checkTasks);
+                main.postDelayed(checkTasks, 300);
+            }
+        };
         call(activities, "registerTaskStackListener", taskListener);
         displays.registerDisplayListener(this, main);
     }
 
+    @SuppressWarnings("deprecation") // app_process has no framework-created main looper.
     public static void main(String[] args) throws Exception {
         Looper.prepareMainLooper();
         // Android 15+ normally initializes this in bindApplication, which app_process skips.
@@ -90,12 +99,12 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
         Looper.loop();
     }
 
-    @Override protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
+    @Override protected boolean onTransact(int code, @NonNull Parcel data, @Nullable Parcel reply, int flags) {
         if (Binder.getCallingUid() != clientUid) throw new SecurityException("Wrong client UID");
         data.enforceInterface(PROTOCOL);
         switch (code) {
             case 1 -> {
-                IBinder owner = data.readStrongBinder();
+                IBinder owner = Objects.requireNonNull(data.readStrongBinder());
                 main.post(() -> run(() -> {
                     if (client != null) throw new IllegalStateException("Already connected");
                     client = owner; client.linkToDeath(() -> main.post(this::close), 0);
@@ -118,7 +127,7 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
                 }));
             }
             case 3 -> {
-                MotionEvent event = data.readTypedObject(MotionEvent.CREATOR);
+                MotionEvent event = Objects.requireNonNull(data.readTypedObject(MotionEvent.CREATOR));
                 // No main-thread queue hop per input sample. Clear the app's incoming Binder identity.
                 long identity = Binder.clearCallingIdentity();
                 try { run(() -> {
@@ -156,6 +165,8 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
             // DESTROY_CONTENT_ON_REMOVAL | TRUSTED | OWN_DISPLAY_GROUP. No SECURE/ALWAYS_UNLOCKED.
             int flags = 1 | 8 | 64 | 128 | 256 | 1024 | 2048;
             if (Build.VERSION.SDK_INT >= 34) {
+                // Physical touches focus display 0. Keep the embedded app focused throughout the gesture.
+                flags |= 16384; // OWN_FOCUS
                 display = displays.createVirtualDisplay(new VirtualDisplayConfig.Builder("OneUIX app page", w, h, density)
                         .setSurface(surface).setFlags(flags).setRequestedRefreshRate(rate).build());
             } else display = displays.createVirtualDisplay("OneUIX app page", w, h, density, surface, flags);
@@ -175,10 +186,12 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
 
     private void focus() throws Exception { call(windows, "moveDisplayToTop", id, "OneUIX input"); }
 
+    @SuppressWarnings("deprecation") // UID 0 can still query all tasks; ordinary app restrictions do not apply.
     private List<ActivityManager.RunningTaskInfo> tasks() {
-        return context.getSystemService(ActivityManager.class).getRunningTasks(Integer.MAX_VALUE);
+        return Objects.requireNonNull(context.getSystemService(ActivityManager.class)).getRunningTasks(Integer.MAX_VALUE);
     }
 
+    // displayId is present at runtime but omitted from the public SDK.
     private boolean owns(ActivityManager.RunningTaskInfo task) {
         try { return task.getClass().getField("displayId").getInt(task) == id && task.numActivities > 0; }
         catch (ReflectiveOperationException error) { throw new IllegalStateException(error); }
@@ -190,7 +203,11 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
             for (var task : tasks()) {
                 boolean samePackage = (task.baseActivity != null && component.getPackageName().equals(task.baseActivity.getPackageName())) ||
                         (task.topActivity != null && component.getPackageName().equals(task.topActivity.getPackageName()));
-                if (samePackage && !owns(task)) throw new IllegalStateException("App already has an existing task; close it first");
+                if (samePackage && !owns(task)) {
+                    call(activities, "startActivityFromRecents", task.taskId,
+                            ActivityOptions.makeBasic().setLaunchDisplayId(id).toBundle());
+                    return;
+                }
             }
         }
         Intent intent = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(component)
@@ -203,9 +220,10 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
 
     @Override public void onDisplayChanged(int changed) {
         if (changed != id || display == null) return;
-        rotation = display.getDisplay().getRotation();
+        int rotation = display.getDisplay().getRotation();
         Matrix matrix = new Matrix(); matrix.setRotate(-90f * rotation);
         switch (rotation) {
+            case Surface.ROTATION_0 -> { }
             case Surface.ROTATION_90 -> matrix.postTranslate(0, width);
             case Surface.ROTATION_180 -> matrix.postTranslate(width, height);
             case Surface.ROTATION_270 -> matrix.postTranslate(height, 0);
@@ -221,13 +239,13 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
         try { action.run(); }
         catch (Exception error) {
             Throwable cause = error.getCause() == null ? error : error.getCause();
-            cause.printStackTrace(System.err); main.post(() -> notifyClient(2, cause.toString()));
+            Log.e(TAG, "Root helper failed", cause); main.post(() -> notifyClient(2, cause.toString()));
         }
     }
 
     /** Named framework calls only; input hot-path methods are cached separately. */
     private static Object call(Object target, String name, Object... args) throws Exception {
-        Class<?> type = target instanceof Class<?> ? (Class<?>) target : target.getClass();
+        Class<?> type = target instanceof Class<?> clazz ? clazz : target.getClass();
         for (Method method : type.getMethods()) {
             if (method.getName().equals(name) && method.getParameterCount() == args.length) {
                 method.setAccessible(true);
@@ -250,7 +268,7 @@ public final class EmbeddedAppServer extends Binder implements DisplayManager.Di
     private void close() {
         if (display != null) {
             try { for (var task : tasks()) if (owns(task)) call(activities, "removeTask", task.taskId); }
-            catch (Exception error) { error.printStackTrace(System.err); }
+            catch (Exception error) { Log.e(TAG, "Cannot remove embedded tasks", error); }
             display.release();
         }
         System.exit(0);
