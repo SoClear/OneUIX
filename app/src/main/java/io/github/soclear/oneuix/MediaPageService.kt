@@ -135,8 +135,6 @@ class MediaPageService : Service() {
         immersive = value
         notify(3, if (value) 1 else 0)
         val params = layout ?: return
-        params.flags = if (value) params.flags or WindowManager.LayoutParams.FLAG_FULLSCREEN
-            else params.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN.inv()
         params.setFitInsetsTypes(if (value) 0 else WindowInsets.Type.systemBars())
         windows.updateViewLayout(page, params)
         page?.windowInsetsController?.apply {
