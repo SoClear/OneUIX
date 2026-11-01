@@ -17,7 +17,21 @@ object NetWorkSpeed {
         val observer = classLoader.loadClass(
             $$"com.android.systemui.statusbar.policy.NetspeedViewController$SettingObserver"
         )
-        xposedModule.hook(observer.getDeclaredMethod("updateSettingValues")).intercept { chain ->
+        val updateSettings = observer.declaredMethods.firstOrNull {
+            it.name == "updateSettingValues" && it.parameterCount == 0
+        }
+        if (updateSettings == null) {
+            // One UI 8.5 及以下
+            val basicRune = Class.forName("com.android.systemui.BasicRune", true, classLoader)
+            basicRune.getDeclaredField("STATUS_REAL_TIME_NETWORK_SPEED").apply {
+                isAccessible = true
+            }.setBoolean(null, true)
+            val settingsHelper = classLoader.loadClass("com.android.systemui.util.SettingsHelper")
+            xposedModule.hook(settingsHelper.getDeclaredMethod("isShowNetworkSpeedInStatusBar"))
+                .intercept { true }
+            return@afterAttachTry
+        }
+        xposedModule.hook(updateSettings).intercept { chain ->
             val result = chain.proceed()
             chain.thisObject.reflect["mIsOnSecSettings"] = true
             result
