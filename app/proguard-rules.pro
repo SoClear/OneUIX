@@ -1,4 +1,8 @@
 # Launched by root app_process via its stable entry point.
+-keep class io.github.soclear.oneuix.StatusBarOverlay {
+    public static void main(java.lang.String[]);
+}
+
 -keep class io.github.soclear.oneuix.EmbeddedAppServer {
     public static void main(java.lang.String[]);
 }

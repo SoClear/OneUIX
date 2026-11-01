@@ -41,6 +41,7 @@ data class Preference(
             val modifyStatusBarRightPadding: Boolean = false,
             val statusBarRightPaddingDp: Float = 0f,
             val alignStatusBarContentToTop: Boolean = false,
+            val dualStatusBar: Boolean = false,
             val setBatteryIconWidthScale: Boolean = false,
             val batteryIconWidthScale: Float = 1f,
             val setBatteryIconHeightScale: Boolean = false,

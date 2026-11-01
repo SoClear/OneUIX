@@ -241,4 +241,7 @@
     <string name="networkSpeedShowPerSecond_title">Show /s</string>
     <string name="networkSpeedRefreshInterval_title">Refresh interval</string>
     <string name="networkSpeedPaddingEnd_title">Spacing to the next icon</string>
+    <string name="dualStatusBar_title">Dual status bar</string>
+    <string name="dualStatusBar_summary">Show notifications on a full-width second row in portrait. Requires root; use Restart System UI to apply. Some apps also need restarting.</string>
+    <string name="restartSystemUI_failed">Could not apply status bar settings. Check root access and try again.</string>
 </resources>

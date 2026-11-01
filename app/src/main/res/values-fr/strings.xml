@@ -241,4 +241,7 @@
     <string name="networkSpeedShowPerSecond_title">Afficher /s</string>
     <string name="networkSpeedRefreshInterval_title">Intervalle de rafraîchissement</string>
     <string name="networkSpeedPaddingEnd_title">Espacement avec la prochaine icône</string>
+    <string name="dualStatusBar_title">Barre d’état sur deux lignes</string>
+    <string name="dualStatusBar_summary">En portrait, afficher les notifications sur une seconde ligne. Accès root requis ; utiliser le bouton de redémarrage de l’interface système. Certaines applications doivent aussi être relancées.</string>
+    <string name="restartSystemUI_failed">Impossible d’appliquer les réglages de la barre d’état. Vérifier l’accès root et réessayer.</string>
 </resources>

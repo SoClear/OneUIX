@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.ui.category
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -27,15 +28,18 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.StatusBarOverlay
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
@@ -46,6 +50,9 @@ import io.github.soclear.oneuix.ui.component.SwitchItem
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import io.github.soclear.oneuix.common.R as CommonR
 
 private const val ESIM_ADAPTER_SIM_BOTH = 2
@@ -58,6 +65,9 @@ fun DetailPaneSystemUI(
     modifier: Modifier = Modifier,
     onNavigateToNetworkSpeed: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var restarting by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -66,13 +76,38 @@ fun DetailPaneSystemUI(
         Spacer(modifier = Modifier.height(30.dp))
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
+            enabled = !restarting,
             onClick = {
-                runCatching { Runtime.getRuntime().exec("su -c killall com.android.systemui") }
+                restarting = true
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        runCatching {
+                            if (Build.VERSION.SDK_INT >= 34) {
+                                StatusBarOverlay.restart(context, uiState.statusBar.dualStatusBar)
+                            } else {
+                                Runtime.getRuntime().exec("su -c killall com.android.systemui")
+                            }
+                        }
+                    }
+                    restarting = false
+                    if (result.isFailure) {
+                        Toast.makeText(context, R.string.restartSystemUI_failed, Toast.LENGTH_LONG).show()
+                    }
+                }
             }
         ) {
             Text(text = stringResource(CommonR.string.restartSystemUI))
         }
         DividerText(R.string.status_bar)
+        if (ONE_UI_VERSION >= 60000) {
+            SwitchItem(
+                icon = ImageVector.vectorResource(R.drawable.mobile_screensaver),
+                title = stringResource(R.string.dualStatusBar_title),
+                summary = stringResource(R.string.dualStatusBar_summary),
+                checked = uiState.statusBar.dualStatusBar,
+                onCheckedChange = { onEvent(SystemUIEvent.StatusBar.DualStatusBar(it)) }
+            )
+        }
         Column {
             var padding by remember {
                 mutableFloatStateOf(uiState.statusBar.statusBarLeftPaddingDp)
@@ -963,6 +998,9 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
 sealed interface SystemUIEvent {
     sealed interface StatusBar : SystemUIEvent {
         @JvmInline
+        value class DualStatusBar(val value: Boolean) : StatusBar
+
+        @JvmInline
         value class AlignContentToTop(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -1162,6 +1200,12 @@ fun SettingViewModel.onSystemUIEvent(event: SystemUIEvent) {
 private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.StatusBar.DualStatusBar -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(dualStatusBar = event.value)
+                )
+            )
+
             is SystemUIEvent.StatusBar.AlignContentToTop -> preference.copy(
                 systemUI = preference.systemUI.copy(
                     statusBar = preference.systemUI.statusBar.copy(

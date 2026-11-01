@@ -241,4 +241,7 @@
     <string name="networkSpeedShowPerSecond_title">/s 표시</string>
     <string name="networkSpeedRefreshInterval_title">새로고침 간격</string>
     <string name="networkSpeedPaddingEnd_title">다음 아이콘과의 간격</string>
+    <string name="dualStatusBar_title">두 줄 상태 표시줄</string>
+    <string name="dualStatusBar_summary">세로 모드에서 알림을 두 번째 줄에 표시합니다. 루트 권한을 허용하고 시스템 UI 다시 시작 버튼을 누르세요. 일부 앱도 다시 시작해야 합니다.</string>
+    <string name="restartSystemUI_failed">상태 표시줄 설정을 적용할 수 없습니다. 루트 권한을 확인하고 다시 시도하세요.</string>
 </resources>

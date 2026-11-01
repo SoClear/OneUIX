@@ -241,4 +241,7 @@
     <string name="networkSpeedShowPerSecond_title">显示 /s</string>
     <string name="networkSpeedRefreshInterval_title">刷新间隔</string>
     <string name="networkSpeedPaddingEnd_title">与下一个图标的间距</string>
+    <string name="dualStatusBar_title">双行状态栏</string>
+    <string name="dualStatusBar_summary">竖屏时通知独占第二行。需要 Root，点击“重启系统 UI”应用设置；部分应用还需重新启动。</string>
+    <string name="restartSystemUI_failed">无法应用状态栏设置，请检查 Root 权限后重试。</string>
 </resources>

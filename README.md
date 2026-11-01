@@ -46,6 +46,7 @@
 - 修改状态栏左边距
 - 修改状态栏右边距
 - 状态栏内容置顶（保留原高度）
+- 双行状态栏，通知独占第二行（One UI 6.0+，竖屏）
 - 设置电池图标宽度缩放倍数
 - 设置电池图标高度缩放倍数
 - 隐藏状态栏电池的百分号
@@ -177,6 +178,8 @@
 
 ### 备份
 
+双行状态栏需要 Root，更改后须点击模块内的“重启系统 UI”以同步系统高度资源，部分应用还需重新启动。QQ 等持久化缓存状态栏高度的页面可能仍不兼容，本功能不增加应用作用域。修改显示缩放或分辨率后请重新应用。停用或卸载模块前，先关闭双行状态栏并点击“重启系统 UI”恢复系统资源。
+
 `/data/misc/[UUID]/prefs/io.github.soclear.oneuix/preference.json`
 
 或者
@@ -215,6 +218,7 @@
 - Modify status bar left padding
 - Modify status bar right padding
 - Align status bar content to the top without changing its height
+- Show notifications on a full-width second status bar row (One UI 6.0+, portrait)
 - Set battery icon width scale factor
 - Set battery icon height scale factor
 - Hide battery percentage sign in status bar
@@ -345,6 +349,8 @@
 - **LSPosed** framework installed and activated.
 
 ### Backup
+
+The dual status bar requires root. Apply changes with the in-app Restart System UI button; some apps also need restarting. Pages that persistently cache the status bar height, including QQ, may remain incompatible. This feature does not add app scopes. Reapply after changing display scaling or resolution. Before disabling or uninstalling the module, turn off the dual status bar and use Restart System UI to restore the system resources.
 
 `/data/misc/[UUID]/prefs/io.github.soclear.oneuix/preference.json`
 

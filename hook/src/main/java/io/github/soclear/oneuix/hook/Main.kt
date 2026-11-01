@@ -7,6 +7,7 @@ import io.github.soclear.oneuix.hook.launcher.Launcher
 import io.github.soclear.oneuix.hook.launcher.MediaPage
 import io.github.soclear.oneuix.hook.systemui.AOD
 import io.github.soclear.oneuix.hook.systemui.statusbar.ESIM
+import io.github.soclear.oneuix.hook.systemui.statusbar.DualStatusBar
 import io.github.soclear.oneuix.hook.systemui.statusbar.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
@@ -293,6 +294,10 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.statusBar.alignStatusBarContentToTop) {
                     StatusBar.alignContentToTop()
+                }
+
+                if (preference.systemUI.statusBar.dualStatusBar) {
+                    DualStatusBar.apply()
                 }
 
                 if (preference.systemUI.other.hideLockscreenEmergencyButton) {

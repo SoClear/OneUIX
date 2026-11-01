@@ -241,4 +241,7 @@
     <string name="networkSpeedShowPerSecond_title">Показывать /s</string>
     <string name="networkSpeedRefreshInterval_title">Интервал обновления</string>
     <string name="networkSpeedPaddingEnd_title">Отступ до следующего значка</string>
+    <string name="dualStatusBar_title">Двухстрочная строка состояния</string>
+    <string name="dualStatusBar_summary">В портретном режиме уведомления занимают вторую строку. Нужен root; нажмите кнопку перезапуска System UI. Некоторым приложениям также нужен перезапуск.</string>
+    <string name="restartSystemUI_failed">Не удалось применить настройки строки состояния. Проверьте root и повторите попытку.</string>
 </resources>
