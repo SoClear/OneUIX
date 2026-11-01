@@ -265,6 +265,10 @@ class Main : XposedModule() {
                     Android.setBlockableNotificationChannel()
                 }
 
+                if (preference.systemUI.other.allowLowBatteryFlashlight) {
+                    SystemUIOther.allowLowBatteryFlashlight()
+                }
+
                 if (preference.systemUI.notification.autoExpandNotifications) {
                     Notification.autoExpandNotifications()
                 }
@@ -565,6 +569,10 @@ class Main : XposedModule() {
 
         if (preference.android.disableScreenWakeOnPowerUnplugged) {
             Android.disableScreenWakeOnPowerUnplugged()
+        }
+
+        if (preference.android.disableLowBatteryDimming) {
+            Android.disableLowBatteryDimming()
         }
 
         if (preference.android.disableFlagSecure) {

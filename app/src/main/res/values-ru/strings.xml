@@ -241,4 +241,8 @@
     <string name="networkSpeedShowPerSecond_title">Показывать /s</string>
     <string name="networkSpeedRefreshInterval_title">Интервал обновления</string>
     <string name="networkSpeedPaddingEnd_title">Отступ до следующего значка</string>
+    <string name="disableLowBatteryDimming_title">Не снижать яркость при низком заряде</string>
+    <string name="disableLowBatteryDimming_summary">Сохранять текущую яркость при заряде 5 % и ниже</string>
+    <string name="allowLowBatteryFlashlight_title">Фонарик при низком заряде</string>
+    <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
 </resources>

@@ -241,4 +241,8 @@
     <string name="networkSpeedShowPerSecond_title">显示 /s</string>
     <string name="networkSpeedRefreshInterval_title">刷新间隔</string>
     <string name="networkSpeedPaddingEnd_title">与下一个图标的间距</string>
+    <string name="disableLowBatteryDimming_title">禁用低电量自动调暗</string>
+    <string name="disableLowBatteryDimming_summary">电量不高于 5% 时保持当前屏幕亮度</string>
+    <string name="allowLowBatteryFlashlight_title">允许低电量使用手电筒</string>
+    <string name="allowLowBatteryFlashlight_summary">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
 </resources>

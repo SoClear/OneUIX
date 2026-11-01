@@ -241,4 +241,8 @@
     <string name="networkSpeedShowPerSecond_title">Afficher /s</string>
     <string name="networkSpeedRefreshInterval_title">Intervalle de rafraîchissement</string>
     <string name="networkSpeedPaddingEnd_title">Espacement avec la prochaine icône</string>
+    <string name="disableLowBatteryDimming_title">Désactiver la baisse de luminosité à batterie faible</string>
+    <string name="disableLowBatteryDimming_summary">Conserver la luminosité actuelle à 5 % de batterie ou moins</string>
+    <string name="allowLowBatteryFlashlight_title">Autoriser la lampe torche à batterie faible</string>
+    <string name="allowLowBatteryFlashlight_summary">Utilisable jusqu’à 1 % sans extinction automatique due à la batterie faible. La protection thermique est conservée</string>
 </resources>

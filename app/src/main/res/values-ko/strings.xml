@@ -241,4 +241,8 @@
     <string name="networkSpeedShowPerSecond_title">/s 표시</string>
     <string name="networkSpeedRefreshInterval_title">새로고침 간격</string>
     <string name="networkSpeedPaddingEnd_title">다음 아이콘과의 간격</string>
+    <string name="disableLowBatteryDimming_title">배터리 부족 시 자동 밝기 감소 방지</string>
+    <string name="disableLowBatteryDimming_summary">배터리가 5% 이하일 때 현재 화면 밝기 유지</string>
+    <string name="allowLowBatteryFlashlight_title">배터리 부족 시 손전등 허용</string>
+    <string name="allowLowBatteryFlashlight_summary">배터리 부족으로 자동으로 꺼지지 않고 1%까지 사용합니다. 과열 보호는 유지됩니다</string>
 </resources>

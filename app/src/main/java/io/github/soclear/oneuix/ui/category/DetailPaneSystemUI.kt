@@ -828,6 +828,13 @@ fun DetailPaneSystemUI(
         )
 
         DividerText(R.string.other)
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.light_mode),
+            title = stringResource(id = R.string.allowLowBatteryFlashlight_title),
+            summary = stringResource(id = R.string.allowLowBatteryFlashlight_summary),
+            checked = uiState.other.allowLowBatteryFlashlight,
+            onCheckedChange = { onEvent(SystemUIEvent.Other.AllowLowBatteryFlashlight(it)) }
+        )
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
             SwitchItem(
@@ -1135,6 +1142,9 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface Other : SystemUIEvent {
+        @JvmInline
+        value class AllowLowBatteryFlashlight(val value: Boolean) : Other
+
         @JvmInline
         value class HideLockscreenEmergencyButton(val value: Boolean) : Other
 
@@ -1733,6 +1743,14 @@ private fun SettingViewModel.onNotification(event: SystemUIEvent.Notification) {
 private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.Other.AllowLowBatteryFlashlight -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    other = preference.systemUI.other.copy(
+                        allowLowBatteryFlashlight = event.value
+                    )
+                )
+            )
+
             is SystemUIEvent.Other.HideLockscreenEmergencyButton -> preference.copy(
                 systemUI = preference.systemUI.copy(
                     other = preference.systemUI.other.copy(

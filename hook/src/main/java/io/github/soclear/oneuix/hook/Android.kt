@@ -104,6 +104,38 @@ object Android {
         }
     }
 
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
+    fun disableLowBatteryDimming() {
+        for (name in listOf("DisplayPowerController", "DisplayPowerController2")) {
+            val controller = runCatching {
+                param.classLoader.loadClass("com.android.server.display.$name")
+            }.getOrNull() ?: continue
+            // Newer One UI already exposes auto_dim_screen in Battery settings.
+            if (controller.declaredFields.any { it.name == "mForceDimSettingEnabled" }) continue
+
+            try {
+                val method = controller.declaredMethods.first { it.name == "requestPowerState" }
+                val requestClass = method.parameterTypes[0]
+                val copyConstructor = requestClass.getConstructor(requestClass)
+                val critical = requestClass.getField("batteryLevelCritical")
+                xposedModule.hook(method).intercept { chain ->
+                    val request = chain.args[0]
+                    if (critical.getBoolean(request)) {
+                        val copy = copyConstructor.newInstance(request)
+                        critical.setBoolean(copy, false)
+                        val args = chain.args.toTypedArray()
+                        args[0] = copy
+                        chain.proceed(args)
+                    } else {
+                        chain.proceed()
+                    }
+                }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
+        }
+    }
+
     // 移除充电器时禁止亮屏
     // PowerManagerService.updateIsPoweredLocked 在插拔充电器时会调用 wakePowerGroupLocked 点亮屏幕，
     // 唤醒理由字符串为 "android.server.power:PLUGGED:" + mIsPowered。

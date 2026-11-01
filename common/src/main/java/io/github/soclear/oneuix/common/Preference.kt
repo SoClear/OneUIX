@@ -22,6 +22,7 @@ data class Preference(
         val allowAllRotation: Boolean = false,
         val liftFcmNetworkLimit: Boolean = false,
         val disableScreenWakeOnPowerUnplugged: Boolean = false,
+        val disableLowBatteryDimming: Boolean = false,
         val disableFlagSecure: Boolean = false,
     )
 
@@ -156,6 +157,7 @@ data class Preference(
         data class Other(
             val hideLockscreenEmergencyButton: Boolean = false,
             val disableScreenshotCaptureSound: Boolean = false,
+            val allowLowBatteryFlashlight: Boolean = false,
             val customPowerMenu: Boolean = false,
             val powerMenuActions: List<PowerMenuAction> = PowerMenuAction.defaultPreferences()
         )
