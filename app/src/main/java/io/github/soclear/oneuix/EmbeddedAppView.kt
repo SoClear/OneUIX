@@ -17,10 +17,11 @@ import android.view.SurfaceView
 import android.widget.FrameLayout
 import android.widget.TextView
 import java.util.UUID
+import androidx.core.view.isVisible
 
 /** Real app output/input; IME belongs to the virtual display, not this host. */
 @SuppressLint("ViewConstructor", "ClickableViewAccessibility")
-class EmbeddedAppView(context: Context, private val onExit: () -> Unit, private val onFullscreen: (Boolean) -> Unit) :
+class EmbeddedAppView(context: Context, private val onExit: (Boolean) -> Unit, private val onFullscreen: (Boolean) -> Unit) :
     FrameLayout(context), SurfaceHolder.Callback {
     private val surfaceView = SurfaceView(context)
     private val refreshRate = context.getSystemService(android.hardware.display.DisplayManager::class.java)
@@ -99,7 +100,7 @@ class EmbeddedAppView(context: Context, private val onExit: () -> Unit, private 
                         if (nonce == request) when (code) {
                             1 -> { status.visibility = GONE; if (active) onFullscreen(message?.toIntOrNull()?.rem(2) == 1) }
                             2 -> showError(message.orEmpty())
-                            3 -> onExit()
+                            3 -> onExit(true)
                         }
                     }
                     return true
@@ -119,13 +120,21 @@ class EmbeddedAppView(context: Context, private val onExit: () -> Unit, private 
         findOnBackInvokedDispatcher()?.unregisterOnBackInvokedCallback(backCallback)
         super.onDetachedFromWindow()
     }
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(visibility)
+        // Some launcher variants never forward the overlay lifecycle over Binder.
+        if (visibility != VISIBLE && active) {
+            active = false
+            onExit(false)
+        }
+    }
     override fun dispatchKeyEvent(event: android.view.KeyEvent): Boolean {
         if (event.keyCode != android.view.KeyEvent.KEYCODE_BACK) return super.dispatchKeyEvent(event)
         if (event.action == android.view.KeyEvent.ACTION_UP) back()
         return true
     }
     private fun back() {
-        if (status.visibility == VISIBLE) onExit() else send(4) {}
+        if (status.isVisible) onExit(true) else send(4) {}
     }
 
     private fun start() {

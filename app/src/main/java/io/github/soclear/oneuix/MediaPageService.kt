@@ -111,7 +111,7 @@ class MediaPageService : Service() {
         callback = listener
         try {
             listener.linkToDeath(death, 0)
-            page = EmbeddedAppView(this, { settle(false) }, ::fullscreen).apply {
+            page = EmbeddedAppView(this, { animate -> settle(open = false, animate = animate) }, ::fullscreen).apply {
                 setApp(selectedApp)
                 visibility = View.INVISIBLE
             }
