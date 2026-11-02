@@ -1,10 +1,12 @@
 package io.github.soclear.oneuix.hook.systemui
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
+import android.provider.Settings
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
@@ -749,6 +751,25 @@ object QS {
             val result = chain.proceed()
             textView?.text = chain.args[1].toString()
             result
+        }
+    }
+
+    @SuppressLint("DiscouragedPrivateApi")
+    context(xposedModule: XposedModule)
+    fun disableHighBrightnessDialog() = afterAttachTry {
+        val getIntForUserMethod = Settings.System::class.java.getDeclaredMethod(
+            "getIntForUser",
+            ContentResolver::class.java,
+            String::class.java,
+            Int::class.javaPrimitiveType,
+            Int::class.javaPrimitiveType
+        )
+        xposedModule.hook(getIntForUserMethod).intercept { chain ->
+            if (chain.args[1] == "shown_max_brightness_dialog") {
+                1
+            } else {
+                chain.proceed()
+            }
         }
     }
 

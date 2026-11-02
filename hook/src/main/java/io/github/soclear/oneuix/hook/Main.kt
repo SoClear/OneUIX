@@ -431,6 +431,10 @@ class Main : XposedModule() {
                     QS.alwaysShowTimeDateOnQs()
                 }
 
+                if (preference.systemUI.qs.disableHighBrightnessDialog) {
+                    QS.disableHighBrightnessDialog()
+                }
+
                 if (preference.systemUI.qs.addBrightnessProgressToQsBar) {
                     QS.addBrightnessProgressToQsBar()
                 }

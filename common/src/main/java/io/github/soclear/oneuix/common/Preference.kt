@@ -131,6 +131,7 @@ data class Preference(
             val hideQsBarSmartViewAndModes: Boolean = false,
             val alwaysExpandQsTileChunk: Boolean = false,
             val alwaysShowTimeDateOnQs: Boolean = false,
+            val disableHighBrightnessDialog: Boolean = false,
             val addBrightnessProgressToQsBar: Boolean = false,
             val addVolumeProgressToQsBar: Boolean = false,
             val showTraditionalChineseDateOnQS: Boolean = false,

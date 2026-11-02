@@ -138,6 +138,8 @@
     <string name="modifyMaxNeverKilledAppNum_title">\'앱 열어두기(최근 앱 유지)\' 최대 개수 수정</string>
     <string name="showTraditionalChineseDateOnQS_title">빠른 설정창에 음력 표시</string>
     <string name="modifyQSClockTextSize_title">빠른 설정창 시계 텍스트 크기 수정</string>
+    <string name="disableHighBrightnessDialog_title">높은 밝기 팝업 비활성화</string>
+    <string name="disableHighBrightnessDialog_summary">밝기를 높일 때 밝기 최적화를 켜라는 안내를 표시하지 않습니다</string>
     <string name="addBrightnessProgressToQsBar_title">빠른 설정창에 밝기 조절 바 표시</string>
     <string name="addVolumeProgressToQsBar_title">빠른 설정창에 볼륨 조절 바 표시</string>
     <string name="showMemoryUsageInRecents_title">최근 앱 화면에 메모리(RAM) 사용량 표시</string>

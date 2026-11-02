@@ -138,6 +138,8 @@
     <string name="modifyMaxNeverKilledAppNum_title">Modifier le nombre maximum d\'applications \"Maintenir ouvert\"</string>
     <string name="showTraditionalChineseDateOnQS_title">Afficher le calendrier lunaire chinois (Paramètres rapides)</string>
     <string name="modifyQSClockTextSize_title">Modifier la taille de la police de l\'horloge (Paramètres rapides)</string>
+    <string name="disableHighBrightnessDialog_title">Désactiver la boîte de dialogue de luminosité élevée</string>
+    <string name="disableHighBrightnessDialog_summary">Ne pas proposer la luminosité adaptative lors de l’augmentation de la luminosité</string>
     <string name="addBrightnessProgressToQsBar_title">Afficher le niveau de luminosité (Paramètres rapides)</string>
     <string name="addVolumeProgressToQsBar_title">Afficher le niveau de volume (Paramètres rapides)</string>
     <string name="showMemoryUsageInRecents_title">Afficher l\'utilisation de la RAM dans les applications récentes</string>

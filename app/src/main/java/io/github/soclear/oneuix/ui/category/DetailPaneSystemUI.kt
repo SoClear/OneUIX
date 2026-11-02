@@ -697,6 +697,15 @@ fun DetailPaneSystemUI(
                     }
                 )
             }
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.brightness_auto),
+                title = stringResource(id = R.string.disableHighBrightnessDialog_title),
+                summary = stringResource(id = R.string.disableHighBrightnessDialog_summary),
+                checked = uiState.qs.disableHighBrightnessDialog,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.QS.DisableHighBrightnessDialog(it))
+                }
+            )
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.light_mode),
@@ -1099,6 +1108,9 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class AlwaysShowTimeDateOnQs(val value: Boolean) : QS
+
+        @JvmInline
+        value class DisableHighBrightnessDialog(val value: Boolean) : QS
 
         @JvmInline
         value class AddBrightnessProgressToQsBar(val value: Boolean) : QS
@@ -1600,6 +1612,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             alwaysShowTimeDateOnQs = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.DisableHighBrightnessDialog -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            disableHighBrightnessDialog = event.value
                         )
                     )
                 )
