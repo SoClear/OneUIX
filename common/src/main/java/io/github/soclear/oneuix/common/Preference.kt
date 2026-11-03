@@ -118,6 +118,7 @@ data class Preference(
 
         @Serializable
         data class QS(
+            val enableRealtimeBlur: Boolean = false,
             val quickQsTileCount: Int = 0,
             val setQsClockMonospaced: Boolean = false,
             val hideQuickQsTiles: Boolean = false,
