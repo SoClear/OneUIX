@@ -22,10 +22,16 @@ object NetWorkSpeed {
         }
         if (updateSettings == null) {
             // One UI 8.5 及以下
-            val basicRune = Class.forName("com.android.systemui.BasicRune", true, classLoader)
-            basicRune.getDeclaredField("STATUS_REAL_TIME_NETWORK_SPEED").apply {
+            val basicRune = classLoader.loadClass("com.android.systemui.BasicRune")
+            val networkSpeed = basicRune.getDeclaredField("STATUS_REAL_TIME_NETWORK_SPEED").apply {
                 isAccessible = true
-            }.setBoolean(null, true)
+            }
+            // 等系统在 Application 就绪后初始化 BasicRune，避免提前触发静态初始化中的空指针。
+            xposedModule.hookClassInitializer(basicRune).intercept { chain ->
+                val result = chain.proceed()
+                networkSpeed.setBoolean(null, true)
+                result
+            }
             val settingsHelper = classLoader.loadClass("com.android.systemui.util.SettingsHelper")
             xposedModule.hook(settingsHelper.getDeclaredMethod("isShowNetworkSpeedInStatusBar"))
                 .intercept { true }
@@ -68,9 +74,11 @@ object NetWorkSpeed {
                 render(chain.thisObject)
                 null
             }
-        listOf(
+        listOfNotNull(
             view.getDeclaredMethod("onFinishInflate"),
-            view.getDeclaredMethod("scaleView", Float::class.javaPrimitiveType),
+            runCatching {
+                view.getDeclaredMethod("scaleView", Float::class.javaPrimitiveType)
+            }.getOrNull(),
         ).forEach { method ->
             xposedModule.hook(method).intercept { chain ->
                 val result = chain.proceed()
