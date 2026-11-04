@@ -3,15 +3,21 @@ package io.github.soclear.oneuix.hook.launcher
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -19,6 +25,7 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.Button
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
@@ -82,115 +89,294 @@ object Launcher {
         }
     }
 
+    /** How often the card refreshes while Recents is in front. */
+    private const val MEMORY_REFRESH_INTERVAL_MS = 2_000L
+
+    /** A rounded bar that shows a fraction filled. */
+    private class MemoryBarView(context: Context, barColor: Int) : View(context) {
+        private val trackPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33FFFFFF }
+        private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = barColor }
+        private var fraction = 0f
+
+        fun setFraction(value: Float) {
+            fraction = value.coerceIn(0f, 1f)
+            invalidate()
+        }
+
+        override fun onDraw(canvas: Canvas) {
+            val radius = height / 2f
+            canvas.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), radius, radius, trackPaint)
+            if (fraction > 0f) {
+                canvas.drawRoundRect(
+                    0f, 0f, width * fraction, height.toFloat(), radius, radius, fillPaint
+                )
+            }
+        }
+    }
+
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun showMemoryUsageInRecentsTargetSdk36() = afterAttachTry {
         if (param.packageName != Package.LAUNCHER ||
             Build.VERSION.SDK_INT < Build.VERSION_CODES.BAKLAVA
         ) return@afterAttachTry
 
-        val memoryViewTag = "oneuix:recents_memory"
+        var card: LinearLayout? = null
+        var percentView: TextView? = null
+        var ramBar: MemoryBarView? = null
+        var ramValue: TextView? = null
+        var reservedView: TextView? = null
+        var swapValue: TextView? = null
         var activityManager: ActivityManager? = null
-        var activityRef: WeakReference<Activity>? = null
+        var contentResolver: ContentResolver? = null
+        val mainHandler = Handler(Looper.getMainLooper())
+
+        fun readSwap(): Pair<Long, Long> {
+            var total = 0L
+            var free = 0L
+            runCatching {
+                File("/proc/meminfo").forEachLine { line ->
+                    when {
+                        line.startsWith("SwapTotal:") ->
+                            total = line.split(Regex("\\s+"))[1].toLong() * 1024
+
+                        line.startsWith("SwapFree:") ->
+                            free = line.split(Regex("\\s+"))[1].toLong() * 1024
+                    }
+                }
+            }
+            return total to free
+        }
+
+        fun formatUsage(usedBytes: Long, totalBytes: Long): String {
+            val gb = 1024.0 * 1024.0 * 1024.0
+            return "%.1f GB / %.0f GB".format(usedBytes / gb, totalBytes / gb)
+        }
+
+        /**
+         * The capacity Samsung advertises, derived from usable RAM plus the memory the firmware
+         * reserves. MemoryInfo.advertisedMem reports 16 GB on this firmware while Device care
+         * shows 12 GB for the same device.
+         */
+        fun advertisedCapacity(totalBytes: Long): Long {
+            val gb = 1024.0 * 1024.0 * 1024.0
+            val totalGb = totalBytes / gb
+            val capacityGb = when {
+                totalGb > 14.5 -> 16.0
+                totalGb > 10.0 -> 12.0
+                totalGb > 7.0 -> 8.0
+                totalGb > 5.0 -> 6.0
+                else -> 4.0
+            }
+            return (capacityGb * gb).toLong()
+        }
+
+        /** Keeps the card above the navigation bar, including insets that arrive after onCreate. */
+        fun bottomMargin(view: View): Int {
+            val insets = view.rootView.rootWindowInsets
+            val bottom = maxOf(
+                insets?.getInsets(WindowInsets.Type.navigationBars())?.bottom ?: 0,
+                insets?.getInsets(WindowInsets.Type.systemBars())?.bottom ?: 0
+            )
+            return bottom + (12 * view.resources.displayMetrics.density).roundToInt()
+        }
+
+        fun update() {
+            card?.let { view ->
+                val params = view.layoutParams as? FrameLayout.LayoutParams
+                val margin = bottomMargin(view)
+                if (params != null && params.bottomMargin != margin) {
+                    params.bottomMargin = margin
+                    view.layoutParams = params
+                }
+            }
+
+            val manager = activityManager ?: return
+            val memoryInfo = ActivityManager.MemoryInfo()
+            manager.getMemoryInfo(memoryInfo)
+            // totalMem leaves out the memory the firmware reserves for the GPU, modem and
+            // secure world, so round it up to the capacity One UI puts on the box.
+            val advertisedRam = advertisedCapacity(memoryInfo.totalMem)
+            val gb = 1024.0 * 1024.0 * 1024.0
+            val usedRam = (memoryInfo.totalMem - memoryInfo.availMem).coerceAtLeast(0)
+            val fraction = if (advertisedRam > 0) usedRam.toFloat() / advertisedRam else 0f
+            percentView?.text = "${(fraction * 100).roundToInt()}%"
+            ramBar?.setFraction(fraction)
+            ramValue?.text = formatUsage(usedRam, advertisedRam)
+            val reserved = (advertisedRam - memoryInfo.totalMem).coerceAtLeast(0)
+            reservedView?.text = "Reserved: %.1f GB".format(reserved / gb)
+
+            val (swapTotal, swapFree) = readSwap()
+            // RAM Plus stores its size in MB in global settings. zram itself is sized larger
+            // than that setting, so the configured value is what Settings shows the user.
+            val configuredSwap = contentResolver?.let { resolver ->
+                Settings.Global.getInt(resolver, "ram_expand_size", 0).toLong() * 1024 * 1024
+            } ?: 0L
+            val swapCapacity = if (configuredSwap > 0) configuredSwap else swapTotal
+            val hasSwap = swapCapacity > 0
+            if (hasSwap) {
+                val usedSwap = (swapTotal - swapFree).coerceAtLeast(0)
+                swapValue?.text = "RAM Plus " + formatUsage(usedSwap, swapCapacity)
+            }
+        }
+
+        val refresh = object : Runnable {
+            override fun run() {
+                if (card?.isAttachedToWindow != true) return
+                update()
+                mainHandler.postDelayed(this, MEMORY_REFRESH_INTERVAL_MS)
+            }
+        }
+
+        fun startRefreshing() {
+            mainHandler.removeCallbacks(refresh)
+            mainHandler.post(refresh)
+        }
+
+        fun stopRefreshing() {
+            mainHandler.removeCallbacks(refresh)
+        }
+
+        fun buildCard(activity: Activity): LinearLayout {
+            fun dp(value: Int) =
+                (value * activity.resources.displayMetrics.density).roundToInt()
+
+            fun text(size: Float, color: Int) = TextView(activity).apply {
+                textSize = size
+                setTextColor(color)
+                typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+                fontFeatureSettings = "'tnum' 1, 'pnum' 0"
+            }
+
+            val percent = text(20f, Color.WHITE)
+            val used = text(11f, 0xB3FFFFFF.toInt()).apply { text = "used" }
+            val value = text(12f, 0xCCFFFFFF.toInt()).apply { gravity = Gravity.END }
+
+            val header = LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.BOTTOM
+                addView(percent)
+                addView(
+                    used,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        marginStart = dp(3)
+                        bottomMargin = dp(3)
+                    }
+                )
+                addView(
+                    value,
+                    LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                        gravity = Gravity.END
+                        bottomMargin = dp(2)
+                    }
+                )
+            }
+
+            val bar = MemoryBarView(activity, 0xFF8AB4F8.toInt())
+
+            val reserved = text(9.5f, 0x99FFFFFF.toInt())
+            val swap = text(9.5f, 0x99FFFFFF.toInt()).apply { gravity = Gravity.END }
+            val footer = LinearLayout(activity).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                addView(
+                    reserved,
+                    LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                )
+                addView(
+                    swap,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                )
+            }
+
+            val container = LinearLayout(activity).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(dp(2), 0, dp(2), 0)
+                addView(
+                    header,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                )
+                addView(
+                    bar,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        dp(6)
+                    ).apply { topMargin = dp(6) }
+                )
+                addView(
+                    footer,
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    ).apply { topMargin = dp(5) }
+                )
+            }
+
+            percentView = percent
+            ramBar = bar
+            ramValue = value
+            reservedView = reserved
+            swapValue = swap
+            return container
+        }
 
         try {
+            val recentsActivity = param.classLoader.loadClass(
+                "com.android.quickstep.RecentsActivity"
+            )
+
             xposedModule.hook(
-                param.classLoader.loadClass("com.android.quickstep.RecentsActivity")
-                    .getDeclaredMethod("onCreate", Bundle::class.java)
+                recentsActivity.getDeclaredMethod("onCreate", Bundle::class.java)
             ).intercept { chain ->
                 val result = chain.proceed()
                 val activity = chain.thisObject as Activity
-                if (activityManager == null) {
-                    activityManager = activity.getSystemService(ActivityManager::class.java)
-                }
-                val decorView = activity.window.decorView as? FrameLayout ?: return@intercept result
-                if (decorView.findViewWithTag<TextView>(memoryViewTag) == null) {
-                    decorView.addView(TextView(activity).apply {
-                        tag = memoryViewTag
-                        setTextColor(Color.WHITE)
-                        typeface = Typeface.MONOSPACE
-                        setShadowLayer(5f, 0f, 0f, Color.BLACK)
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.WRAP_CONTENT,
-                            FrameLayout.LayoutParams.WRAP_CONTENT
+                activityManager = activity.getSystemService(ActivityManager::class.java)
+                contentResolver = activity.contentResolver
+                try {
+                    card?.let { (it.parent as? ViewGroup)?.removeView(it) }
+                    val decorView = activity.window.decorView as? ViewGroup
+                        ?: return@intercept result
+                    val newCard = buildCard(activity)
+                    card = newCard
+                    val density = activity.resources.displayMetrics.density
+                    decorView.addView(
+                        newCard,
+                        FrameLayout.LayoutParams(
+                            (320 * density).roundToInt(),
+                            ViewGroup.LayoutParams.WRAP_CONTENT
                         ).apply {
                             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                            bottomMargin = bottomMargin(decorView)
                         }
-                    })
+                    )
+                    update()
+                } catch (t: Throwable) {
+                    xlog(t)
                 }
-                activityRef = WeakReference(activity)
-                result
-            }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
-
-
-        var lastUpdateTime = 0L
-        val memoryInfo = ActivityManager.MemoryInfo()
-        val swapTotal by lazy {
-            File("/proc/meminfo").readLines()
-                .first { it.startsWith("SwapTotal:") }
-                .split(Regex("\\s+"))[1].toLong() * 1024
-        }
-
-        fun formatMemory(freeBytes: Long, totalBytes: Long): String {
-            val freeBytesDouble = freeBytes.toDouble()
-            val totalBytesDouble = totalBytes.toDouble()
-            val divisor = 1024 * 1024 * 1024
-            val freeGB = freeBytesDouble / divisor
-            val freePercentage = (freeBytesDouble / totalBytes * 100).roundToInt()
-            val usedGB = (totalBytesDouble - freeBytesDouble) / divisor
-            val usedPercentage = 100 - freePercentage
-            return "%.2fG %d%% %.2fG %d%%".format(
-                freeGB,
-                freePercentage,
-                usedGB,
-                usedPercentage
-            )
-        }
-
-        fun getMemoryText(): String {
-            activityManager?.getMemoryInfo(memoryInfo) ?: return ""
-            val leftText = formatMemory(memoryInfo.availMem, memoryInfo.totalMem)
-            val swapFree = File("/proc/meminfo").readLines()
-                .first { it.startsWith("SwapFree:") }
-                .split(Regex("\\s+"))[1].toLong() * 1024
-            val rightText = formatMemory(swapFree, swapTotal)
-            return "$leftText   $rightText"
-        }
-
-        fun updateMemoryText() {
-            val currentTime = System.nanoTime()
-            if (currentTime - lastUpdateTime < 300_000_000L) {
-                return
-            }
-            lastUpdateTime = currentTime
-
-            val memoryText = getMemoryText()
-            activityRef?.get()?.apply {
-                runOnUiThread {
-                    window.decorView.findViewWithTag<TextView>(memoryViewTag)?.text = memoryText
-                }
-            }
-        }
-
-        try {
-            xposedModule.hook(
-                param.classLoader.loadClass("com.android.quickstep.RecentsActivity")
-                    .getDeclaredMethod("onResume")
-            ).intercept { chain ->
-                val result = chain.proceed()
-                updateMemoryText()
                 result
             }
 
             xposedModule.hook(
-                param.classLoader.loadClass($$"com.android.systemui.shared.system.TaskStackChangeListeners$Impl")
-                    .getDeclaredMethod("onTaskRemoved", Int::class.javaPrimitiveType)
+                recentsActivity.getDeclaredMethod("onResume")
             ).intercept { chain ->
                 val result = chain.proceed()
-                updateMemoryText()
+                startRefreshing()
                 result
+            }
+
+            xposedModule.hook(
+                recentsActivity.getDeclaredMethod("onPause")
+            ).intercept { chain ->
+                stopRefreshing()
+                chain.proceed()
             }
         } catch (t: Throwable) {
             xlog(t)
