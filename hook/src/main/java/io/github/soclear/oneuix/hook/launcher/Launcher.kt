@@ -263,14 +263,12 @@ object Launcher {
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     ).apply {
                         marginStart = dp(3)
-                        bottomMargin = dp(3)
                     }
                 )
                 addView(
                     value,
                     LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
-                        gravity = Gravity.END
-                        bottomMargin = dp(2)
+                        gravity = Gravity.END or Gravity.BOTTOM
                     }
                 )
             }
