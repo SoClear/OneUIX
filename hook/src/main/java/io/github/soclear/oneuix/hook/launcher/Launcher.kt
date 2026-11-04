@@ -211,8 +211,9 @@ object Launcher {
             val configuredSwap = contentResolver?.let { resolver ->
                 Settings.Global.getInt(resolver, "ram_expand_size", 0).toLong() * 1024 * 1024
             } ?: 0L
-            val swapCapacity = if (configuredSwap > 0) configuredSwap else swapTotal
-            val hasSwap = swapCapacity > 0
+            // No configured RAM Plus means the footer is hidden, even if a base zram device exists.
+            val swapCapacity = configuredSwap
+            val hasSwap = swapCapacity > 0 && swapTotal > 0
             if (hasSwap) {
                 val usedSwap = (swapTotal - swapFree).coerceAtLeast(0)
                 swapValue?.text = "RAM Plus " + formatUsage(usedSwap, swapCapacity)
