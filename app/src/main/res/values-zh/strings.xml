@@ -69,6 +69,8 @@
     <string name="hideQuickQsTiles_summary">One UI 6.1：快捷开关仅在完全展开的快捷设置面板中显示</string>
     <string name="hideDeviceControlQsTile_title">隐藏快捷设置的设备控制</string>
     <string name="hideSmartViewQsTile_title">隐藏快捷设置的Smart View</string>
+    <string name="hideAudioEraserBanner_title">隐藏音频橡皮擦横幅</string>
+    <string name="hideAudioEraserBanner_summary">隐藏在使用特定应用时快捷面板常驻的音频橡皮擦横幅</string>
     <string name="quickQsTileCount_title">收起状态快捷开关数量</string>
     <string name="quickQsTileCount_default">系统默认</string>
     <string name="alwaysExpandQsTileChunk_title">总是展开快捷设置磁贴块</string>
