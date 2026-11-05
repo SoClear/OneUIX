@@ -10,7 +10,7 @@ import java.util.Observable
 import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed as Config
 
 @Suppress("DEPRECATION")
-@SuppressLint("PrivateApi")
+@SuppressLint("PrivateApi", "DiscouragedApi")
 object NetWorkSpeed {
     context(xposedModule: XposedModule)
     fun supportRealTime() = afterAttachTry {
@@ -43,7 +43,6 @@ object NetWorkSpeed {
             result
         }
     }
-
     context(xposedModule: XposedModule)
     fun configure(config: Config) = afterAttachTry {
         System.loadLibrary("oneuix_network")
@@ -51,6 +50,7 @@ object NetWorkSpeed {
         val handler = classLoader.loadClass(
             $$"com.android.systemui.statusbar.policy.NetspeedViewController$NetworkSpeedManager$1"
         )
+        val lineSpacingRes = resources.getIdentifier("netspeed_line_space_extra", "dimen", packageName)
         initialize(
             view.getDeclaredField("mContentView"),
             view.getDeclaredField("mContentUpdated"),
@@ -60,7 +60,7 @@ object NetWorkSpeed {
             if (config.showArrows) config.marker.down else "",
             config.unit.bits, config.unit.base, config.showPerSecond,
             config.textSizeSp, config.markerSizeSp, config.markerGap,
-            config.lineSpacingDp, config.threshold,
+            config.lineSpacingDp, lineSpacingRes, config.threshold,
             config.refreshInterval.milliseconds, config.paddingEndDp,
         )
 
@@ -92,7 +92,7 @@ object NetWorkSpeed {
         content: Field, updated: Field, manager: Field, layout: Int, up: String, down: String,
         bits: Boolean, base: Int, showPerSecond: Boolean,
         textSize: Float, markerSize: Float, markerGap: Float,
-        lineSpacing: Float, threshold: Int, interval: Long, paddingEnd: Float,
+        lineSpacing: Float, lineSpacingRes: Int, threshold: Int, interval: Long, paddingEnd: Float,
     )
     private external fun tick(handler: Any, what: Int)
     private external fun render(view: Any)

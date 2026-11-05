@@ -13,7 +13,7 @@ static struct {
     enum Layout layout;
     jstring up, down;
     bool bits, show_per_second;
-    int base;
+    int base, line_spacing_res;
     float text_size, marker_size, marker_gap, line_spacing, padding_end;
     double threshold;
     jlong interval;
@@ -27,9 +27,9 @@ static struct {
     jmethodID count_observers, set_changed, notify_observers, send_message;
     jmethodID set_text, set_size, set_lines, set_gravity, set_alignment;
     jmethodID set_typeface, set_line_spacing, set_font_padding;
-    jmethodID get_resources, get_metrics, apply_dimension, get_paint, measure_text;
+    jmethodID get_resources, get_metrics, get_dimension, apply_dimension, get_paint, measure_text;
     jmethodID get_padding_start, get_padding_top, get_padding_bottom, set_padding;
-    jmethodID set_visibility;
+    jmethodID set_visibility, get_layout_params, set_layout_params, set_margin_end;
 } java;
 
 static TrafficSpeed speed;
@@ -44,7 +44,7 @@ static jclass global_class(JNIEnv *env, const char *name) {
 JNIEXPORT void JNICALL JNI_METHOD(initialize)(
         JNIEnv *env, jobject self, jobject content, jobject updated, jobject manager, jint layout,
         jstring up, jstring down, jboolean bits, jint base, jboolean show_per_second, jfloat text_size,
-        jfloat marker_size, jfloat marker_gap, jfloat line_spacing, jint threshold,
+        jfloat marker_size, jfloat marker_gap, jfloat line_spacing, jint line_spacing_res, jint threshold,
         jlong interval, jfloat padding_end) {
     (void)self;
     config.layout = layout;
@@ -57,6 +57,7 @@ JNIEXPORT void JNICALL JNI_METHOD(initialize)(
     config.marker_size = marker_size;
     config.marker_gap = marker_gap;
     config.line_spacing = line_spacing;
+    config.line_spacing_res = line_spacing_res;
     config.threshold = (double)threshold * base / (bits ? 8 : 1);
     config.interval = interval;
     config.padding_end = padding_end;
@@ -99,8 +100,13 @@ JNIEXPORT void JNICALL JNI_METHOD(initialize)(
     java.set_padding = (*env)->GetMethodID(env, text, "setPaddingRelative", "(IIII)V");
     jclass view = (*env)->FindClass(env, "android/view/View");
     java.set_visibility = (*env)->GetMethodID(env, view, "setVisibility", "(I)V");
+    java.get_layout_params = (*env)->GetMethodID(env, view, "getLayoutParams", "()Landroid/view/ViewGroup$LayoutParams;");
+    java.set_layout_params = (*env)->GetMethodID(env, view, "setLayoutParams", "(Landroid/view/ViewGroup$LayoutParams;)V");
+    jclass margins = (*env)->FindClass(env, "android/view/ViewGroup$MarginLayoutParams");
+    java.set_margin_end = (*env)->GetMethodID(env, margins, "setMarginEnd", "(I)V");
     jclass resources = (*env)->FindClass(env, "android/content/res/Resources");
     java.get_metrics = (*env)->GetMethodID(env, resources, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;");
+    java.get_dimension = (*env)->GetMethodID(env, resources, "getDimensionPixelSize", "(I)I");
     jclass paint = (*env)->FindClass(env, "android/graphics/Paint");
     java.measure_text = (*env)->GetMethodID(env, paint, "measureText", "(Ljava/lang/String;)F");
     jclass typeface = (*env)->FindClass(env, "android/graphics/Typeface");
@@ -138,18 +144,31 @@ JNIEXPORT void JNICALL JNI_METHOD(applyStyle)(JNIEnv *env, jobject self, jobject
     jobject metrics = metrics_for(env, text);
     bool two_lines = config.layout == SYSTEM || config.layout == SPLIT_VERTICAL;
     (*env)->CallVoidMethod(env, text, java.set_lines, two_lines ? 2 : 1);
-    (*env)->CallVoidMethod(env, text, java.set_gravity, 0x800013); // START | CENTER_VERTICAL
+    (*env)->CallVoidMethod(env, text, java.set_gravity, config.layout == SYSTEM ? 0x11 : 0x800013); // CENTER / START | CENTER_VERTICAL
     (*env)->CallVoidMethod(env, text, java.set_alignment, 1); // GRAVITY
     (*env)->CallVoidMethod(env, text, java.set_font_padding, JNI_FALSE);
     if (config.layout != SYSTEM) (*env)->CallVoidMethod(env, text, java.set_typeface, java.typeface, 1);
     if (config.text_size > 0) (*env)->CallVoidMethod(env, text, java.set_size, 2, (jdouble)config.text_size);
-    (*env)->CallVoidMethod(env, text, java.set_line_spacing,
-                          (jdouble)dimension(env, metrics, 1, config.line_spacing), 1.0);
+    float line_spacing = dimension(env, metrics, 1, config.line_spacing);
+    if (config.layout == SYSTEM) {
+        jobject resources = (*env)->CallObjectMethod(env, text, java.get_resources);
+        line_spacing += (float)(*env)->CallIntMethod(env, resources, java.get_dimension, config.line_spacing_res);
+        (*env)->DeleteLocalRef(env, resources);
+    }
+    (*env)->CallVoidMethod(env, text, java.set_line_spacing, (jdouble)line_spacing, 1.0);
     int start = (*env)->CallIntMethod(env, text, java.get_padding_start);
     int top = (*env)->CallIntMethod(env, text, java.get_padding_top);
     int bottom = (*env)->CallIntMethod(env, text, java.get_padding_bottom);
     int end = (int)lroundf(dimension(env, metrics, 1, config.padding_end));
-    (*env)->CallVoidMethod(env, text, java.set_padding, start, top, end, bottom);
+    (*env)->CallVoidMethod(env, text, java.set_padding, start, top, end > 0 ? end : 0, bottom);
+    if (end < 0) {
+        jobject params = (*env)->CallObjectMethod(env, view, java.get_layout_params);
+        if (params != NULL) {
+            (*env)->CallVoidMethod(env, params, java.set_margin_end, end);
+            (*env)->CallVoidMethod(env, view, java.set_layout_params, params);
+            (*env)->DeleteLocalRef(env, params);
+        }
+    }
 }
 
 static void format_speed(double bytes, char *value, size_t size, bool split_unit) {

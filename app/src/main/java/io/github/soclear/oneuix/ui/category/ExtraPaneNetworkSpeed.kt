@@ -115,8 +115,8 @@ fun ExtraPaneNetworkSpeed(
                     SliderItem(
                         title = stringResource(R.string.networkSpeedPaddingEnd_title),
                         value = config.paddingEndDp,
-                        valueRange = 0f..16f,
-                        steps = 15,
+                        valueRange = -8f..16f,
+                        steps = 23,
                         display = { "%.0f dp".format(it) },
                         onCommit = { update(config.copy(paddingEndDp = it)) }
                     )
@@ -180,9 +180,9 @@ fun ExtraPaneNetworkSpeed(
                         SliderItem(
                             title = stringResource(id = R.string.networkSpeedLineSpacing_title),
                             value = config.lineSpacingDp,
-                            valueRange = 0f..16f,
-                            steps = 15,
-                            display = { if (it <= 0f) systemSizeLabel else "%.0f dp".format(it) },
+                            valueRange = -8f..16f,
+                            steps = 23,
+                            display = { if (it == 0f) systemSizeLabel else "%.0f dp".format(it) },
                             onCommit = { update(config.copy(lineSpacingDp = it)) }
                         )
                     }
