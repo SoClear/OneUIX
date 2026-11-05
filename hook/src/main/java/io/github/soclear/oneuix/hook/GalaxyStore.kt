@@ -1,11 +1,13 @@
 package io.github.soclear.oneuix.hook
 
 import android.content.Context
+import android.telephony.TelephonyManager
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.HookConfig
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.getHookConfig
 import kotlinx.serialization.Serializable
@@ -16,6 +18,25 @@ import java.lang.reflect.Modifier
 
 
 object GalaxyStore {
+    context(xposedModule: XposedModule)
+    fun setRegion(simOperator: String) {
+        if (!simOperator.matches(Regex("[0-9]{5,6}"))) return
+        xposedModule.hook(TelephonyManager::class.java.getDeclaredMethod("getSimOperator"))
+            .intercept { simOperator }
+    }
+
+    context(xposedModule: XposedModule)
+    fun hideTabs(discover: Boolean, benefits: Boolean) = afterAttachTry(discover || benefits) {
+        val hookConfig = getHookConfig { getHookConfigFromDexKit() } ?: return@afterAttachTry
+        val getters = buildList {
+            if (discover) add(hookConfig.discoverTabSupport)
+            if (benefits) add(hookConfig.benefitsTabSupport)
+        }
+        getters.forEach {
+            xposedModule.hook(DexMethod(it).getMethodInstance(classLoader)).intercept { "N" }
+        }
+    }
+
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun blockGalaxyStoreAds() {
         if (param.packageName != Package.STORE) {
@@ -38,6 +59,8 @@ object GalaxyStore {
         val requestMapPutMethod: String,
         val getAdDataGroupParentMethod: String,
         val checkAge: String,
+        val discoverTabSupport: String,
+        val benefitsTabSupport: String,
     ) : HookConfig
 
     private fun Context.getHookConfigFromDexKit(): GalaxyStoreHookConfig? {
@@ -117,6 +140,16 @@ object GalaxyStore {
                 }
             }.singleOrNull() ?: return null
 
+            val resultClass = bridge.getClassData("com.sec.android.app.commonlib.doc.GetCommonInfoResult")
+                ?: return null
+            fun tabSupportGetter(field: String): String? = resultClass.findMethod {
+                matcher {
+                    paramCount = 0
+                    returnType = "java.lang.String"
+                    addUsingField { name = field }
+                }
+            }.singleOrNull()?.toDexMethod()?.serialize()
+
             return GalaxyStoreHookConfig(
                 versionCode = packageManager.getPackageInfo(packageName, 0).longVersionCode,
                 prepareRecommendPopupOnDownloading = prepareRecommendPopupOnDownloading
@@ -127,6 +160,8 @@ object GalaxyStore {
                 getAdDataGroupParentMethod = getAdDataGroupParentMethod.toDexMethod()
                     .serialize(),
                 checkAge = checkAge.toDexMethod().serialize(),
+                discoverTabSupport = tabSupportGetter("discoverTabSupport") ?: return null,
+                benefitsTabSupport = tabSupportGetter("benefitsTabSupport") ?: return null,
             )
         }
     }

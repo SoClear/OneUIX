@@ -9,7 +9,34 @@ import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
+@SuppressLint("PrivateApi")
 object AOD {
+    context(xposedModule: XposedModule)
+    fun hideAODChargingInfo() = afterAttachTry {
+        val hookedClasses = mutableSetOf<Class<*>>()
+        classLoader.loadClass("com.android.systemui.doze.PluginAODManager")
+            .getDeclaredMethod("setAODPlugin", classLoader.loadClass("com.android.systemui.plugins.aod.PluginAOD"))
+            .let { xposedModule.hook(it) }
+            .intercept { chain ->
+                try {
+                    // AOD views are loaded by the plugin's class loader.
+                    val viewClass = chain.args[0]?.javaClass?.classLoader
+                        ?.loadClass("com.samsung.android.uniform.widget.charginginfo.ChargingInfoView")
+                    if (viewClass != null && hookedClasses.add(viewClass)) {
+                        xposedModule.hook(viewClass.getDeclaredMethod("onFinishInflate"))
+                            .intercept { viewChain ->
+                                val result = viewChain.proceed()
+                                (viewChain.thisObject as View).visibility = View.GONE
+                                result
+                            }
+                    }
+                } catch (t: Throwable) {
+                    xlog(t)
+                }
+                chain.proceed()
+            }
+    }
+
     @SuppressLint("PrivateApi")
     context(xposedModule: XposedModule)
     fun hideAODStatusBar() = afterAttachTry(Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {

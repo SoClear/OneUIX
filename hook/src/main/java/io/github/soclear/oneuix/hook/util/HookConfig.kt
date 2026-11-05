@@ -1,8 +1,10 @@
 package io.github.soclear.oneuix.hook.util
 
 import android.content.Context
+import android.util.Log
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.io.IOException
 
 interface HookConfig {
     val versionCode: Long
@@ -30,9 +32,14 @@ inline fun <reified T : HookConfig> Context.getHookConfig(
     // 否则从 DexKit 解析 hook 配置
     val hookConfigFromDexKit = getHookConfigFromDexKit()
     if (hookConfigFromDexKit != null) {
-        // 解析成功，保存到本地并返回
         val string = Json.encodeToString(hookConfigFromDexKit)
-        file.writeText(string)
+        // 缓存仅用于加速。开机首次解锁前 CE 目录可能不可用，写入失败不能中断 Hook。
+        try {
+            file.parentFile?.mkdirs()
+            file.writeText(string)
+        } catch (e: IOException) {
+            Log.w("OneUIX", "Cannot save hook config to $file; using parsed config", e)
+        }
         return hookConfigFromDexKit
     }
     // DexKit 解析 hook 配置失败

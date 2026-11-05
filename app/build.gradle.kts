@@ -8,6 +8,7 @@ plugins {
 
 android {
     namespace = "io.github.soclear.oneuix"
+    ndkVersion = "30.0.16248370"
     compileSdk {
         version = release(37)
     }
@@ -16,8 +17,8 @@ android {
         applicationId = providers.gradleProperty("oneuix.applicationId").get()
         minSdk = 33
         targetSdk = 37
-        versionCode = 12
-        versionName = "1.10.0"
+        versionCode = 13
+        versionName = "1.11.0"
 
         ndk {
             // ABI过滤，只加载 arm 架构 64 位动态链接库

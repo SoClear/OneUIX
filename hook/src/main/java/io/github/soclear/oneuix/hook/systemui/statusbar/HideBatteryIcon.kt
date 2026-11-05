@@ -1,4 +1,4 @@
-package io.github.soclear.oneuix.hook.systemui
+package io.github.soclear.oneuix.hook.systemui.statusbar
 
 import android.annotation.SuppressLint
 import android.view.View

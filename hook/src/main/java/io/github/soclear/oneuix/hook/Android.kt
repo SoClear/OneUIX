@@ -2,7 +2,6 @@ package io.github.soclear.oneuix.hook
 
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
-import android.os.Bundle
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.hook.util.reflect
@@ -10,37 +9,6 @@ import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Android {
-    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
-    fun disableWritingToolkitGlobally() {
-        val galaxyAiRestrictionsPackage = "com.samsung.android.knox.galaxyai"
-        val writingToolkitKey = "key_writing_toolkit"
-        val grayoutKey = "grayout"
-
-        val classLoader = param.classLoader
-
-        try {
-            val proxyClass = classLoader.loadClass("com.android.server.enterprise.EDMProxyService")
-            proxyClass.declaredMethods.filter {
-                it.name == "getApplicationRestrictions"
-            }.forEach {
-                xposedModule.hook(it).intercept { chain ->
-                    val result = chain.proceed()
-                    if (chain.args.getOrNull(0) != galaxyAiRestrictionsPackage) {
-                        result
-                    } else {
-                        val restrictions = Bundle(result as? Bundle ?: Bundle.EMPTY)
-                        val writingToolkit = Bundle(restrictions.getBundle(writingToolkitKey) ?: Bundle.EMPTY)
-                        writingToolkit.putBoolean(grayoutKey, true)
-                        restrictions.putBundle(writingToolkitKey, writingToolkit)
-                        restrictions
-                    }
-                }
-            }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
-    }
-
     @SuppressLint("BlockedPrivateApi")
     context(xposedModule: XposedModule)
     fun setBlockableNotificationChannel() {
@@ -133,6 +101,38 @@ object Android {
                 }
         } catch (t: Throwable) {
             xlog(t)
+        }
+    }
+
+    context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
+    fun disableLowBatteryDimming() {
+        for (name in listOf("DisplayPowerController", "DisplayPowerController2")) {
+            val controller = runCatching {
+                param.classLoader.loadClass("com.android.server.display.$name")
+            }.getOrNull() ?: continue
+            // Newer One UI already exposes auto_dim_screen in Battery settings.
+            if (controller.declaredFields.any { it.name == "mForceDimSettingEnabled" }) continue
+
+            try {
+                val method = controller.declaredMethods.first { it.name == "requestPowerState" }
+                val requestClass = method.parameterTypes[0]
+                val copyConstructor = requestClass.getConstructor(requestClass)
+                val critical = requestClass.getField("batteryLevelCritical")
+                xposedModule.hook(method).intercept { chain ->
+                    val request = chain.args[0]
+                    if (critical.getBoolean(request)) {
+                        val copy = copyConstructor.newInstance(request)
+                        critical.setBoolean(copy, false)
+                        val args = chain.args.toTypedArray()
+                        args[0] = copy
+                        chain.proceed(args)
+                    } else {
+                        chain.proceed()
+                    }
+                }
+            } catch (t: Throwable) {
+                xlog(t)
+            }
         }
     }
 

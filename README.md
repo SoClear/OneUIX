@@ -45,6 +45,7 @@
 
 - 修改状态栏左边距
 - 修改状态栏右边距
+- 状态栏内容置顶（保留原高度）
 - 设置电池图标宽度缩放倍数
 - 设置电池图标高度缩放倍数
 - 隐藏状态栏电池的百分号
@@ -68,10 +69,12 @@
 
 - 快捷设置时间设为等宽字体
 - 隐藏快捷设置的设备控制
+- 隐藏折叠通知栏的快捷开关行（One UI 6.1）
 - 隐藏快捷设置的 Smart View
 - 开启快捷设置 5G 磁贴
 - 开启沉浸模式快捷设置磁贴
 - 户外模式快捷设置磁贴
+- 自动调节亮度快捷设置磁贴（需要 root 权限）
 - 隐藏快捷设置面板的媒体播放器 Bar
 - 隐藏快捷设置面板的附近设备和设备控制 Bar
 - 隐藏快捷设置面板的安全底部提示 Bar
@@ -87,12 +90,14 @@
 
 ##### 息屏提醒
 
+- 隐藏息屏提醒的充电信息
 - 隐藏息屏提醒的状态栏
 - 息屏提醒显示中国农历
 
 ##### 其他
 
 - 自定义关机菜单按钮（包括软重启）
+- 隐藏锁屏紧急呼叫按钮
 - 禁用截图声音
 - 隐藏所选音乐应用的实时活动和媒体通知
 - 允许所有旋转角度
@@ -137,6 +142,7 @@
 
 - 对所选应用隐藏截图行为
 - 去除应用商店的广告
+- 自定义应用商店 SIM 运营商代码（MCC+MNC）
 - 应用分身支持所有用户应用
 - 天气源设为中国天气
 - 最近任务页面显示内存信息
@@ -148,12 +154,15 @@
 - 支持三星笔记的所有功能
 - 日历中显示中国节假日
 - 支持拦截短信
+- 解除三星信息的本地 RCS 限制（仍需运营商支持）
 - 主题和图标试用永不过期
 - 伪装浏览器国家/地区代码为美国
 - 禁用 AI 水印
+- 隐藏三星健康的“发现”页面
 - 绕过 Samsung Health Monitor 国家检查
 - S Pen 使用谷歌翻译
 - 隐藏应用屏幕搜索栏
+- 修改桌面底部栏下边距（手机竖屏）
 - 移除快捷方式图标右下角小角标
 - 手表连接模式（WearOS CN / WearOS Global）
 - 绕过手表配对区域检查
@@ -205,6 +214,7 @@
 
 - Modify status bar left padding
 - Modify status bar right padding
+- Align status bar content to the top without changing its height
 - Set battery icon width scale factor
 - Set battery icon height scale factor
 - Hide battery percentage sign in status bar
@@ -228,10 +238,12 @@
 
 - Set Quick Settings clock to monospaced font
 - Hide Device Control in Quick Settings
+- Hide Quick Settings tiles in the collapsed notification panel (One UI 6.1)
 - Hide Smart View in Quick Settings
 - Enable 5G Quick Settings tile
 - Enable Immersive mode Quick Settings tile
 - Outdoor mode Quick Settings tile
+- Auto brightness Quick Settings tile (requires root)
 - Hide Media Player bar in QS panel
 - Hide Nearby Devices and Device Control bar in QS panel
 - Hide Security footer bar in QS panel
@@ -247,12 +259,14 @@
 
 ##### Always On Display
 
+- Hide AOD charging information
 - Hide AOD status bar
 - Show Chinese Lunar calendar on AOD/Lock screen
 
 ##### Other
 
 - Customize power menu actions (including soft reboot)
+- Hide the lock screen emergency call button
 - Disable screenshot sound
 - Hide ongoing media activity and media notifications for selected apps
 - Allow all rotation angles
@@ -297,6 +311,7 @@
 
 - Hide screenshot activity from selected apps
 - Remove ads in Galaxy Store
+- Customize the SIM operator code (MCC+MNC) seen by Galaxy Store
 - Make all user apps available for app cloning
 - Set weather provider to China Weather
 - Show memory usage in Recents page
@@ -308,12 +323,15 @@
 - Support all Samsung Notes features
 - Show Chinese holidays in Calendar
 - Support message blocking
+- Bypass local RCS restrictions in Samsung Messages (carrier support required)
 - Never expire theme and icon trials
 - Spoof Browser Region to US
 - Disable AI watermark
+- Hide the Discover tab in Samsung Health
 - Bypass Samsung Health Monitor country check
 - Use Google Translate for S Pen
 - Hide search bar on app screen
+- Modify home screen dock bottom padding (phones in portrait mode)
 - Remove bottom-right shortcut badge
 - Watch connection mode (WearOS CN / WearOS Global)
 - Bypass watch pairing region checks

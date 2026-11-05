@@ -14,6 +14,7 @@ enum class Category(val packageName: String) {
     DualApp(Package.DUAL_APP),
     Gallery(Package.GALLERY),
     GalaxyStore(Package.STORE),
+    Health(Package.HEALTH),
     HealthMonitor(Package.HEALTH_MONITOR),
     Launcher(Package.LAUNCHER),
     Messaging(Package.MESSAGING),

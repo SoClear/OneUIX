@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.os.Build
 import android.util.LruCache
+import android.widget.TextView
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.hook.util.currentApplication
@@ -12,6 +13,16 @@ import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Other {
+    context(xposedModule: XposedModule)
+    fun disableWritingToolkit() {
+        try {
+            xposedModule.hook(TextView::class.java.getDeclaredMethod("isDisableWritingToolkit"))
+                .intercept { true }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
+
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
     fun hideScreenshotDetection() {
         val screenshotPath = Regex("screen[ _-]?(shot|cap)|截[屏图]", RegexOption.IGNORE_CASE)

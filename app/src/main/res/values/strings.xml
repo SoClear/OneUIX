@@ -21,7 +21,7 @@
     <string name="hideBatteryLevelTextPercentageSign_title">Hide percentage sign</string>
     <string name="hideBatteryLevelTextChargingIcon_title">Hide charging icon</string>
     <string name="supportRealTimeNetworkSpeed_title">Support displaying real-time network speed</string>
-    <string name="supportRealTimeNetworkSpeed_summary">Settings -> Notifications -> Advanced settings -> Show real-time network speed\nClick to enter more settings</string>
+    <string name="supportRealTimeNetworkSpeed_summary">Enable network speed here. Tap for more settings.</string>
     <string name="networkSpeedLayout_title">Network speed layout</string>
     <string name="networkSpeedLayout_systemDefault">System default</string>
     <string name="networkSpeedLayout_splitHorizontal">Split horizontally, side by side</string>
@@ -46,6 +46,7 @@
     <string name="immersiveModeQsTile_title">Enable Immersive mode Quick Settings tile</string>
     <string name="rootImmersiveModeQsTile_summary">Requires root access. Add the tile manually; tap it to hide or restore the status bar</string>
     <string name="outdoorModeQsTile_label">Outdoor mode</string>
+    <string name="autoBrightnessQsTile_label">Auto brightness</string>
     <string name="setStatusBarClockFormat_title">Set status bar date and time format</string>
     <string name="setStatusBarClockTextScale_title">Set status bar clock scale factor</string>
     <string name="updateStatusBarClockEverySecond_title">Update status bar clock every second</string>
@@ -68,6 +69,10 @@
     <string name="hideSmartViewQsTile_title">Hide Smart View in Quick Settings</string>
     <string name="hideAudioEraserBanner_title">Hide Audio Eraser banner</string>
     <string name="hideAudioEraserBanner_summary">Hide the Audio Eraser banner pinned in the Quick Settings panel when using certain apps</string>
+    <string name="quickQsTileCount_title">Collapsed Quick Settings tile count</string>
+    <string name="hideQuickQsTiles_title">Hide Quick Settings tiles in collapsed panel</string>
+    <string name="hideQuickQsTiles_summary">One UI 6.1: show tiles only in the fully expanded Quick Settings panel</string>
+    <string name="quickQsTileCount_default">System default</string>
     <string name="alwaysExpandQsTileChunk_title">Always expand Quick Settings tile chunk</string>
     <string name="alwaysShowTimeDateOnQs_title">Always show time and date in QS panel</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modify maximum number of notification icons in status bar</string>
@@ -78,7 +83,12 @@
     <string name="showMorePlaybackSpeeds_summary">Includes local video player and built-in browser player</string>
     <string name="redirect_custom_tab_title">Force links to open in external Samsung Internet</string>
     <string name="redirect_custom_tab_summary">When Samsung Internet is set as the default browser, many apps open links in a limited in-app Samsung Internet Custom Tab. Enable this to force links out of the app and open them in the full Samsung Internet browser.</string>
+    <string name="hideGalaxyStoreDiscover_title">Hide Discover tab</string>
+    <string name="hideGalaxyStoreBenefits_title">Hide Benefits tab</string>
     <string name="blockGalaxyStoreAds_title">Remove ads in Galaxy Store</string>
+    <string name="galaxyStoreRegion_title">Galaxy Store SIM operator (MCC+MNC)</string>
+    <string name="galaxyStoreRegion_summary">Enter 5 or 6 digits, keeping leading zeros, then tap Confirm to save. Leave blank for no modification. Restart Galaxy Store to apply.</string>
+    <string name="galaxyStoreRegion_reference">Look up country and operator codes (ITU)</string>
     <string name="blockGalaxyStoreAds_summary">Remove splash screen ads, recommended ads/pop-ups, and installation age restriction pop-ups</string>
     <string name="supportAllCameraMenu_title">Show all camera menus</string>
     <string name="supportAllCameraMenu_summary">Shutter sound, Auto HDR, Log, Frame watermark</string>
@@ -130,6 +140,8 @@
     <string name="modifyMaxNeverKilledAppNum_title">Modify max number of \'Keep open\' apps</string>
     <string name="showTraditionalChineseDateOnQS_title">Show Lunar calendar in QS panel</string>
     <string name="modifyQSClockTextSize_title">Modify Quick Settings panel clock text size</string>
+    <string name="disableHighBrightnessDialog_title">Disable high-brightness dialog</string>
+    <string name="disableHighBrightnessDialog_summary">Do not prompt to enable adaptive brightness when increasing brightness</string>
     <string name="addBrightnessProgressToQsBar_title">Show brightness level in QS panel</string>
     <string name="addVolumeProgressToQsBar_title">Show volume level in QS panel</string>
     <string name="showMemoryUsageInRecents_title">Show memory usage in Recents page</string>
@@ -141,9 +153,12 @@
     <string name="supportOutdoorMode_title">Unlock Outdoor mode</string>
     <string name="disablePinVerifyPer72h_title">Disable PIN verification every 72 hours</string>
     <string name="hideAODStatusBar_title">Hide AOD status bar</string>
+    <string name="hideAODChargingInfo_title">Hide AOD charging information</string>
     <string name="aodLockSupportLunar_title">Show Chinese Lunar calendar on AOD/Lock screen</string>
     <string name="enableChineseHolidayDisplay_title">Show Chinese holidays in Calendar</string>
     <string name="supportBlockMessage_title">Support message blocking</string>
+    <string name="unlockRcs_title">Unlock RCS</string>
+    <string name="unlockRcs_summary">Show chat settings and bypass local RCS support checks. Carrier RCS service is still required. Restart Samsung Messages after changing this option.</string>
     <string name="setThemeTrialNeverExpired_title">Never expire theme and icon trials</string>
     <string name="spoofBrowserCountryCodeToUS_title">Spoof Browser Region to US</string>
     <string name="spoofBrowserCountryCodeToUS_summary">Customize search engines and Ad blockers</string>
@@ -155,6 +170,7 @@
     <string name="spoofPhoneStatusAsOfficial_summary">Settings -> About phone -> Status information</string>
     <string name="noAIWatermark_title">Disable AI watermark</string>
     <string name="noAIWatermark_summary">Includes Photo Editor and Creative Studio</string>
+    <string name="hideSamsungHealthDiscover_title">Hide Discover and Promotions</string>
     <string name="bypassHealthMonitorCountryCheck_title">Bypass Samsung Health Monitor country check</string>
     <string name="bypassHealthMonitorCountryCheck_summary">Allow using Health Monitor in unsupported countries</string>
     <string name="useSPenGoogleTranslate_title">Use Google Translate for S Pen</string>
@@ -181,8 +197,8 @@
     <string name="liftFcmNetworkLimit_title">Lift FCM network limit</string>
     <string name="liftFcmNetworkLimit_summary">Remove the China (including Hong Kong) firmware restriction that throttles GMS/FCM push network access</string>
     <string name="disableScreenWakeOnPowerUnplugged_title">Keep screen off when unplugged</string>
-    <string name="disableWritingToolkitGlobally_title">Disable Writing Toolkit globally</string>
-    <string name="disableWritingToolkitGlobally_summary">Removes Samsung Writing Toolkit from text selection menus in all apps through the System Framework</string>
+    <string name="disableWritingToolkit_title">Disable Writing Toolkit</string>
+    <string name="disableWritingToolkit_summary">Add the selected apps to the module scope and restart them to remove Samsung Writing Toolkit from their text selection menus</string>
     <string name="disableFlagSecure_title">Disable FLAG_SECURE</string>
     <string name="hideScreenshotDetection_title">Hide screenshots from apps</string>
     <string name="hideScreenshotDetection_summary">Add the selected apps to the module scope and restart them. Block screenshot callbacks and recognized screenshot change notifications. Screenshots remain visible in photo pickers; other photo notifications are preserved</string>
@@ -214,4 +230,25 @@
     <string name="nfc_note">Note (optional)</string>
     <string name="nfc_save">Save / update</string>
     <string name="nfc_delete">Delete</string>
+    <string name="alignStatusBarContentToTop_title">Align status bar content to the top</string>
+    <string name="alignStatusBarContentToTop_summary">Portrait mode only. Keeps the original status bar height and app insets.</string>
+    <string name="hideLockscreenEmergencyButton_title">Hide lock screen emergency call button</string>
+    <string name="hideLockscreenEmergencyButton_summary">Removes the emergency call shortcut from the unlock screen. This makes emergency dialing less accessible.</string>
+    <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
+    <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
+    <string name="mediaPage_title">App media page (experimental)</string>
+    <string name="mediaPage_summary">Restart One UI Home after changing this switch. Select OneUIX in its Media page settings, then tap here to choose an app. Root access is required. Use system Back and Home gestures. Some apps may not support embedding.</string>
+    <string name="mediaPage_selectApp">Choose an app</string>
+    <string name="mediaPage_starting">Starting app… Allow OneUIX root access if prompted.</string>
+    <string name="mediaPage_unavailable">This app is unavailable or has no launcher activity.</string>
+    <string name="mediaPage_rootFailed">Root helper exited (%1$d). Check root access, then leave and reopen the page.</string>
+    <string name="networkSpeedShowPerSecond_title">Show /s</string>
+    <string name="networkSpeedRefreshInterval_title">Refresh interval</string>
+    <string name="networkSpeedPaddingEnd_title">Spacing to the next icon</string>
+    <string name="disableLowBatteryDimming_title">Disable low-battery screen dimming</string>
+    <string name="disableLowBatteryDimming_summary">Keep the current brightness at 5% battery or below</string>
+    <string name="allowLowBatteryFlashlight_title">Allow flashlight at low battery</string>
+    <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
+    <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
+    <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
 </resources>

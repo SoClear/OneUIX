@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.ui.category
 
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -129,13 +131,19 @@ fun DetailPaneAndroid(
             checked = uiState.disableScreenWakeOnPowerUnplugged,
             onCheckedChange = { onEvent(AndroidEvent.DisableScreenWakeOnPowerUnplugged(it)) }
         )
-        SwitchItem(
-            icon = ImageVector.vectorResource(id = R.drawable.format_letter_spacing),
-            title = stringResource(id = R.string.disableWritingToolkitGlobally_title),
-            summary = stringResource(id = R.string.disableWritingToolkitGlobally_summary),
-            checked = uiState.disableWritingToolkitGlobally,
-            onCheckedChange = { onEvent(AndroidEvent.DisableWritingToolkitGlobally(it)) }
-        )
+        val context = LocalContext.current
+        val hasNativeAutoDim = remember {
+            Settings.Global.getString(context.contentResolver, "auto_dim_screen") != null
+        }
+        if (!hasNativeAutoDim) {
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.light_mode),
+                title = stringResource(id = R.string.disableLowBatteryDimming_title),
+                summary = stringResource(id = R.string.disableLowBatteryDimming_summary),
+                checked = uiState.disableLowBatteryDimming,
+                onCheckedChange = { onEvent(AndroidEvent.DisableLowBatteryDimming(it)) }
+            )
+        }
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.screenshot),
             title = stringResource(id = R.string.disableFlagSecure_title),
@@ -172,7 +180,7 @@ sealed interface AndroidEvent {
     value class DisableScreenWakeOnPowerUnplugged(val value: Boolean) : AndroidEvent
 
     @JvmInline
-    value class DisableWritingToolkitGlobally(val value: Boolean) : AndroidEvent
+    value class DisableLowBatteryDimming(val value: Boolean) : AndroidEvent
 
     @JvmInline
     value class DisableFlagSecure(val value: Boolean) : AndroidEvent
@@ -245,10 +253,10 @@ fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
                 )
             }
 
-            is AndroidEvent.DisableWritingToolkitGlobally -> {
+            is AndroidEvent.DisableLowBatteryDimming -> {
                 preference.copy(
                     android = preference.android.copy(
-                        disableWritingToolkitGlobally = event.value
+                        disableLowBatteryDimming = event.value
                     )
                 )
             }

@@ -29,6 +29,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneCamera
 import io.github.soclear.oneuix.ui.category.DetailPaneDualApp
 import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
+import io.github.soclear.oneuix.ui.category.DetailPaneSamsungHealth
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
 import io.github.soclear.oneuix.ui.category.DetailPaneLauncher
 import io.github.soclear.oneuix.ui.category.DetailPaneMessaging
@@ -58,6 +59,7 @@ import io.github.soclear.oneuix.ui.category.onCameraEvent
 import io.github.soclear.oneuix.ui.category.onDualAppEvent
 import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
+import io.github.soclear.oneuix.ui.category.onSamsungHealthEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
 import io.github.soclear.oneuix.ui.category.onLauncherEvent
 import io.github.soclear.oneuix.ui.category.onMessagingEvent
@@ -213,6 +215,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                             onEvent = viewModel::onGalaxyStoreEvent
                         )
 
+                        Category.Health -> DetailPaneSamsungHealth(
+                            uiState = preference.other,
+                            onEvent = viewModel::onSamsungHealthEvent
+                        )
+
                         Category.HealthMonitor -> DetailPaneHealthMonitor(
                             uiState = preference.other,
                             onEvent = viewModel::onHealthMonitorEvent
@@ -277,7 +284,10 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.Other -> DetailPaneOther(
                             uiState = preference.other,
                             onEvent = viewModel::onOtherEvent,
-                            onNavigateToAppPicker = {
+                            onNavigateToWritingToolkitApps = {
+                                navigateToExtra(SettingDestination.Extra.DisableWritingToolkitApps)
+                            },
+                            onNavigateToScreenshotDetectionApps = {
                                 navigateToExtra(SettingDestination.Extra.HideScreenshotDetectionApps)
                             }
                         )
@@ -308,6 +318,12 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                                 SystemUIEvent.Notification.HideOngoingActivityMediaPackages(it.sorted().joinToString(","))
                             )
                         },
+                        onBack = onBack
+                    )
+
+                    SettingDestination.Extra.DisableWritingToolkitApps -> AppPicker(
+                        selectedPackages = preference.other.disableWritingToolkitPackages,
+                        onSelectionChange = { viewModel.onOtherEvent(OtherEvent.DisableWritingToolkitPackages(it)) },
                         onBack = onBack
                     )
 

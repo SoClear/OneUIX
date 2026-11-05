@@ -19,6 +19,14 @@
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
+    <!--
+        "Modify system settings" is what lets the app write a system setting itself instead of going
+        through root, and Android greys that screen's switch out for an app that does not declare
+        this permission, so the user has no way to grant it. Declaring it only makes the switch
+        usable; the grant is still the user's to give.
+    -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
     <!-- The app picker needs to list all installed apps, including system apps. -->
     <uses-permission
         android:name="android.permission.QUERY_ALL_PACKAGES"
@@ -45,6 +53,10 @@
             </intent-filter>
         </activity>
         <service
+            android:name=".MediaPageService"
+            android:exported="true"
+            android:permission="android.permission.BIND_APPWIDGET" />
+        <service
             android:name=".FiveGTileService"
             android:exported="true"
             android:icon="@drawable/five_g"
@@ -69,6 +81,16 @@
             android:exported="true"
             android:icon="@drawable/light_mode"
             android:label="@string/outdoorModeQsTile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".AutoBrightnessTileService"
+            android:exported="true"
+            android:icon="@drawable/brightness_auto"
+            android:label="@string/autoBrightnessQsTile_label"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />

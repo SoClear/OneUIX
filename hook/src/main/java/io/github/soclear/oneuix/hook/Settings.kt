@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
+import android.net.wifi.WifiInfo
 import android.view.View
 import android.widget.TextView
 import io.github.libxposed.api.XposedModule
@@ -232,6 +233,50 @@ object Settings {
 
             val checkRootingConditionMethod = clazz.getDeclaredMethod("checkRootingCondition")
             xposedModule.hook(checkRootingConditionMethod).intercept { false }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
+
+    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
+    fun showWiFiLinkSpeed() {
+        if (param.packageName != Package.SETTINGS) {
+            return
+        }
+        try {
+            val connectedListAdapterClass = param.classLoader.loadClass(
+                "com.samsung.android.settings.wifi.ConnectedListAdapter"
+            )
+            val viewHolderClass = param.classLoader.loadClass(
+                $$"androidx.recyclerview.widget.RecyclerView$ViewHolder"
+            )
+
+            fun getLinkSpeed(thisObject: Any, position: Int): String? {
+                val wifiEntries = thisObject.reflect["mWifiEntries"] as? List<*> ?: return null
+                val wifiEntry = wifiEntries.getOrNull(position) ?: return null
+                val wifiInfo = wifiEntry.reflect["mWifiInfo"] as? WifiInfo ?: return null
+                return "${wifiInfo.txLinkSpeedMbps},${wifiInfo.rxLinkSpeedMbps}"
+            }
+
+            val onBindViewHolderMethod = connectedListAdapterClass.getDeclaredMethod(
+                "onBindViewHolder",
+                viewHolderClass,
+                Int::class.javaPrimitiveType
+            )
+            xposedModule.hook(onBindViewHolderMethod).intercept { chain ->
+                val result = chain.proceed()
+                try {
+                    val position = chain.args[1] as Int
+                    val linkSpeed = getLinkSpeed(chain.thisObject, position)
+                    if (linkSpeed != null) {
+                        val mSummary = chain.args[0].reflect["mSummary"] as? TextView
+                        mSummary?.append(" $linkSpeed")
+                    }
+                } catch (t: Throwable) {
+                    xlog(t)
+                }
+                result
+            }
         } catch (t: Throwable) {
             xlog(t)
         }

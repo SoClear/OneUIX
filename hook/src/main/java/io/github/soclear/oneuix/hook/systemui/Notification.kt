@@ -3,90 +3,15 @@ package io.github.soclear.oneuix.hook.systemui
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
-import io.github.soclear.oneuix.common.Package
-import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Notification {
-    context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun setStatusBarMaxNotificationIcons(max: Int) = afterAttach {
-        if (param.packageName != Package.SYSTEMUI ||
-            max < 0 ||
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
-        ) return@afterAttach
-
-        if (ONE_UI_VERSION >= 80500) {
-            try {
-                val notificationIconContainerClass = param.classLoader
-                    .loadClass("com.android.systemui.statusbar.phone.NotificationIconContainer")
-                xposedModule.hook(
-                    notificationIconContainerClass.getDeclaredMethod(
-                        "shouldForceOverflow",
-                        Int::class.javaPrimitiveType,
-                        Float::class.javaPrimitiveType,
-                        Int::class.javaPrimitiveType
-                    )
-                ).intercept { chain ->
-                    val newArgs = chain.args.toTypedArray()
-                    newArgs[2] = max
-                    chain.proceed(newArgs)
-                }
-            } catch (t: Throwable) {
-                xlog(t)
-            }
-
-            try {
-                param.classLoader
-                    .loadClass("com.android.systemui.statusbar.notification.icon.ui.viewmodel.NotificationIconContainerStatusBarViewModel")
-                    .declaredConstructors
-                    .forEach {
-                        xposedModule.hook(it).intercept { chain ->
-                            val result = chain.proceed()
-                            chain.thisObject.reflect["maxIcons"] = Int.MAX_VALUE
-                            result
-                        }
-                    }
-            } catch (t: Throwable) {
-                xlog(t)
-            }
-            return@afterAttach
-        }
-        try {
-            val notificationIconContainerClass = param.classLoader
-                .loadClass("com.android.systemui.statusbar.phone.NotificationIconContainer")
-            xposedModule.hook(
-                notificationIconContainerClass.getDeclaredMethod(
-                    "shouldForceOverflow",
-                    Int::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType,
-                    Float::class.javaPrimitiveType,
-                    Int::class.javaPrimitiveType
-                )
-            ).intercept { chain ->
-                val newArgs = chain.args.toTypedArray()
-                newArgs[3] = max
-                chain.proceed(newArgs)
-            }
-
-            xposedModule.hook(
-                notificationIconContainerClass.getDeclaredMethod("initResources")
-            ).intercept { chain ->
-                val result = chain.proceed()
-                chain.thisObject.reflect["mMaxStaticIcons"] = Int.MAX_VALUE
-                result
-            }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
-    }
-
     context(xposedModule: XposedModule)
     fun disableNotificationGrouping() = afterAttachTry {
         classLoader

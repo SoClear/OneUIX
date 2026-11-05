@@ -6,6 +6,6 @@ import java.io.Serializable
 sealed interface SettingDestination : Serializable {
     data class Detail(val category: Category) : SettingDestination
     enum class Extra : SettingDestination {
-        NetworkSpeed, HideOngoingActivityMediaApps, HideScreenshotDetectionApps, NfcCards
+        NetworkSpeed, HideOngoingActivityMediaApps, DisableWritingToolkitApps, HideScreenshotDetectionApps, NfcCards
     }
 }

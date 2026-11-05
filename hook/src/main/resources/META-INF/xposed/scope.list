@@ -23,6 +23,7 @@ com.sec.android.app.camera
 com.sec.android.app.launcher
 com.sec.android.app.samsungapps
 com.sec.android.app.sbrowser
+com.sec.android.app.shealth
 com.sec.android.daemonapp
 com.sec.android.gallery3d
 com.sec.android.mimage.photoretouching

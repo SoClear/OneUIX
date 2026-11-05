@@ -2,14 +2,16 @@ package io.github.soclear.oneuix.hook
 
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
-import io.github.soclear.oneuix.common.NetworkSpeedOption
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.hook.launcher.Launcher
+import io.github.soclear.oneuix.hook.launcher.MediaPage
 import io.github.soclear.oneuix.hook.systemui.AOD
-import io.github.soclear.oneuix.hook.systemui.ESIM
-import io.github.soclear.oneuix.hook.systemui.HideBatteryIcon
+import io.github.soclear.oneuix.hook.systemui.statusbar.ESIM
+import io.github.soclear.oneuix.hook.systemui.statusbar.HideBatteryIcon
 import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
-import io.github.soclear.oneuix.hook.systemui.StatusBar
+import io.github.soclear.oneuix.hook.systemui.statusbar.StatusBar
+import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
@@ -25,6 +27,12 @@ class Main : XposedModule() {
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = with(param) {
         if (!isFirstPackage) return@with
         val preference = PreferenceProvider.loadPreference() ?: return@with
+
+        if (preference.other.disableWritingToolkit &&
+            packageName in preference.other.disableWritingToolkitPackages
+        ) {
+            Other.disableWritingToolkit()
+        }
 
         if (preference.other.hideScreenshotDetection &&
             packageName in preference.other.hideScreenshotDetectionPackages
@@ -106,6 +114,12 @@ class Main : XposedModule() {
                 }
             }
 
+            Package.HEALTH -> {
+                if (preference.other.hideSamsungHealthDiscover) {
+                    SamsungHealth.hideDiscover()
+                }
+            }
+
             Package.HEALTH_MONITOR -> {
                 if (preference.other.bypassHealthMonitorCountryCheck) {
                     HealthMonitor.bypassCountryCheck()
@@ -121,6 +135,14 @@ class Main : XposedModule() {
             }
 
             Package.LAUNCHER -> {
+                if (preference.other.embedAppInMediaPage) {
+                    MediaPage.embedAppInMediaPage()
+                }
+
+                if (preference.other.modifyDockBottomPadding) {
+                    Launcher.setDockBottomPadding(preference.other.dockBottomPaddingDp)
+                }
+
                 if (preference.other.showMemoryUsageInRecents) {
                     Launcher.showMemoryUsageInRecents()
                 }
@@ -151,6 +173,9 @@ class Main : XposedModule() {
             Package.MESSAGING -> {
                 if (preference.other.supportBlockMessage) {
                     Messaging.isSupportBlock()
+                }
+                if (preference.other.unlockRcs) {
+                    Messaging.unlockRcs()
                 }
             }
 
@@ -190,7 +215,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.settings.showWiFiLinkSpeed) {
-                    Network.showWiFiLinkSpeed()
+                    Settings.showWiFiLinkSpeed()
                 }
 
                 if (preference.settings.supportAnyFont) {
@@ -199,10 +224,6 @@ class Main : XposedModule() {
 
                 if (preference.android.supportAppJumpBlock) {
                     CoreRune.supportAppJumpBlockSettings()
-                }
-
-                if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
-                    Network.supportRealTimeNetworkSpeed()
                 }
 
                 if (preference.settings.supportAutoPowerOnOff) {
@@ -227,14 +248,29 @@ class Main : XposedModule() {
             }
 
             Package.STORE -> {
+                GalaxyStore.hideTabs(
+                    preference.other.hideGalaxyStoreDiscover,
+                    preference.other.hideGalaxyStoreBenefits,
+                )
+                if (preference.other.setGalaxyStoreSimOperator) {
+                    GalaxyStore.setRegion(preference.other.galaxyStoreSimOperator)
+                }
                 if (preference.other.blockGalaxyStoreAds) {
                     GalaxyStore.blockGalaxyStoreAds()
                 }
             }
 
             Package.SYSTEMUI if (processName == Package.SYSTEMUI) -> {
+                if (preference.systemUI.qs.enableRealtimeBlur) {
+                    SystemUIOther.enableRealtimeBlur(classLoader)
+                }
+
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
+                }
+
+                if (preference.systemUI.other.allowLowBatteryFlashlight) {
+                    SystemUIOther.allowLowBatteryFlashlight()
                 }
 
                 if (preference.systemUI.notification.autoExpandNotifications) {
@@ -263,6 +299,14 @@ class Main : XposedModule() {
                     StatusBar.setBatteryIconScale(widthScale, heightScale)
                 }
 
+                if (preference.systemUI.statusBar.alignStatusBarContentToTop) {
+                    StatusBar.alignContentToTop()
+                }
+
+                if (preference.systemUI.other.hideLockscreenEmergencyButton) {
+                    SystemUIOther.hideLockscreenEmergencyButton()
+                }
+
                 if (preference.systemUI.statusBar.hideBatteryPercentageSign) {
                     StatusBar.hideBatteryPercentageSign()
                 }
@@ -278,12 +322,11 @@ class Main : XposedModule() {
                     )
                 }
 
-                if (preference.systemUI.statusBar.supportRealTimeNetworkSpeed) {
-                    Network.supportRealTimeNetworkSpeed()
-                }
-
-                if (preference.systemUI.statusBar.networkSpeedLayout != NetworkSpeedOption.Layout.SYSTEM.ordinal) {
-                    Network.showCustomNetworkSpeed(preference.systemUI.statusBar)
+                with(preference.systemUI.statusBar.networkSpeed) {
+                    if (supportRealTime) {
+                        NetWorkSpeed.supportRealTime()
+                        NetWorkSpeed.configure(this)
+                    }
                 }
 
                 if (preference.systemUI.statusBar.setStatusBarClockFormat) {
@@ -320,7 +363,7 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.statusBar.modifyStatusBarMaxNotificationIcons) {
                     val max = preference.systemUI.statusBar.statusBarMaxNotificationIcons
-                    Notification.setStatusBarMaxNotificationIcons(max)
+                    StatusBar.setStatusBarMaxNotificationIcons(max)
                 }
 
                 if (preference.systemUI.statusBar.setCustomCarrierName) {
@@ -342,6 +385,14 @@ class Main : XposedModule() {
                     QS.setQsClockStyle(monospaced, modifyTextSize, textSize)
                 }
 
+                if (preference.systemUI.qs.quickQsTileCount != 0) {
+                    QS.setQuickQsTileCount(preference.systemUI.qs.quickQsTileCount)
+                }
+
+                if (preference.systemUI.qs.hideQuickQsTiles) {
+                    QS.hideQuickQsTiles()
+                }
+
                 if (preference.systemUI.qs.hideDeviceControlQsTile) {
                     QS.hideDeviceControlQsTile()
                 }
@@ -355,7 +406,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.systemUI.qs.turnOn5gQsTile) {
-                    Network.turnOn5gQsTile()
+                    QS.turnOn5gQsTile()
                 }
 
                 run {
@@ -388,6 +439,10 @@ class Main : XposedModule() {
                     QS.alwaysShowTimeDateOnQs()
                 }
 
+                if (preference.systemUI.qs.disableHighBrightnessDialog) {
+                    QS.disableHighBrightnessDialog()
+                }
+
                 if (preference.systemUI.qs.addBrightnessProgressToQsBar) {
                     QS.addBrightnessProgressToQsBar()
                 }
@@ -398,6 +453,10 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.qs.showTraditionalChineseDateOnQS) {
                     QS.showTraditionalChineseDateOnQS()
+                }
+
+                if (preference.systemUI.aod.hideAODChargingInfo) {
+                    AOD.hideAODChargingInfo()
                 }
 
                 if (preference.systemUI.aod.hideAODStatusBar) {
@@ -449,7 +508,7 @@ class Main : XposedModule() {
                 }
 
                 if (preference.systemUI.qs.turnOn5gQsTile) {
-                    Network.turnOn5gQsTile()
+                    QS.turnOn5gQsTile()
                 }
             }
 
@@ -494,10 +553,6 @@ class Main : XposedModule() {
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) = with(param) {
         val preference = PreferenceProvider.loadPreference() ?: return@with
 
-        if (preference.android.disableWritingToolkitGlobally) {
-            Android.disableWritingToolkitGlobally()
-        }
-
         if (preference.android.disablePinVerifyPer72h) {
             Android.disablePinVerifyPer72h()
         }
@@ -526,6 +581,10 @@ class Main : XposedModule() {
 
         if (preference.android.disableScreenWakeOnPowerUnplugged) {
             Android.disableScreenWakeOnPowerUnplugged()
+        }
+
+        if (preference.android.disableLowBatteryDimming) {
+            Android.disableLowBatteryDimming()
         }
 
         if (preference.android.disableFlagSecure) {

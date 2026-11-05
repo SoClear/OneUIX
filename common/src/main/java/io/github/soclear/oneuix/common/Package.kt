@@ -10,6 +10,7 @@ object Package {
     const val DIALER = "com.samsung.android.dialer"
     const val DUAL_APP = "com.samsung.android.da.daagent"
     const val GALLERY = "com.sec.android.gallery3d"
+    const val HEALTH = "com.sec.android.app.shealth"
     const val HEALTH_MONITOR = "com.samsung.android.shealthmonitor"
     const val INCALLUI = "com.samsung.android.incallui"
     const val LAUNCHER = "com.sec.android.app.launcher"

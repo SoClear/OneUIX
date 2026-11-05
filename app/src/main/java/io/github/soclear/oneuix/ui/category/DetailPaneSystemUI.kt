@@ -39,6 +39,7 @@ import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
+import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
@@ -277,9 +278,9 @@ fun DetailPaneSystemUI(
             summary = stringResource(id = R.string.supportRealTimeNetworkSpeed_summary),
             clickable = true,
             onClick = onNavigateToNetworkSpeed,
-            checked = uiState.statusBar.supportRealTimeNetworkSpeed,
+            checked = uiState.statusBar.networkSpeed.supportRealTime,
             onCheckedChange = {
-                onEvent(SystemUIEvent.StatusBar.SupportRealTimeNetworkSpeed(it))
+                onEvent(SystemUIEvent.StatusBar.NetWorkSpeedChange(uiState.statusBar.networkSpeed.copy(supportRealTime = it)))
             }
         )
         Column {
@@ -540,7 +541,35 @@ fun DetailPaneSystemUI(
             }
         )
 
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.padding),
+            title = stringResource(R.string.alignStatusBarContentToTop_title),
+            summary = stringResource(R.string.alignStatusBarContentToTop_summary),
+            checked = uiState.statusBar.alignStatusBarContentToTop,
+            onCheckedChange = { onEvent(SystemUIEvent.StatusBar.AlignContentToTop(it)) }
+        )
+
         DividerText(R.string.qs)
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.format_paint),
+            title = stringResource(R.string.enableRealtimeBlur_title),
+            summary = stringResource(R.string.enableRealtimeBlur_summary),
+            checked = uiState.qs.enableRealtimeBlur,
+            onCheckedChange = { onEvent(SystemUIEvent.QS.EnableRealtimeBlur(it)) }
+        )
+        if (ONE_UI_VERSION >= 80000) {
+            val tileCounts = listOf(0, 7, 8, 9)
+            SelectItem(
+                icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
+                title = stringResource(id = R.string.quickQsTileCount_title),
+                entries = listOf(stringResource(id = R.string.quickQsTileCount_default)) +
+                    tileCounts.drop(1).map { it.toString() },
+                selectedIndex = tileCounts.indexOf(uiState.qs.quickQsTileCount),
+                onSelectedIndexChange = {
+                    onEvent(SystemUIEvent.QS.QuickQsTileCount(tileCounts[it]))
+                }
+            )
+        }
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.format_letter_spacing),
             title = stringResource(id = R.string.setQsClockMonospaced_title),
@@ -550,6 +579,17 @@ fun DetailPaneSystemUI(
             }
         )
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (ONE_UI_VERSION in 60100 until 70000) {
+                SwitchItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
+                    title = stringResource(id = R.string.hideQuickQsTiles_title),
+                    summary = stringResource(id = R.string.hideQuickQsTiles_summary),
+                    checked = uiState.qs.hideQuickQsTiles,
+                    onCheckedChange = {
+                        onEvent(SystemUIEvent.QS.HideQuickQsTiles(it))
+                    }
+                )
+            }
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
                 title = stringResource(id = R.string.hideDeviceControlQsTile_title),
@@ -675,6 +715,15 @@ fun DetailPaneSystemUI(
                     }
                 )
             }
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.brightness_auto),
+                title = stringResource(id = R.string.disableHighBrightnessDialog_title),
+                summary = stringResource(id = R.string.disableHighBrightnessDialog_summary),
+                checked = uiState.qs.disableHighBrightnessDialog,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.QS.DisableHighBrightnessDialog(it))
+                }
+            )
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.light_mode),
@@ -744,6 +793,14 @@ fun DetailPaneSystemUI(
             DividerText(R.string.aod)
             SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.battery),
+                title = stringResource(id = R.string.hideAODChargingInfo_title),
+                checked = uiState.aod.hideAODChargingInfo,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.AOD.HideAODChargingInfo(it))
+                }
+            )
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.battery),
                 title = stringResource(id = R.string.hideAODStatusBar_title),
                 checked = uiState.aod.hideAODStatusBar,
                 onCheckedChange = {
@@ -798,6 +855,13 @@ fun DetailPaneSystemUI(
         )
 
         DividerText(R.string.other)
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.light_mode),
+            title = stringResource(id = R.string.allowLowBatteryFlashlight_title),
+            summary = stringResource(id = R.string.allowLowBatteryFlashlight_summary),
+            checked = uiState.other.allowLowBatteryFlashlight,
+            onCheckedChange = { onEvent(SystemUIEvent.Other.AllowLowBatteryFlashlight(it)) }
+        )
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
             SwitchItem(
@@ -827,6 +891,13 @@ fun DetailPaneSystemUI(
             onCheckedChange = {
                 onEvent(SystemUIEvent.Other.DisableScreenshotCaptureSound(it))
             }
+        )
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.block),
+            title = stringResource(R.string.hideLockscreenEmergencyButton_title),
+            summary = stringResource(R.string.hideLockscreenEmergencyButton_summary),
+            checked = uiState.other.hideLockscreenEmergencyButton,
+            onCheckedChange = { onEvent(SystemUIEvent.Other.HideLockscreenEmergencyButton(it)) }
         )
     }
 }
@@ -926,6 +997,9 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
 sealed interface SystemUIEvent {
     sealed interface StatusBar : SystemUIEvent {
         @JvmInline
+        value class AlignContentToTop(val value: Boolean) : StatusBar
+
+        @JvmInline
         value class ModifyStatusBarLeftPadding(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -965,34 +1039,7 @@ sealed interface SystemUIEvent {
         value class HideBatteryLevelTextChargingIcon(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class SupportRealTimeNetworkSpeed(val value: Boolean) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedLayout(val value: Int) : StatusBar
-
-        @JvmInline
-        value class ShowNetworkSpeedArrows(val value: Boolean) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarker(val value: Int) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedUnit(val value: Int) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedTextSize(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarkerSize(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedMarkerGap(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedLineSpacing(val value: Float) : StatusBar
-
-        @JvmInline
-        value class NetworkSpeedThreshold(val value: Int) : StatusBar
+        value class NetWorkSpeedChange(val value: NetWorkSpeed) : StatusBar
 
         @JvmInline
         value class SetStatusBarClockFormat(val value: Boolean) : StatusBar
@@ -1042,7 +1089,16 @@ sealed interface SystemUIEvent {
 
     sealed interface QS : SystemUIEvent {
         @JvmInline
+        value class EnableRealtimeBlur(val value: Boolean) : QS
+
+        @JvmInline
+        value class QuickQsTileCount(val value: Int) : QS
+
+        @JvmInline
         value class SetQsClockMonospaced(val value: Boolean) : QS
+
+        @JvmInline
+        value class HideQuickQsTiles(val value: Boolean) : QS
 
         @JvmInline
         value class HideDeviceControlQsTile(val value: Boolean) : QS
@@ -1078,6 +1134,9 @@ sealed interface SystemUIEvent {
         value class AlwaysShowTimeDateOnQs(val value: Boolean) : QS
 
         @JvmInline
+        value class DisableHighBrightnessDialog(val value: Boolean) : QS
+
+        @JvmInline
         value class AddBrightnessProgressToQsBar(val value: Boolean) : QS
 
         @JvmInline
@@ -1094,6 +1153,9 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface AOD : SystemUIEvent {
+        @JvmInline
+        value class HideAODChargingInfo(val value: Boolean) : AOD
+
         @JvmInline
         value class HideAODStatusBar(val value: Boolean) : AOD
 
@@ -1116,6 +1178,12 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface Other : SystemUIEvent {
+        @JvmInline
+        value class AllowLowBatteryFlashlight(val value: Boolean) : Other
+
+        @JvmInline
+        value class HideLockscreenEmergencyButton(val value: Boolean) : Other
+
         @JvmInline
         value class CustomPowerMenu(val value: Boolean) : Other
 
@@ -1140,6 +1208,14 @@ fun SettingViewModel.onSystemUIEvent(event: SystemUIEvent) {
 private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.StatusBar.AlignContentToTop -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(
+                        alignStatusBarContentToTop = event.value
+                    )
+                )
+            )
+
             is SystemUIEvent.StatusBar.ModifyStatusBarLeftPadding -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
@@ -1280,26 +1356,11 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                 )
             }
 
-            is SystemUIEvent.StatusBar.SupportRealTimeNetworkSpeed -> {
-                preference.copy(
-                    systemUI = preference.systemUI.copy(
-                        statusBar = preference.systemUI.statusBar.copy(
-                            supportRealTimeNetworkSpeed = event.value
-                        )
-                    )
+            is SystemUIEvent.StatusBar.NetWorkSpeedChange -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(networkSpeed = event.value)
                 )
-            }
-
-
-            is SystemUIEvent.StatusBar.NetworkSpeedLayout -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLayout = event.value)))
-            is SystemUIEvent.StatusBar.ShowNetworkSpeedArrows -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(showNetworkSpeedArrows = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarker -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarker = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedUnit -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedUnit = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedTextSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedTextSizeSp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarkerSize -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerSizeSp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedMarkerGap -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedMarkerGap = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedLineSpacing -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedLineSpacingDp = event.value)))
-            is SystemUIEvent.StatusBar.NetworkSpeedThreshold -> preference.copy(systemUI = preference.systemUI.copy(statusBar = preference.systemUI.statusBar.copy(networkSpeedThreshold = event.value)))
+            )
 
             is SystemUIEvent.StatusBar.SetStatusBarClockFormat -> {
                 preference.copy(
@@ -1450,11 +1511,39 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
 private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.QS.EnableRealtimeBlur -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    qs = preference.systemUI.qs.copy(
+                        enableRealtimeBlur = event.value
+                    )
+                )
+            )
+
+            is SystemUIEvent.QS.QuickQsTileCount -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            quickQsTileCount = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.QS.SetQsClockMonospaced -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             setQsClockMonospaced = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.HideQuickQsTiles -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            hideQuickQsTiles = event.value
                         )
                     )
                 )
@@ -1570,6 +1659,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                 )
             }
 
+            is SystemUIEvent.QS.DisableHighBrightnessDialog -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            disableHighBrightnessDialog = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.QS.AddBrightnessProgressToQsBar -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
@@ -1626,6 +1725,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
 private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.AOD.HideAODChargingInfo -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        aod = preference.systemUI.aod.copy(
+                            hideAODChargingInfo = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.AOD.HideAODStatusBar -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
@@ -1698,6 +1807,22 @@ private fun SettingViewModel.onNotification(event: SystemUIEvent.Notification) {
 private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.Other.AllowLowBatteryFlashlight -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    other = preference.systemUI.other.copy(
+                        allowLowBatteryFlashlight = event.value
+                    )
+                )
+            )
+
+            is SystemUIEvent.Other.HideLockscreenEmergencyButton -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    other = preference.systemUI.other.copy(
+                        hideLockscreenEmergencyButton = event.value
+                    )
+                )
+            )
+
             is SystemUIEvent.Other.CustomPowerMenu -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
