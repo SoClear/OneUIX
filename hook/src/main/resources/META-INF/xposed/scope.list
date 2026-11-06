@@ -21,6 +21,7 @@ com.samsung.android.video
 com.samsung.android.app.watchmanager
 com.sec.android.app.camera
 com.sec.android.app.launcher
+com.sec.android.app.myfiles
 com.sec.android.app.samsungapps
 com.sec.android.app.sbrowser
 com.sec.android.app.shealth

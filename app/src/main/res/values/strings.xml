@@ -251,4 +251,6 @@
     <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
     <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
     <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
+    <string name="fixMyFilesNetworkStorage_title">Fix My Files network storage redirect</string>
+    <string name="fixMyFilesNetworkStorage_summary">For the international My Files on a China ROM: stop Network storage from jumping to the Galaxy Store update page. Keeps the cached latest version equal to the installed version</string>
 </resources>
