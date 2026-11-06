@@ -18,6 +18,7 @@ enum class Category(val packageName: String) {
     HealthMonitor(Package.HEALTH_MONITOR),
     Launcher(Package.LAUNCHER),
     Messaging(Package.MESSAGING),
+    MyFiles(Package.MY_FILES),
     NFC(Package.NFC),
     Notes(Package.NOTES),
     PhotoRetouching(Package.PHOTO_RETOUCHING),

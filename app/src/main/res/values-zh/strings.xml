@@ -251,4 +251,6 @@
     <string name="allowLowBatteryFlashlight_summary">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
     <string name="enableRealtimeBlur_title">面板实时模糊（实验性）</string>
     <string name="enableRealtimeBlur_summary">尝试为通知栏和快捷面板开启实时模糊。需要 ROM 底层图形支持，可能增加功耗或出现显示异常。修改后请重启设备。</string>
+    <string name="fixMyFilesNetworkStorage_title">修复我的文件网络存储跳转</string>
+    <string name="fixMyFilesNetworkStorage_summary">适用于国行系统上使用国际版“我的文件”：点击网络存储时不再跳转到应用商店更新页面。让缓存的最新版本与已安装版本保持一致</string>
 </resources>
