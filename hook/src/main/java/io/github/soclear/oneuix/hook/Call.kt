@@ -49,8 +49,8 @@ object Call {
     fun showGeocodedLocationInRecentCall() {
         if (param.packageName != Package.DIALER) return
         afterAttach {
-            val hookConfig = getHookConfig { getHookConfigFromDexKit() } ?: return@afterAttach
             try {
+                val hookConfig = getHookConfig { getHookConfigFromDexKit() } ?: return@afterAttach
                 val methodInstance =
                     DexMethod(hookConfig.setSubTextMethod).getMethodInstance(classLoader)
                 val geoCodedLocationField =
@@ -58,16 +58,27 @@ object Call {
                 val subTextField =
                     DexField(hookConfig.subTextField).getFieldInstance(classLoader)
 
-                xposedModule.hook(methodInstance).intercept { chain ->
-                    val result = chain.proceed()
-                    val baseCallLog = chain.args[0]
-                    val callLogViewItem = chain.args[1]
-                    val geocodedLocation = geoCodedLocationField.get(baseCallLog)
-                    val subText = subTextField.get(callLogViewItem)
-                    val subTextWithLocation = "$subText $geocodedLocation".trim()
-                    subTextField.set(callLogViewItem, subTextWithLocation)
-                    result
-                }
+                // 同时覆盖通用实现与地区分支，不能只挂包含特征字符串的国行实现。
+                generateSequence(methodInstance.declaringClass) { it.superclass }
+                    .mapNotNull { clazz ->
+                        clazz.declaredMethods.singleOrNull {
+                            it.name == methodInstance.name &&
+                                it.parameterTypes.contentEquals(methodInstance.parameterTypes)
+                        }
+                    }.forEach { method ->
+                        xposedModule.hook(method).intercept { chain ->
+                            val result = chain.proceed()
+                            val baseCallLog = chain.args[0]
+                            val callLogViewItem = chain.args[1]
+                            val geocodedLocation = geoCodedLocationField.get(baseCallLog) as? String
+                            if (geocodedLocation.isNullOrBlank()) return@intercept result
+                            val subText = (subTextField.get(callLogViewItem) as? String).orEmpty()
+                            if (!subText.endsWith(geocodedLocation)) {
+                                subTextField.set(callLogViewItem, "$subText $geocodedLocation".trim())
+                            }
+                            result
+                        }
+                    }
             } catch (t: Throwable) {
                 xlog(t)
             }
@@ -95,6 +106,7 @@ object Call {
         val setSubTextMethod: String,
     ) : HookConfig
 
+    context(xposedModule: XposedModule)
     private fun Context.getHookConfigFromDexKit(): CallHookConfig? {
         val exclusions = listOf(
             "android",
@@ -116,7 +128,9 @@ object Call {
                 }
             }.singleOrNull() ?: return null
             val baseCallLogClass = baseCallLogClassData.getInstance(classLoader)
-            val instance = baseCallLogClass.getDeclaredConstructor().apply { isAccessible = true }.newInstance()
+            // 仅用于注入字段标记，不依赖宿主类的构造器签名。
+            val instance = xposedModule.getInvoker(Any::class.java.getDeclaredConstructor())
+                .newInstanceSpecial(baseCallLogClass)
 
             val tokenToField = mutableMapOf<String, Field>()
 
