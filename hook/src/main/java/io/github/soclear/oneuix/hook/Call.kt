@@ -157,10 +157,10 @@ object Call {
                 val after = result.substring(index + keyword.length)
 
                 // 检查内容是以哪个 TOKEN 开头
-                for (entry in tokenToField.entries) {
-                    if (after.startsWith(entry.key)) {
+                for ((key, value) in tokenToField) {
+                    if (after.startsWith(key)) {
                         // 找到了 geoCodedLocation 对应字段
-                        return entry.value
+                        return value
                     }
                 }
             }
@@ -227,10 +227,10 @@ object Call {
                 val after = result.substring(index + keyword.length)
 
                 // 检查内容是以哪个 TOKEN 开头
-                for (entry in tokenToField.entries) {
-                    if (after.startsWith(entry.key)) {
+                for ((key, value) in tokenToField) {
+                    if (after.startsWith(key)) {
                         // 找到了 geoCodedLocation 对应字段
-                        return entry.value
+                        return value
                     }
                 }
             }
