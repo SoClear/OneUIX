@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Slider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -18,6 +17,7 @@ import androidx.compose.ui.res.vectorResource
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.DefaultSlider
 import io.github.soclear.oneuix.ui.component.SwitchItem
 
 @Composable
@@ -76,7 +76,11 @@ fun DetailPaneLauncher(
                 onCheckedChange = { onEvent(LauncherEvent.ModifyDockBottomPadding(it)) }
             )
             AnimatedVisibility(uiState.modifyDockBottomPadding) {
-                Slider(
+                DefaultSlider(
+                    onReset = {
+                        padding = Preference.Other().dockBottomPaddingDp
+                        onEvent(LauncherEvent.DockBottomPaddingDp(padding))
+                    },
                     value = padding,
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),

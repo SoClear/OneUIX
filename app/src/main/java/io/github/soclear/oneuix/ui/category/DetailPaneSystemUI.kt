@@ -1,6 +1,7 @@
 package io.github.soclear.oneuix.ui.category
 
 import android.content.Context
+import android.util.TypedValue
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -19,7 +20,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,11 +42,14 @@ import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
-import io.github.soclear.oneuix.common.semDisplayDeviceTypeOrNull
 import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
+import io.github.soclear.oneuix.common.semDisplayDeviceTypeOrNull
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
+import io.github.soclear.oneuix.ui.component.NumericSlider
+import io.github.soclear.oneuix.ui.component.rememberSystemUiDimension
+import io.github.soclear.oneuix.ui.component.rememberNativeStatusBarSidePaddingDp
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
@@ -65,6 +68,7 @@ fun DetailPaneSystemUI(
     val context = LocalContext.current
     val displayType = LocalConfiguration.current.semDisplayDeviceTypeOrNull()
     val foldable = remember { isSamsungFoldable(context) }
+    val nativeSidePaddingDp = rememberNativeStatusBarSidePaddingDp()
     val innerScreen = foldable && displayType == 0
     val leftEnabled = if (innerScreen) uiState.statusBar.modifyInnerStatusBarLeftPadding
         else uiState.statusBar.modifyStatusBarLeftPadding
@@ -97,8 +101,8 @@ fun DetailPaneSystemUI(
             )
         }
         Column {
-            var padding by remember(innerScreen, leftPaddingDp) {
-                mutableFloatStateOf(leftPaddingDp)
+            var padding by remember(innerScreen, leftPaddingDp, nativeSidePaddingDp) {
+                mutableFloatStateOf(leftPaddingDp ?: nativeSidePaddingDp ?: 0f)
             }
             var expanded by remember(innerScreen) { mutableStateOf(false) }
 
@@ -106,7 +110,10 @@ fun DetailPaneSystemUI(
                 title = stringResource(id = R.string.statusBarLeftPaddingDp_title),
                 modifier = Modifier.animateContentSize(),
                 summary = if (leftEnabled) {
-                    "%.1fdp".format(padding)
+                    if (leftPaddingDp == null) {
+                        stringResource(R.string.slider_systemDefault) +
+                            (nativeSidePaddingDp?.let { " (%.1fdp)".format(it) } ?: "")
+                    } else "%.1fdp".format(padding)
                 } else null,
                 icon = ImageVector.vectorResource(id = R.drawable.padding),
                 clickable = true,
@@ -123,21 +130,31 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && leftEnabled) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.statusBarLeftPaddingDp_title),
+                    unit = "dp",
+                    decimalPlaces = 1,
+                    defaultDescription = if (leftPaddingDp == null) stringResource(R.string.slider_systemDefault) else null,
+                    unknownDefault = leftPaddingDp == null && nativeSidePaddingDp == null,
+                    onReset = {
+                        padding = nativeSidePaddingDp ?: 0f
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarLeftPaddingDp(null)
+                            else SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(null))
+                    },
                     value = padding,
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0f..100f,
-                    onValueChangeFinished = {
-                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarLeftPaddingDp(padding)
-                            else SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(padding))
+                    onCommit = { committed ->
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarLeftPaddingDp(committed)
+                            else SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(committed))
                     }
                 )
             }
         }
         Column {
-            var padding by remember(innerScreen, rightPaddingDp) {
-                mutableFloatStateOf(rightPaddingDp)
+            var padding by remember(innerScreen, rightPaddingDp, nativeSidePaddingDp) {
+                mutableFloatStateOf(rightPaddingDp ?: nativeSidePaddingDp ?: 0f)
             }
             var expanded by remember(innerScreen) { mutableStateOf(false) }
 
@@ -145,7 +162,10 @@ fun DetailPaneSystemUI(
                 title = stringResource(id = R.string.statusBarRightPaddingDp_title),
                 modifier = Modifier.animateContentSize(),
                 summary = if (rightEnabled) {
-                    "%.1fdp".format(padding)
+                    if (rightPaddingDp == null) {
+                        stringResource(R.string.slider_systemDefault) +
+                            (nativeSidePaddingDp?.let { " (%.1fdp)".format(it) } ?: "")
+                    } else "%.1fdp".format(padding)
                 } else null,
                 icon = ImageVector.vectorResource(id = R.drawable.padding),
                 clickable = true,
@@ -162,20 +182,30 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && rightEnabled) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.statusBarRightPaddingDp_title),
+                    unit = "dp",
+                    decimalPlaces = 1,
+                    defaultDescription = if (rightPaddingDp == null) stringResource(R.string.slider_systemDefault) else null,
+                    unknownDefault = rightPaddingDp == null && nativeSidePaddingDp == null,
+                    onReset = {
+                        padding = nativeSidePaddingDp ?: 0f
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp(null)
+                            else SystemUIEvent.StatusBar.StatusBarRightPaddingDp(null))
+                    },
                     value = padding,
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0f..100f,
-                    onValueChangeFinished = {
-                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp(padding)
-                            else SystemUIEvent.StatusBar.StatusBarRightPaddingDp(padding))
+                    onCommit = { committed ->
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp(committed)
+                            else SystemUIEvent.StatusBar.StatusBarRightPaddingDp(committed))
                     }
                 )
             }
         }
         Column {
-            var widthScale by remember {
+            var widthScale by remember(uiState.statusBar.batteryIconWidthScale) {
                 mutableFloatStateOf(uiState.statusBar.batteryIconWidthScale)
             }
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -200,19 +230,26 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && uiState.statusBar.setBatteryIconWidthScale) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.setBatteryIconWidthScale_title),
+                    unit = "×",
+                    decimalPlaces = 2,
+                    onReset = {
+                        widthScale = Preference.SystemUI.StatusBar().batteryIconWidthScale
+                        onEvent(SystemUIEvent.StatusBar.BatteryIconWidthScale(widthScale))
+                    },
                     value = widthScale,
                     onValueChange = { widthScale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0.5f..2f,
-                    onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.BatteryIconWidthScale(widthScale))
+                    onCommit = { committed ->
+                        onEvent(SystemUIEvent.StatusBar.BatteryIconWidthScale(committed))
                     }
                 )
             }
         }
         Column {
-            var heightScale by remember {
+            var heightScale by remember(uiState.statusBar.batteryIconHeightScale) {
                 mutableFloatStateOf(uiState.statusBar.batteryIconHeightScale)
             }
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -237,13 +274,20 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && uiState.statusBar.setBatteryIconHeightScale) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.setBatteryIconHeightScale_title),
+                    unit = "×",
+                    decimalPlaces = 2,
+                    onReset = {
+                        heightScale = Preference.SystemUI.StatusBar().batteryIconHeightScale
+                        onEvent(SystemUIEvent.StatusBar.BatteryIconHeightScale(heightScale))
+                    },
                     value = heightScale,
                     onValueChange = { heightScale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0.5f..2f,
-                    onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.BatteryIconHeightScale(heightScale))
+                    onCommit = { committed ->
+                        onEvent(SystemUIEvent.StatusBar.BatteryIconHeightScale(committed))
                     }
                 )
             }
@@ -375,7 +419,7 @@ fun DetailPaneSystemUI(
             }
         }
         Column {
-            var scale by remember {
+            var scale by remember(uiState.statusBar.statusBarClockTextScale) {
                 mutableFloatStateOf(uiState.statusBar.statusBarClockTextScale)
             }
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -400,13 +444,20 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && uiState.statusBar.setStatusBarClockTextScale) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.setStatusBarClockTextScale_title),
+                    unit = "×",
+                    decimalPlaces = 2,
+                    onReset = {
+                        scale = Preference.SystemUI.StatusBar().statusBarClockTextScale
+                        onEvent(SystemUIEvent.StatusBar.StatusBarClockTextScale(scale))
+                    },
                     value = scale,
                     onValueChange = { scale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0.5f..2.5f,
-                    onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.StatusBarClockTextScale(scale))
+                    onCommit = { committed ->
+                        onEvent(SystemUIEvent.StatusBar.StatusBarClockTextScale(committed))
                     }
                 )
             }
@@ -472,7 +523,7 @@ fun DetailPaneSystemUI(
             }
         )
         Column {
-            var max by remember {
+            var max by remember(uiState.statusBar.statusBarMaxNotificationIcons) {
                 mutableIntStateOf(uiState.statusBar.statusBarMaxNotificationIcons)
             }
             var expanded by rememberSaveable { mutableStateOf(false) }
@@ -495,14 +546,21 @@ fun DetailPaneSystemUI(
                 }
             )
             AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarMaxNotificationIcons) {
-                Slider(
+                NumericSlider(
+                    label = stringResource(R.string.setStatusBarMaxNotificationIcons_title),
+                    unit = "",
+                    decimalPlaces = 0,
+                    onReset = {
+                        max = Preference.SystemUI.StatusBar().statusBarMaxNotificationIcons
+                        onEvent(SystemUIEvent.StatusBar.StatusBarMaxNotificationIcons(max))
+                    },
                     value = max.toFloat(),
                     onValueChange = { max = it.roundToInt() },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 4f..20f,
                     steps = 15,
-                    onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.StatusBarMaxNotificationIcons(max))
+                    onCommit = { committed ->
+                        onEvent(SystemUIEvent.StatusBar.StatusBarMaxNotificationIcons(committed.roundToInt()))
                     }
                 )
             }
@@ -780,7 +838,9 @@ fun DetailPaneSystemUI(
                 }
             )
             Column {
-                var textSize by remember { mutableFloatStateOf(uiState.qs.qsClockTextSize) }
+                val nativeClockSize = rememberSystemUiDimension("clock_text_size", TypedValue.COMPLEX_UNIT_SP)
+                    ?: Preference.SystemUI.QS().qsClockTextSize
+                var textSize by remember(uiState.qs.qsClockTextSize) { mutableFloatStateOf(uiState.qs.qsClockTextSize) }
                 var expanded by rememberSaveable { mutableStateOf(false) }
 
                 SwitchItem(
@@ -804,13 +864,20 @@ fun DetailPaneSystemUI(
                 )
 
                 AnimatedVisibility(expanded && uiState.qs.modifyQSClockTextSize) {
-                    Slider(
+                    NumericSlider(
+                        label = stringResource(R.string.modifyQSClockTextSize_title),
+                        unit = "sp",
+                        decimalPlaces = 1,
+                        onReset = {
+                            textSize = nativeClockSize
+                            onEvent(SystemUIEvent.QS.QSClockTextSize(textSize))
+                        },
                         value = textSize,
                         onValueChange = { textSize = it },
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        valueRange = 15f..70f,
-                        onValueChangeFinished = {
-                            onEvent(SystemUIEvent.QS.QSClockTextSize(textSize))
+                        valueRange = minOf(15f, nativeClockSize)..maxOf(70f, nativeClockSize),
+                        onCommit = { committed ->
+                            onEvent(SystemUIEvent.QS.QSClockTextSize(committed))
                         }
                     )
                 }
@@ -1037,25 +1104,25 @@ sealed interface SystemUIEvent {
         value class ModifyStatusBarLeftPadding(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class StatusBarLeftPaddingDp(val value: Float) : StatusBar
+        value class StatusBarLeftPaddingDp(val value: Float?) : StatusBar
 
         @JvmInline
         value class ModifyStatusBarRightPadding(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class StatusBarRightPaddingDp(val value: Float) : StatusBar
+        value class StatusBarRightPaddingDp(val value: Float?) : StatusBar
 
         @JvmInline
         value class ModifyInnerStatusBarLeftPadding(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class InnerStatusBarLeftPaddingDp(val value: Float) : StatusBar
+        value class InnerStatusBarLeftPaddingDp(val value: Float?) : StatusBar
 
         @JvmInline
         value class ModifyInnerStatusBarRightPadding(val value: Boolean) : StatusBar
 
         @JvmInline
-        value class InnerStatusBarRightPaddingDp(val value: Float) : StatusBar
+        value class InnerStatusBarRightPaddingDp(val value: Float?) : StatusBar
 
         @JvmInline
         value class SetBatteryIconWidthScale(val value: Boolean) : StatusBar

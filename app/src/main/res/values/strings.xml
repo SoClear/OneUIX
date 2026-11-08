@@ -253,4 +253,6 @@
     <string name="allowLowBatteryFlashlight_summary" formatted="false">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
     <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
     <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
+    <string name="slider_systemDefault">System default</string>
+    <string name="slider_numericRange">Allowed: %1$s–%2$s</string>
 </resources>

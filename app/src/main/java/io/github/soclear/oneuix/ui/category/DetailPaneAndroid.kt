@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.DefaultSlider
 import io.github.soclear.oneuix.ui.component.SwitchItem
 import kotlin.math.roundToInt
 import io.github.soclear.oneuix.common.R as CommonR
@@ -63,7 +63,7 @@ fun DetailPaneAndroid(
             onCheckedChange = { onEvent(AndroidEvent.DisablePinVerifyPer72h(it)) }
         )
         Column {
-            var max by remember { mutableIntStateOf(uiState.maxNeverKilledAppNum) }
+            var max by remember(uiState.maxNeverKilledAppNum) { mutableIntStateOf(uiState.maxNeverKilledAppNum) }
             var expanded by rememberSaveable { mutableStateOf(false) }
 
             SwitchItem(
@@ -85,7 +85,11 @@ fun DetailPaneAndroid(
             )
 
             AnimatedVisibility(expanded && uiState.modifyMaxNeverKilledAppNum) {
-                Slider(
+                DefaultSlider(
+                    onReset = {
+                        max = Preference.Android().maxNeverKilledAppNum
+                        onEvent(AndroidEvent.MaxNeverKilledAppNum(max))
+                    },
                     value = max.toFloat(),
                     onValueChange = { max = it.roundToInt() },
                     modifier = Modifier.padding(horizontal = 16.dp),

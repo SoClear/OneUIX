@@ -15,7 +15,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -34,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
 import io.github.soclear.oneuix.common.Preference
+import io.github.soclear.oneuix.ui.component.NumericSlider
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
 
@@ -115,8 +115,10 @@ fun ExtraPaneNetworkSpeed(
                     SliderItem(
                         title = stringResource(R.string.networkSpeedPaddingEnd_title),
                         value = config.paddingEndDp,
+                        defaultValue = NetWorkSpeed().paddingEndDp,
                         valueRange = -8f..16f,
                         steps = 23,
+                        unit = "dp",
                         display = { "%.0f dp".format(it) },
                         onCommit = { update(config.copy(paddingEndDp = it)) }
                     )
@@ -126,8 +128,10 @@ fun ExtraPaneNetworkSpeed(
                     SliderItem(
                         title = stringResource(id = R.string.networkSpeedTextSize_title),
                         value = config.textSizeSp,
+                        defaultValue = NetWorkSpeed().textSizeSp,
                         valueRange = 0f..24f,
                         steps = 23,
+                        unit = "sp",
                         display = { if (it <= 0f) systemSizeLabel else "%.0f sp".format(it) },
                         onCommit = { update(config.copy(textSizeSp = it)) }
                     )
@@ -180,8 +184,10 @@ fun ExtraPaneNetworkSpeed(
                         SliderItem(
                             title = stringResource(id = R.string.networkSpeedLineSpacing_title),
                             value = config.lineSpacingDp,
+                            defaultValue = NetWorkSpeed().lineSpacingDp,
                             valueRange = -8f..16f,
                             steps = 23,
+                            unit = "dp",
                             display = { if (it == 0f) systemSizeLabel else "%.0f dp".format(it) },
                             onCommit = { update(config.copy(lineSpacingDp = it)) }
                         )
@@ -214,8 +220,10 @@ fun ExtraPaneNetworkSpeed(
                                     SliderItem(
                                         title = stringResource(id = R.string.networkSpeedMarkerSize_title),
                                         value = config.markerSizeSp,
+                                        defaultValue = NetWorkSpeed().markerSizeSp,
                                         valueRange = 0f..32f,
                                         steps = 31,
+                                        unit = "sp",
                                         display = {
                                             if (it <= 0f) sameAsTextLabel else "%.0f sp".format(
                                                 it
@@ -229,8 +237,11 @@ fun ExtraPaneNetworkSpeed(
                                     SliderItem(
                                         title = stringResource(id = R.string.networkSpeedMarkerGap_title),
                                         value = config.markerGap,
+                                        defaultValue = NetWorkSpeed().markerGap,
                                         valueRange = 0f..3f,
                                         steps = 29,
+                                        unit = "×",
+                                        decimalPlaces = 2,
                                         display = { "%.2fx".format(it) },
                                         onCommit = {
                                             update(config.copy(markerGap = it))
@@ -250,11 +261,14 @@ fun ExtraPaneNetworkSpeed(
 private fun SliderItem(
     title: String,
     value: Float,
+    defaultValue: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     display: (Float) -> String,
     onCommit: (Float) -> Unit,
     modifier: Modifier = Modifier,
     steps: Int = 0,
+    unit: String,
+    decimalPlaces: Int = 0,
 ) {
     var current by remember(value) { mutableFloatStateOf(value) }
     Column(modifier = modifier) {
@@ -268,10 +282,18 @@ private fun SliderItem(
                 )
             }
         )
-        Slider(
+        NumericSlider(
+            label = title,
+            unit = unit,
+            decimalPlaces = decimalPlaces,
+            defaultDescription = if (current == defaultValue) display(current) else null,
+            onReset = {
+                current = defaultValue
+                onCommit(defaultValue)
+            },
             value = current,
             onValueChange = { current = it },
-            onValueChangeFinished = { onCommit(current) },
+            onCommit = onCommit,
             modifier = Modifier.padding(horizontal = 16.dp),
             valueRange = valueRange,
             steps = steps
