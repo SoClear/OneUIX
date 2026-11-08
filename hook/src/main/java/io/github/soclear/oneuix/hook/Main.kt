@@ -12,6 +12,7 @@ import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
 import io.github.soclear.oneuix.hook.systemui.statusbar.StatusBar
 import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
+import io.github.soclear.oneuix.hook.systemui.StatusBarSpacing
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
@@ -286,7 +287,17 @@ class Main : XposedModule() {
                         if (preference.systemUI.statusBar.modifyStatusBarRightPadding) {
                             preference.systemUI.statusBar.statusBarRightPaddingDp
                         } else null
-                    StatusBar.setStatusBarPaddingDp(leftPaddingDp, rightPaddingDp)
+                    val innerLeftPaddingDp =
+                        if (preference.systemUI.statusBar.modifyInnerStatusBarLeftPadding) {
+                            preference.systemUI.statusBar.innerStatusBarLeftPaddingDp
+                        } else null
+                    val innerRightPaddingDp =
+                        if (preference.systemUI.statusBar.modifyInnerStatusBarRightPadding) {
+                            preference.systemUI.statusBar.innerStatusBarRightPaddingDp
+                        } else null
+                    StatusBar.setStatusBarPaddingDp(
+                        leftPaddingDp, rightPaddingDp, innerLeftPaddingDp, innerRightPaddingDp
+                    )
                 }
 
                 run {
@@ -298,6 +309,13 @@ class Main : XposedModule() {
                     } else null
                     StatusBar.setBatteryIconScale(widthScale, heightScale)
                 }
+
+                StatusBarSpacing.setNativeGaps(
+                    if (preference.systemUI.statusBar.modifyStatusIconEndPadding)
+                        preference.systemUI.statusBar.statusIconEndPaddingDp else null,
+                    if (preference.systemUI.statusBar.modifyRightClockStartMargin)
+                        preference.systemUI.statusBar.rightClockStartMarginDp else null
+                )
 
                 if (preference.systemUI.statusBar.alignStatusBarContentToTop) {
                     StatusBar.alignContentToTop()

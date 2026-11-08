@@ -3,6 +3,7 @@ package io.github.soclear.oneuix.hook.systemui.statusbar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -21,16 +23,58 @@ import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.common.semDisplayDeviceTypeOrNull
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 import java.lang.reflect.Modifier
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.WeakHashMap
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @SuppressLint("PrivateApi")
 object StatusBar {
+    private var statusBarClockScale: Float? = null
+    private val scaledClockSizes = WeakHashMap<TextView, Float>()
+    private val originalStatusIconGravity = WeakHashMap<View, Int>()
+    private val watchedRightClocks = WeakHashMap<View, Boolean>()
+
+    /** Keep the stock strip next to a right-side clock when custom padding widens its weighted frame. */
+    private fun alignStatusIconsWithRightClock(
+        bar: View,
+        configuration: Configuration,
+        outerRightPadding: Boolean,
+        innerRightPadding: Boolean
+    ) {
+        val mainDisplay = configuration.semDisplayDeviceTypeOrNull() == 0
+        val customPadding = if (mainDisplay) innerRightPadding else outerRightPadding
+        val iconsId = bar.resources.getIdentifier("system_icons", "id", Package.SYSTEMUI)
+        val clockId = bar.resources.getIdentifier("right_clock_container", "id", Package.SYSTEMUI)
+        if (iconsId == 0 || clockId == 0) return
+        val icons = bar.findViewById<View>(iconsId) ?: return
+        val clock = bar.findViewById<View>(clockId) ?: return
+        val params = icons.layoutParams as? FrameLayout.LayoutParams ?: return
+        val original = originalStatusIconGravity.getOrPut(icons) { params.gravity }
+        val alignToClock = customPadding && clock.visibility == View.VISIBLE &&
+            bar.layoutDirection == View.LAYOUT_DIRECTION_LTR
+        val target = if (alignToClock) original or Gravity.END else original
+        if (params.gravity != target) {
+            params.gravity = target
+            icons.layoutParams = params
+        }
+    }
+    private fun applyStatusBarClockScale(view: TextView) {
+        val scale = statusBarClockScale ?: return
+        if (scale == 1f) return
+        val currentSize = view.textSize
+        if (abs(currentSize - (scaledClockSizes[view] ?: Float.NaN)) < 0.5f) return
+        val scaledSize = currentSize * scale
+        view.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledSize)
+        scaledClockSizes[view] = scaledSize
+    }
+
     context(xposedModule: XposedModule)
     fun alignContentToTop() = afterAttachTry {
         val clazz = classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorBasicGardener")
@@ -49,23 +93,129 @@ object StatusBar {
     }
 
     context(xposedModule: XposedModule)
-    fun setStatusBarPaddingDp(left: Float?, right: Float?) = afterAttachTry(left != null || right != null) {
-        val clazz =
-            classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorGardenAlgorithmCenterCutout")
-        if (left != null) {
-            val method = clazz.getDeclaredMethod("calculateLeftPadding")
-            xposedModule.hook(method).intercept { chain ->
-                val inputProperties = chain.thisObject.reflect["inputProperties"]
-                val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (left * density).roundToInt()
+    fun setStatusBarPaddingDp(left: Float?, right: Float?, innerLeft: Float?, innerRight: Float?) {
+        afterAttachTry(ONE_UI_VERSION >= 90000 && (right != null || innerRight != null)) {
+            val controller = classLoader.loadClass(
+                "com.android.systemui.statusbar.phone.PhoneStatusBarViewController"
+            )
+            xposedModule.hook(controller.getDeclaredMethod("onViewAttached")).intercept { chain ->
+                val result = chain.proceed()
+                val bar = chain.thisObject.reflect["mView"] as? View
+                if (bar != null) {
+                    alignStatusIconsWithRightClock(bar, bar.resources.configuration, right != null, innerRight != null)
+                    val clockId = bar.resources.getIdentifier("right_clock_container", "id", Package.SYSTEMUI)
+                    val clock = if (clockId != 0) bar.findViewById<View>(clockId) else null
+                    if (clock != null && watchedRightClocks.put(clock, true) == null) {
+                        clock.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+                            alignStatusIconsWithRightClock(
+                                bar, bar.resources.configuration, right != null, innerRight != null
+                            )
+                        }
+                    }
+                    bar.post {
+                        alignStatusIconsWithRightClock(
+                            bar, bar.resources.configuration, right != null, innerRight != null
+                        )
+                    }
+                }
+                result
+            }
+            val barClass = classLoader.loadClass("com.android.systemui.statusbar.phone.PhoneStatusBarView")
+            xposedModule.hook(barClass.getDeclaredMethod("onConfigurationChanged", Configuration::class.java))
+                .intercept { chain ->
+                    val result = chain.proceed()
+                    val bar = chain.thisObject as? View
+                    val configuration = chain.args.firstOrNull() as? Configuration
+                    if (bar != null && configuration != null) {
+                        alignStatusIconsWithRightClock(bar, configuration, right != null, innerRight != null)
+                    }
+                    result
+                }
+        }
+        afterAttachTry(left != null || right != null) {
+            hookStatusBarPadding("IndicatorGardenAlgorithmCenterCutout", left, right)
+        }
+        afterAttachTry(innerLeft != null || innerRight != null) {
+            hookStatusBarPadding("IndicatorGardenAlgorithmSidelingCenterCutout", innerLeft, innerRight, innerOnly = true)
+        }
+        innerRight?.let { rightPaddingDp ->
+            afterAttachTry {
+                if (ONE_UI_VERSION >= 90000) {
+                    // One UI 9's main status bar budgets icons using the stock corner padding,
+                    // even after calculateRightPadding() has been overridden. Correct that budget
+                    // directly. Changing the cutout Rect's width also changes the jump distance
+                    // when an icon crosses it, and conflicts with modules that reserve icon width.
+                    val stockPaddingId = resources.getIdentifier(
+                        "status_bar_indicator_corner_padding", "dimen", "android"
+                    )
+                    if (stockPaddingId == 0) {
+                        xlog("Framework corner padding unavailable; keeping the native right-side width budget")
+                        return@afterAttachTry
+                    }
+                    val info = classLoader.loadClass(
+                        "com.android.systemui.statusbar.phone.PhoneStatusBarViewControllerExt\$onViewAttached\$3"
+                    )
+                    val method = info.getDeclaredMethod("getRightSideAvailableWidth", Rect::class.java)
+                    xposedModule.hook(method).intercept { chain ->
+                        val result = chain.proceed()
+                        val available = result as? Int ?: return@intercept result
+                        if (resources.configuration.semDisplayDeviceTypeOrNull() != 0) {
+                            return@intercept available
+                        }
+                        val stockPadding = runCatching {
+                            resources.getDimensionPixelSize(stockPaddingId)
+                        }.getOrNull() ?: return@intercept available
+                        val requestedPadding = (rightPaddingDp * resources.displayMetrics.density).roundToInt()
+                        available + stockPadding - requestedPadding
+                    }
+                    return@afterAttachTry
+                }
+
+                // Earlier One UI builds have not been measured for the right-side budget method.
+                val cutoutUtil = classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorCutoutUtil")
+                xposedModule.hook(cutoutUtil.getDeclaredMethod("getDisplayCutoutAreaToExclude")).intercept { chain ->
+                    val cutout = chain.proceed() as? Rect ?: return@intercept null
+                    if (resources.configuration.semDisplayDeviceTypeOrNull() != 0) return@intercept cutout
+
+                    val inputProperties = chain.thisObject.reflect["inputProperties"]
+                    val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
+                    val cornerPadding = inputProperties?.reflect?.get("cornerPaddingC") as? Int ?: 0
+                    // StatusIconContainer uses cornerPaddingC, not calculateRightPadding(),
+                    // when it decides how many icons fit to the right of the cutout.
+                    val paddingDelta = (rightPaddingDp * density).roundToInt() - cornerPadding
+                    if (paddingDelta == 0) cutout else Rect(cutout).apply {
+                        if (paddingDelta > 0) {
+                            this.right += paddingDelta
+                        } else {
+                            // Reducing the right inset moves icons on the left of the cutout rightward.
+                            this.left += paddingDelta
+                        }
+                    }
+                }
             }
         }
-        if (right != null) {
-            val method = clazz.getDeclaredMethod("calculateRightPadding")
-            xposedModule.hook(method).intercept { chain ->
+    }
+
+    context(xposedModule: XposedModule, context: Context)
+    private fun hookStatusBarPadding(className: String, left: Float?, right: Float?, innerOnly: Boolean = false) {
+        val clazz = context.classLoader.loadClass("com.android.systemui.statusbar.phone.$className")
+        val garden = context.classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorGarden")
+        // These callers can inline the stock padding calculation. The outer inset then changes
+        // while the garden's width cap still reserves the stock inset beside the camera.
+        for ((methodName, paddingDp) in listOf(
+            "calculateLeftContainerMaxWidth" to left, "calculateRightContainerMaxWidth" to right
+        )) {
+            if (paddingDp != null) xposedModule.deoptimize(clazz.getDeclaredMethod(methodName, garden))
+        }
+        for ((methodName, paddingDp) in listOf("calculateLeftPadding" to left, "calculateRightPadding" to right)) {
+            if (paddingDp == null) continue
+            xposedModule.hook(clazz.getDeclaredMethod(methodName)).intercept { chain ->
+                if (innerOnly && context.resources.configuration.semDisplayDeviceTypeOrNull() != 0) {
+                    return@intercept chain.proceed()
+                }
                 val inputProperties = chain.thisObject.reflect["inputProperties"]
                 val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (right * density).roundToInt()
+                (paddingDp * density).roundToInt()
             }
         }
     }
@@ -227,6 +377,15 @@ object StatusBar {
 
     context(xposedModule: XposedModule)
     fun setStatusBarClockTextScale(scale: Float) = afterAttachTry {
+        statusBarClockScale = scale
+        val clockClass = classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockIndicatorView")
+        val bellSoundClass = classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockBellSound")
+        xposedModule.hook(clockClass.getDeclaredMethod("notifyTimeChanged", bellSoundClass)).intercept { chain ->
+            val result = chain.proceed()
+            (chain.thisObject as? TextView)?.let { applyStatusBarClockScale(it) }
+            result
+        }
+
         if (ONE_UI_VERSION >= 90000) {
             val controllerClass = classLoader.loadClass(
                 "com.android.systemui.statusbar.policy.QSClockIndicatorViewController"
@@ -240,7 +399,7 @@ object StatusBar {
                     pending.remove(view)?.let { view.removeCallbacks(it) }
                     val task = Runnable {
                         pending.remove(view)
-                        view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.textSize * scale)
+                        applyStatusBarClockScale(view)
                     }
                     pending[view] = task
                     // One UI 9 posts its size update; scale afterwards, once per pending update.
@@ -259,7 +418,7 @@ object StatusBar {
                 val result = chain.proceed()
                 try {
                     val clockView = chain.thisObject.reflect["view"] as? TextView
-                    clockView?.setTextSize(TypedValue.COMPLEX_UNIT_PX, clockView.textSize * scale)
+                    clockView?.let { applyStatusBarClockScale(it) }
                 } catch (t: Throwable) {
                     xlog(t)
                 }
@@ -294,6 +453,7 @@ object StatusBar {
             val dateTime = block()
             clockTextView?.text = dateTime
             clockTextView?.contentDescription = dateTime
+            clockTextView?.let { applyStatusBarClockScale(it) }
             null
         }
     }

@@ -246,9 +246,15 @@
     <string name="networkSpeedRefreshInterval_title">Интервал обновления</string>
     <string name="networkSpeedPaddingEnd_title">Отступ до следующего значка</string>
     <string name="disableLowBatteryDimming_title">Не снижать яркость при низком заряде</string>
-    <string name="disableLowBatteryDimming_summary">Сохранять текущую яркость при заряде 5 % и ниже</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">Сохранять текущую яркость при заряде 5 % и ниже</string>
     <string name="allowLowBatteryFlashlight_title">Фонарик при низком заряде</string>
-    <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
     <string name="enableRealtimeBlur_title">Размытие панелей в реальном времени (экспериментально)</string>
     <string name="enableRealtimeBlur_summary">Попытаться включить размытие в реальном времени в панели уведомлений и быстрых настройках. Требуется поддержка графики в прошивке. Возможны повышенный расход энергии и ошибки отображения. После изменения перезагрузите устройство.</string>
+    <string name="statusBarPadding_coverScreen">Отступы внешнего экрана</string>
+    <string name="statusBarPadding_innerScreen">Отступы внутреннего экрана</string>
+    <string name="modifyStatusIconEndPadding_title">Изменить отступ после значков состояния</string>
+    <string name="modifyRightClockStartMargin_title">Изменить отступ перед часами справа</string>
+    <string name="slider_systemDefault">По умолчанию</string>
+    <string name="slider_numericRange">Диапазон: %1$s–%2$s</string>
 </resources>

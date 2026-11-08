@@ -10,6 +10,8 @@
     <string name="aod">Always On Display</string>
     <string name="statusBarLeftPaddingDp_title">Modify status bar left padding</string>
     <string name="statusBarRightPaddingDp_title">Modify status bar right padding</string>
+    <string name="statusBarPadding_coverScreen">Cover screen padding</string>
+    <string name="statusBarPadding_innerScreen">Inner screen padding</string>
     <string name="setBatteryIconWidthScale_title">Set battery icon width scale factor</string>
     <string name="setBatteryIconHeightScale_title">Set battery icon height scale factor</string>
     <string name="hideBatteryPercentageSign_title">Hide battery percentage sign in status bar</string>
@@ -246,9 +248,13 @@
     <string name="networkSpeedRefreshInterval_title">Refresh interval</string>
     <string name="networkSpeedPaddingEnd_title">Spacing to the next icon</string>
     <string name="disableLowBatteryDimming_title">Disable low-battery screen dimming</string>
-    <string name="disableLowBatteryDimming_summary">Keep the current brightness at 5% battery or below</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">Keep the current brightness at 5% battery or below</string>
     <string name="allowLowBatteryFlashlight_title">Allow flashlight at low battery</string>
-    <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
     <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
     <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
+    <string name="modifyStatusIconEndPadding_title">Modify status icon end padding</string>
+    <string name="modifyRightClockStartMargin_title">Modify right clock start margin</string>
+    <string name="slider_systemDefault">System default</string>
+    <string name="slider_numericRange">Allowed: %1$s–%2$s</string>
 </resources>

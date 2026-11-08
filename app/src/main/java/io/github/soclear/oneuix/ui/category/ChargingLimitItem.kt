@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,12 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.ui.component.DefaultSlider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
+private const val DEFAULT_CHARGING_LIMIT = 100
 private const val PROTECTION = "protect_battery"
 private const val THRESHOLD = "battery_protection_threshold"
 
@@ -45,6 +46,19 @@ fun ChargingLimitItem() {
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         limit = readChargingLimit(context)
     }
+    fun applyLimit(target: Int) {
+        busy = true
+        scope.launch {
+            val applied = runCatching {
+                withContext(Dispatchers.IO) { setChargingLimit(context, target) }
+            }.isSuccess
+            limit = readChargingLimit(context)
+            busy = false
+            if (!applied) {
+                Toast.makeText(context, R.string.chargingLimit_failed, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     ListItem(
         headlineContent = { Text(stringResource(R.string.chargingLimit_title)) },
         supportingContent = { Text(stringResource(R.string.chargingLimit_summary)) },
@@ -53,34 +67,22 @@ fun ChargingLimitItem() {
         },
         trailingContent = { Text("$limit%") },
     )
-    Slider(
+    DefaultSlider(
         value = limit.toFloat(),
         onValueChange = { limit = it.roundToInt() },
         valueRange = 20f..100f,
         steps = 79,
         enabled = !busy,
         modifier = Modifier.padding(horizontal = 16.dp),
-        onValueChangeFinished = {
-            val target = limit
-            busy = true
-            scope.launch {
-                val applied = runCatching {
-                    withContext(Dispatchers.IO) { setChargingLimit(context, target) }
-                }.isSuccess
-                limit = readChargingLimit(context)
-                busy = false
-                if (!applied) {
-                    Toast.makeText(context, R.string.chargingLimit_failed, Toast.LENGTH_SHORT).show()
-                }
-            }
-        },
+        onReset = { applyLimit(DEFAULT_CHARGING_LIMIT) },
+        onValueChangeFinished = { applyLimit(limit) },
     )
 }
 
 private fun readChargingLimit(context: Context): Int =
     if (Settings.Global.getInt(context.contentResolver, PROTECTION, 0) == 1) {
         Settings.Global.getInt(context.contentResolver, THRESHOLD, 80).coerceIn(20, 100)
-    } else 100
+    } else DEFAULT_CHARGING_LIMIT
 
 private fun setChargingLimit(context: Context, limit: Int) {
     require(limit in 20..100)
