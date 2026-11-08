@@ -246,9 +246,9 @@
     <string name="networkSpeedRefreshInterval_title">Intervalle de rafraîchissement</string>
     <string name="networkSpeedPaddingEnd_title">Espacement avec la prochaine icône</string>
     <string name="disableLowBatteryDimming_title">Désactiver la baisse de luminosité à batterie faible</string>
-    <string name="disableLowBatteryDimming_summary">Conserver la luminosité actuelle à 5 % de batterie ou moins</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">Conserver la luminosité actuelle à 5 % de batterie ou moins</string>
     <string name="allowLowBatteryFlashlight_title">Autoriser la lampe torche à batterie faible</string>
-    <string name="allowLowBatteryFlashlight_summary">Utilisable jusqu’à 1 % sans extinction automatique due à la batterie faible. La protection thermique est conservée</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">Utilisable jusqu’à 1 % sans extinction automatique due à la batterie faible. La protection thermique est conservée</string>
     <string name="enableRealtimeBlur_title">Flou des panneaux en temps réel (expérimental)</string>
     <string name="enableRealtimeBlur_summary">Tenter d’activer le flou en temps réel dans les panneaux de notifications et de réglages rapides. Nécessite la prise en charge graphique de la ROM et peut augmenter la consommation ou causer des problèmes d’affichage. Redémarrez l’appareil après modification.</string>
 </resources>
