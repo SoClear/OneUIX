@@ -10,6 +10,8 @@
     <string name="aod">Always On Display</string>
     <string name="statusBarLeftPaddingDp_title">Modify status bar left padding</string>
     <string name="statusBarRightPaddingDp_title">Modify status bar right padding</string>
+    <string name="statusBarPadding_coverScreen">Cover screen padding</string>
+    <string name="statusBarPadding_innerScreen">Inner screen padding</string>
     <string name="setBatteryIconWidthScale_title">Set battery icon width scale factor</string>
     <string name="setBatteryIconHeightScale_title">Set battery icon height scale factor</string>
     <string name="hideBatteryPercentageSign_title">Hide battery percentage sign in status bar</string>

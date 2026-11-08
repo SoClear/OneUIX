@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.ui.category
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
@@ -39,6 +42,7 @@ import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
+import io.github.soclear.oneuix.common.semDisplayDeviceTypeOrNull
 import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SelectItem
@@ -58,6 +62,18 @@ fun DetailPaneSystemUI(
     modifier: Modifier = Modifier,
     onNavigateToNetworkSpeed: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val displayType = LocalConfiguration.current.semDisplayDeviceTypeOrNull()
+    val foldable = remember { isSamsungFoldable(context) }
+    val innerScreen = foldable && displayType == 0
+    val leftEnabled = if (innerScreen) uiState.statusBar.modifyInnerStatusBarLeftPadding
+        else uiState.statusBar.modifyStatusBarLeftPadding
+    val leftPaddingDp = if (innerScreen) uiState.statusBar.innerStatusBarLeftPaddingDp
+        else uiState.statusBar.statusBarLeftPaddingDp
+    val rightEnabled = if (innerScreen) uiState.statusBar.modifyInnerStatusBarRightPadding
+        else uiState.statusBar.modifyStatusBarRightPadding
+    val rightPaddingDp = if (innerScreen) uiState.statusBar.innerStatusBarRightPaddingDp
+        else uiState.statusBar.statusBarRightPaddingDp
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -73,76 +89,87 @@ fun DetailPaneSystemUI(
             Text(text = stringResource(CommonR.string.restartSystemUI))
         }
         DividerText(R.string.status_bar)
+        if (foldable && (displayType == 0 || displayType == 5)) {
+            Text(
+                text = stringResource(if (innerScreen) R.string.statusBarPadding_innerScreen else R.string.statusBarPadding_coverScreen),
+                modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp),
+                color = MaterialTheme.colorScheme.secondary,
+            )
+        }
         Column {
-            var padding by remember {
-                mutableFloatStateOf(uiState.statusBar.statusBarLeftPaddingDp)
+            var padding by remember(innerScreen, leftPaddingDp) {
+                mutableFloatStateOf(leftPaddingDp)
             }
-            var expanded by rememberSaveable { mutableStateOf(false) }
+            var expanded by remember(innerScreen) { mutableStateOf(false) }
 
             SwitchItem(
                 title = stringResource(id = R.string.statusBarLeftPaddingDp_title),
                 modifier = Modifier.animateContentSize(),
-                summary = if (uiState.statusBar.modifyStatusBarLeftPadding) {
+                summary = if (leftEnabled) {
                     "%.1fdp".format(padding)
                 } else null,
                 icon = ImageVector.vectorResource(id = R.drawable.padding),
                 clickable = true,
                 onClick = { expanded = !expanded },
-                checked = uiState.statusBar.modifyStatusBarLeftPadding,
+                checked = leftEnabled,
                 onCheckedChange = {
                     if (it && padding == 0f) {
                         expanded = true
                     } else if (!it) {
                         expanded = false
                     }
-                    onEvent(SystemUIEvent.StatusBar.ModifyStatusBarLeftPadding(it))
+                    onEvent(if (innerScreen) SystemUIEvent.StatusBar.ModifyInnerStatusBarLeftPadding(it)
+                        else SystemUIEvent.StatusBar.ModifyStatusBarLeftPadding(it))
                 }
             )
-            AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarLeftPadding) {
+            AnimatedVisibility(expanded && leftEnabled) {
                 Slider(
                     value = padding,
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0f..100f,
                     onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(padding))
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarLeftPaddingDp(padding)
+                            else SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(padding))
                     }
                 )
             }
         }
         Column {
-            var padding by remember {
-                mutableFloatStateOf(uiState.statusBar.statusBarRightPaddingDp)
+            var padding by remember(innerScreen, rightPaddingDp) {
+                mutableFloatStateOf(rightPaddingDp)
             }
-            var expanded by rememberSaveable { mutableStateOf(false) }
+            var expanded by remember(innerScreen) { mutableStateOf(false) }
 
             SwitchItem(
                 title = stringResource(id = R.string.statusBarRightPaddingDp_title),
                 modifier = Modifier.animateContentSize(),
-                summary = if (uiState.statusBar.modifyStatusBarRightPadding) {
+                summary = if (rightEnabled) {
                     "%.1fdp".format(padding)
                 } else null,
                 icon = ImageVector.vectorResource(id = R.drawable.padding),
                 clickable = true,
                 onClick = { expanded = !expanded },
-                checked = uiState.statusBar.modifyStatusBarRightPadding,
+                checked = rightEnabled,
                 onCheckedChange = {
                     if (it && padding == 0f) {
                         expanded = true
                     } else if (!it) {
                         expanded = false
                     }
-                    onEvent(SystemUIEvent.StatusBar.ModifyStatusBarRightPadding(it))
+                    onEvent(if (innerScreen) SystemUIEvent.StatusBar.ModifyInnerStatusBarRightPadding(it)
+                        else SystemUIEvent.StatusBar.ModifyStatusBarRightPadding(it))
                 }
             )
-            AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarRightPadding) {
+            AnimatedVisibility(expanded && rightEnabled) {
                 Slider(
                     value = padding,
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
                     valueRange = 0f..100f,
                     onValueChangeFinished = {
-                        onEvent(SystemUIEvent.StatusBar.StatusBarRightPaddingDp(padding))
+                        onEvent(if (innerScreen) SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp(padding)
+                            else SystemUIEvent.StatusBar.StatusBarRightPaddingDp(padding))
                     }
                 )
             }
@@ -909,6 +936,13 @@ private fun DividerText(@StringRes id: Int) = Text(
     color = MaterialTheme.colorScheme.primary,
 )
 
+private fun isSamsungFoldable(context: Context): Boolean = runCatching {
+    val clazz = context.classLoader.loadClass("com.samsung.android.feature.SemFloatingFeature")
+    val instance = clazz.getMethod("getInstance").invoke(null)
+    clazz.getMethod("getBoolean", String::class.java)
+        .invoke(instance, "SEC_FLOATING_FEATURE_FRAMEWORK_SUPPORT_FOLDABLE_TYPE_FOLD") as Boolean
+}.getOrDefault(false)
+
 @Composable
 private fun PowerMenuActionEditor(
     actions: List<PowerMenuAction>,
@@ -1010,6 +1044,18 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class StatusBarRightPaddingDp(val value: Float) : StatusBar
+
+        @JvmInline
+        value class ModifyInnerStatusBarLeftPadding(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class InnerStatusBarLeftPaddingDp(val value: Float) : StatusBar
+
+        @JvmInline
+        value class ModifyInnerStatusBarRightPadding(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class InnerStatusBarRightPaddingDp(val value: Float) : StatusBar
 
         @JvmInline
         value class SetBatteryIconWidthScale(val value: Boolean) : StatusBar
@@ -1255,6 +1301,30 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     )
                 )
             }
+
+            is SystemUIEvent.StatusBar.ModifyInnerStatusBarLeftPadding -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(modifyInnerStatusBarLeftPadding = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.InnerStatusBarLeftPaddingDp -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(innerStatusBarLeftPaddingDp = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.ModifyInnerStatusBarRightPadding -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(modifyInnerStatusBarRightPadding = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(innerStatusBarRightPaddingDp = event.value)
+                )
+            )
 
             is SystemUIEvent.StatusBar.SetBatteryIconWidthScale -> {
                 preference.copy(

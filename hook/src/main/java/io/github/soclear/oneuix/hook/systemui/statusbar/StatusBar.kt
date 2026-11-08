@@ -20,6 +20,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
 import io.github.soclear.oneuix.common.Package
+import io.github.soclear.oneuix.common.semDisplayDeviceTypeOrNull
 import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
@@ -63,23 +64,27 @@ object StatusBar {
     }
 
     context(xposedModule: XposedModule)
-    fun setStatusBarPaddingDp(left: Float?, right: Float?) = afterAttachTry(left != null || right != null) {
-        val clazz =
-            classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorGardenAlgorithmCenterCutout")
-        if (left != null) {
-            val method = clazz.getDeclaredMethod("calculateLeftPadding")
-            xposedModule.hook(method).intercept { chain ->
-                val inputProperties = chain.thisObject.reflect["inputProperties"]
-                val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (left * density).roundToInt()
-            }
+    fun setStatusBarPaddingDp(left: Float?, right: Float?, innerLeft: Float?, innerRight: Float?) {
+        afterAttachTry(left != null || right != null) {
+            hookStatusBarPadding("IndicatorGardenAlgorithmCenterCutout", left, right)
         }
-        if (right != null) {
-            val method = clazz.getDeclaredMethod("calculateRightPadding")
-            xposedModule.hook(method).intercept { chain ->
+        afterAttachTry(innerLeft != null || innerRight != null) {
+            hookStatusBarPadding("IndicatorGardenAlgorithmSidelingCenterCutout", innerLeft, innerRight, innerOnly = true)
+        }
+    }
+
+    context(xposedModule: XposedModule, context: Context)
+    private fun hookStatusBarPadding(className: String, left: Float?, right: Float?, innerOnly: Boolean = false) {
+        val clazz = context.classLoader.loadClass("com.android.systemui.statusbar.phone.$className")
+        for ((methodName, paddingDp) in listOf("calculateLeftPadding" to left, "calculateRightPadding" to right)) {
+            if (paddingDp == null) continue
+            xposedModule.hook(clazz.getDeclaredMethod(methodName)).intercept { chain ->
+                if (innerOnly && context.resources.configuration.semDisplayDeviceTypeOrNull() != 0) {
+                    return@intercept chain.proceed()
+                }
                 val inputProperties = chain.thisObject.reflect["inputProperties"]
                 val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (right * density).roundToInt()
+                (paddingDp * density).roundToInt()
             }
         }
     }
