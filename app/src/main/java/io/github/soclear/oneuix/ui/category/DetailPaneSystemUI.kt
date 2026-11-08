@@ -204,6 +204,22 @@ fun DetailPaneSystemUI(
                 )
             }
         }
+        NativeStatusBarGapSetting(
+            title = R.string.modifyStatusIconEndPadding_title,
+            nativeDimension = "signal_cluster_battery_padding",
+            enabled = uiState.statusBar.modifyStatusIconEndPadding,
+            paddingDp = uiState.statusBar.statusIconEndPaddingDp,
+            onEnabledChange = { onEvent(SystemUIEvent.StatusBar.ModifyStatusIconEndPadding(it)) },
+            onPaddingChange = { onEvent(SystemUIEvent.StatusBar.StatusIconEndPaddingDp(it)) }
+        )
+        NativeStatusBarGapSetting(
+            title = R.string.modifyRightClockStartMargin_title,
+            nativeDimension = "status_bar_left_clock_end_padding",
+            enabled = uiState.statusBar.modifyRightClockStartMargin,
+            paddingDp = uiState.statusBar.rightClockStartMarginDp,
+            onEnabledChange = { onEvent(SystemUIEvent.StatusBar.ModifyRightClockStartMargin(it)) },
+            onPaddingChange = { onEvent(SystemUIEvent.StatusBar.RightClockStartMarginDp(it)) }
+        )
         Column {
             var widthScale by remember(uiState.statusBar.batteryIconWidthScale) {
                 mutableFloatStateOf(uiState.statusBar.batteryIconWidthScale)
@@ -1095,6 +1111,58 @@ private fun powerMenuActionTitle(actionName: String): Int = when (actionName) {
     else -> R.string.other
 }
 
+/** An unset value follows the ROM's own dimension, including resource overlays. */
+@Composable
+private fun NativeStatusBarGapSetting(
+    @StringRes title: Int,
+    nativeDimension: String,
+    enabled: Boolean,
+    paddingDp: Float?,
+    onEnabledChange: (Boolean) -> Unit,
+    onPaddingChange: (Float?) -> Unit
+) {
+    val nativeDp = rememberSystemUiDimension(nativeDimension)
+    var padding by remember(paddingDp, nativeDp) {
+        mutableFloatStateOf(paddingDp ?: nativeDp ?: 0f)
+    }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    Column {
+        SwitchItem(
+            title = stringResource(title),
+            summary = if (enabled) {
+                if (paddingDp != null || nativeDp != null) "%.1fdp".format(padding)
+                else stringResource(R.string.slider_systemDefault)
+            } else null,
+            icon = ImageVector.vectorResource(R.drawable.padding),
+            clickable = true,
+            onClick = { expanded = !expanded },
+            checked = enabled,
+            onCheckedChange = {
+                expanded = it
+                onEnabledChange(it)
+            }
+        )
+        AnimatedVisibility(expanded && enabled) {
+            NumericSlider(
+                label = stringResource(title),
+                unit = "dp",
+                decimalPlaces = 1,
+                defaultDescription = if (paddingDp == null) stringResource(R.string.slider_systemDefault) else null,
+                unknownDefault = paddingDp == null && nativeDp == null,
+                value = padding,
+                onValueChange = { padding = it },
+                onReset = {
+                    padding = nativeDp ?: 0f
+                    onPaddingChange(null)
+                },
+                modifier = Modifier.padding(horizontal = 16.dp),
+                valueRange = 0f..maxOf(100f, nativeDp ?: 0f, paddingDp ?: 0f),
+                onCommit = { committed -> onPaddingChange(committed) }
+            )
+        }
+    }
+}
+
 sealed interface SystemUIEvent {
     sealed interface StatusBar : SystemUIEvent {
         @JvmInline
@@ -1123,6 +1191,18 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class InnerStatusBarRightPaddingDp(val value: Float?) : StatusBar
+
+        @JvmInline
+        value class ModifyStatusIconEndPadding(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class StatusIconEndPaddingDp(val value: Float?) : StatusBar
+
+        @JvmInline
+        value class ModifyRightClockStartMargin(val value: Boolean) : StatusBar
+
+        @JvmInline
+        value class RightClockStartMarginDp(val value: Float?) : StatusBar
 
         @JvmInline
         value class SetBatteryIconWidthScale(val value: Boolean) : StatusBar
@@ -1390,6 +1470,30 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
             is SystemUIEvent.StatusBar.InnerStatusBarRightPaddingDp -> preference.copy(
                 systemUI = preference.systemUI.copy(
                     statusBar = preference.systemUI.statusBar.copy(innerStatusBarRightPaddingDp = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.ModifyStatusIconEndPadding -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(modifyStatusIconEndPadding = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.StatusIconEndPaddingDp -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(statusIconEndPaddingDp = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.RightClockStartMarginDp -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(rightClockStartMarginDp = event.value)
+                )
+            )
+
+            is SystemUIEvent.StatusBar.ModifyRightClockStartMargin -> preference.copy(
+                systemUI = preference.systemUI.copy(
+                    statusBar = preference.systemUI.statusBar.copy(modifyRightClockStartMargin = event.value)
                 )
             )
 

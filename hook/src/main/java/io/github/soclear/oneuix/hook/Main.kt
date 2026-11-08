@@ -12,6 +12,7 @@ import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
 import io.github.soclear.oneuix.hook.systemui.statusbar.StatusBar
 import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
+import io.github.soclear.oneuix.hook.systemui.StatusBarSpacing
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
@@ -308,6 +309,13 @@ class Main : XposedModule() {
                     } else null
                     StatusBar.setBatteryIconScale(widthScale, heightScale)
                 }
+
+                StatusBarSpacing.setNativeGaps(
+                    if (preference.systemUI.statusBar.modifyStatusIconEndPadding)
+                        preference.systemUI.statusBar.statusIconEndPaddingDp else null,
+                    if (preference.systemUI.statusBar.modifyRightClockStartMargin)
+                        preference.systemUI.statusBar.rightClockStartMarginDp else null
+                )
 
                 if (preference.systemUI.statusBar.alignStatusBarContentToTop) {
                     StatusBar.alignContentToTop()

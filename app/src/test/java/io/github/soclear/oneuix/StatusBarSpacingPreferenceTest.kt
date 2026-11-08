@@ -40,4 +40,34 @@ class StatusBarSpacingPreferenceTest {
         assertNull(Preference.SystemUI.StatusBar().innerStatusBarRightPaddingDp)
     }
 
+    @Test
+    fun existingSettingsKeepNativeGaps() {
+        val preference = IgnoreUnknownKeysJson.decodeFromString<Preference>(
+            """{"systemUI":{"statusBar":{"modifyStatusBarRightPadding":true,"statusBarRightPaddingDp":7.5}}}"""
+        ).systemUI.statusBar
+        assertFalse(preference.modifyStatusIconEndPadding)
+        assertFalse(preference.modifyRightClockStartMargin)
+        assertNull(preference.statusIconEndPaddingDp)
+        assertNull(preference.rightClockStartMarginDp)
+        assertEquals(7.5f, preference.statusBarRightPaddingDp)
+    }
+
+    @Test
+    fun nativeZeroAndCustomGapsSurviveSavingIndependently() {
+        for (icons in listOf(null, 0f, 8.5f)) {
+            for (clock in listOf(null, 0f, 12f)) {
+                val original = Preference.SystemUI.StatusBar(
+                    modifyStatusIconEndPadding = true,
+                    statusIconEndPaddingDp = icons,
+                    modifyRightClockStartMargin = true,
+                    rightClockStartMarginDp = clock
+                )
+                val saved = Preference(systemUI = Preference.SystemUI(statusBar = original))
+                val restored = IgnoreUnknownKeysJson.decodeFromString<Preference>(
+                    IgnoreUnknownKeysJson.encodeToString(saved)
+                )
+                assertEquals(original, restored.systemUI.statusBar)
+            }
+        }
+    }
 }

@@ -253,6 +253,8 @@
     <string name="enableRealtimeBlur_summary">尝试为通知栏和快捷面板开启实时模糊。需要 ROM 底层图形支持，可能增加功耗或出现显示异常。修改后请重启设备。</string>
     <string name="statusBarPadding_coverScreen">外屏边距</string>
     <string name="statusBarPadding_innerScreen">内屏边距</string>
+    <string name="modifyStatusIconEndPadding_title">修改状态图标末端边距</string>
+    <string name="modifyRightClockStartMargin_title">修改右侧时钟前方边距</string>
     <string name="slider_systemDefault">系统默认值</string>
     <string name="slider_numericRange">范围：%1$s–%2$s</string>
 </resources>
