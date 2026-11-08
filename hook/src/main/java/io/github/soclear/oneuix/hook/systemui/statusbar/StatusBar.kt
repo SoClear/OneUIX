@@ -27,10 +27,24 @@ import io.github.soclear.oneuix.hook.util.xlog
 import java.lang.reflect.Modifier
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.WeakHashMap
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @SuppressLint("PrivateApi")
 object StatusBar {
+    private var statusBarClockScale: Float? = null
+    private val scaledClockSizes = WeakHashMap<TextView, Float>()
+    private fun applyStatusBarClockScale(view: TextView) {
+        val scale = statusBarClockScale ?: return
+        if (scale == 1f) return
+        val currentSize = view.textSize
+        if (abs(currentSize - (scaledClockSizes[view] ?: Float.NaN)) < 0.5f) return
+        val scaledSize = currentSize * scale
+        view.setTextSize(TypedValue.COMPLEX_UNIT_PX, scaledSize)
+        scaledClockSizes[view] = scaledSize
+    }
+
     context(xposedModule: XposedModule)
     fun alignContentToTop() = afterAttachTry {
         val clazz = classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorBasicGardener")
@@ -227,6 +241,15 @@ object StatusBar {
 
     context(xposedModule: XposedModule)
     fun setStatusBarClockTextScale(scale: Float) = afterAttachTry {
+        statusBarClockScale = scale
+        val clockClass = classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockIndicatorView")
+        val bellSoundClass = classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockBellSound")
+        xposedModule.hook(clockClass.getDeclaredMethod("notifyTimeChanged", bellSoundClass)).intercept { chain ->
+            val result = chain.proceed()
+            (chain.thisObject as? TextView)?.let { applyStatusBarClockScale(it) }
+            result
+        }
+
         if (ONE_UI_VERSION >= 90000) {
             val controllerClass = classLoader.loadClass(
                 "com.android.systemui.statusbar.policy.QSClockIndicatorViewController"
@@ -240,7 +263,7 @@ object StatusBar {
                     pending.remove(view)?.let { view.removeCallbacks(it) }
                     val task = Runnable {
                         pending.remove(view)
-                        view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.textSize * scale)
+                        applyStatusBarClockScale(view)
                     }
                     pending[view] = task
                     // One UI 9 posts its size update; scale afterwards, once per pending update.
@@ -259,7 +282,7 @@ object StatusBar {
                 val result = chain.proceed()
                 try {
                     val clockView = chain.thisObject.reflect["view"] as? TextView
-                    clockView?.setTextSize(TypedValue.COMPLEX_UNIT_PX, clockView.textSize * scale)
+                    clockView?.let { applyStatusBarClockScale(it) }
                 } catch (t: Throwable) {
                     xlog(t)
                 }
@@ -294,6 +317,7 @@ object StatusBar {
             val dateTime = block()
             clockTextView?.text = dateTime
             clockTextView?.contentDescription = dateTime
+            clockTextView?.let { applyStatusBarClockScale(it) }
             null
         }
     }
