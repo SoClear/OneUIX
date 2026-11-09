@@ -251,4 +251,6 @@
     <string name="disableLowBatteryDimming_summary">Сохранять текущую яркость при заряде 5 % и ниже</string>
     <string name="allowLowBatteryFlashlight_title">Фонарик при низком заряде</string>
     <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
+    <string name="fixMyFilesNetworkStorage_title">Исправить переход «Сетевого хранилища» в «Моих файлах»</string>
+    <string name="fixMyFilesNetworkStorage_summary">Для международной версии «Моих файлов» на китайской прошивке: не даёт «Сетевому хранилищу» перенаправлять на страницу обновления в Galaxy Store. Кэшированная последняя версия приравнивается к установленной</string>
 </resources>

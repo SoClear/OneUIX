@@ -179,6 +179,12 @@ class Main : XposedModule() {
                 }
             }
 
+            Package.MY_FILES -> {
+                if (preference.other.fixMyFilesNetworkStorage) {
+                    MyFiles.fixNetworkStorageUpdateCheck()
+                }
+            }
+
             Package.NFC -> NFC.filterNfcCards()
 
             Package.NOTES -> {

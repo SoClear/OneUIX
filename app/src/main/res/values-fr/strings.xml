@@ -251,4 +251,6 @@
     <string name="disableLowBatteryDimming_summary">Conserver la luminosité actuelle à 5 % de batterie ou moins</string>
     <string name="allowLowBatteryFlashlight_title">Autoriser la lampe torche à batterie faible</string>
     <string name="allowLowBatteryFlashlight_summary">Utilisable jusqu’à 1 % sans extinction automatique due à la batterie faible. La protection thermique est conservée</string>
+    <string name="fixMyFilesNetworkStorage_title">Corriger la redirection du stockage réseau dans Mes fichiers</string>
+    <string name="fixMyFilesNetworkStorage_summary">Pour la version internationale de Mes fichiers sur une ROM chinoise : empêche le stockage réseau de rediriger vers la page de mise à jour du Galaxy Store. La dernière version en cache est alignée sur la version installée</string>
 </resources>
