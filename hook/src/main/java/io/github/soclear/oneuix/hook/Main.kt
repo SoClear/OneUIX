@@ -261,10 +261,6 @@ class Main : XposedModule() {
             }
 
             Package.SYSTEMUI if (processName == Package.SYSTEMUI) -> {
-                if (preference.systemUI.qs.enableRealtimeBlur) {
-                    SystemUIOther.enableRealtimeBlur(classLoader)
-                }
-
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }

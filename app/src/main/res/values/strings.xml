@@ -251,6 +251,4 @@
     <string name="disableLowBatteryDimming_summary">Keep the current brightness at 5% battery or below</string>
     <string name="allowLowBatteryFlashlight_title">Allow flashlight at low battery</string>
     <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
-    <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
-    <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
 </resources>

@@ -550,13 +550,6 @@ fun DetailPaneSystemUI(
         )
 
         DividerText(R.string.qs)
-        SwitchItem(
-            icon = ImageVector.vectorResource(id = R.drawable.format_paint),
-            title = stringResource(R.string.enableRealtimeBlur_title),
-            summary = stringResource(R.string.enableRealtimeBlur_summary),
-            checked = uiState.qs.enableRealtimeBlur,
-            onCheckedChange = { onEvent(SystemUIEvent.QS.EnableRealtimeBlur(it)) }
-        )
         if (ONE_UI_VERSION >= 80000) {
             val tileCounts = listOf(0, 7, 8, 9)
             SelectItem(
@@ -1098,9 +1091,6 @@ sealed interface SystemUIEvent {
 
     sealed interface QS : SystemUIEvent {
         @JvmInline
-        value class EnableRealtimeBlur(val value: Boolean) : QS
-
-        @JvmInline
         value class QuickQsTileCount(val value: Int) : QS
 
         @JvmInline
@@ -1523,14 +1513,6 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
 private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
     updateData { preference ->
         when (event) {
-            is SystemUIEvent.QS.EnableRealtimeBlur -> preference.copy(
-                systemUI = preference.systemUI.copy(
-                    qs = preference.systemUI.qs.copy(
-                        enableRealtimeBlur = event.value
-                    )
-                )
-            )
-
             is SystemUIEvent.QS.QuickQsTileCount -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(
