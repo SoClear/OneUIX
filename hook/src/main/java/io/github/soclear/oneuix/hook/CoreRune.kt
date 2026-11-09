@@ -3,6 +3,7 @@ package io.github.soclear.oneuix.hook
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
@@ -17,13 +18,21 @@ object CoreRune {
     fun supportAppJumpBlockAndroid() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) return
         try {
+            val serviceClass = param.classLoader.loadClass("com.android.server.wm.ActivityTaskManagerService")
+            if (AppJumpBlockFlag.isFinal(param.classLoader)) {
+                // EZIH retains these three field read sites. Discard compiled constant values
+                // before the service constructor enables the runtime-initialized CSC flag.
+                val readers = setOf("onSystemReady", "startActivities", "startActivityAsUser")
+                val methods = serviceClass.declaredMethods.filter { it.name in readers }
+                check(methods.map { it.name }.toSet() == readers) { "App-redirect read sites differ" }
+                methods.forEach { check(xposedModule.deoptimize(it)) { "Cannot deoptimize ${it.name}" } }
+            }
             xposedModule.hook(
-                param.classLoader.loadClass("com.android.server.wm.ActivityTaskManagerService")
-                    .getDeclaredConstructor(Context::class.java)
+                serviceClass.getDeclaredConstructor(Context::class.java)
             ).intercept { chain ->
                 try {
-                    param.classLoader.loadClass("com.samsung.android.rune.CoreRune")
-                        .reflect["SUPPORT_APP_JUMP_BLOCK"] = true
+                    AppJumpBlockFlag.enable(param.classLoader)
+                    xlog("App redirect compatibility: system flag enabled and verified", priority = Log.INFO)
                 } catch (t: Throwable) {
                     xlog(t)
                 }
@@ -53,16 +62,9 @@ object CoreRune {
                     param.classLoader
                         .loadClass("com.samsung.android.settings.$infix.AppRedirectInterceptionPreferenceController")
                         .getDeclaredMethod("getAvailabilityStatus")
-                ).intercept { chain ->
-                    try {
-                        param.classLoader
-                            .loadClass("com.samsung.android.rune.CoreRune")
-                            .reflect["SUPPORT_APP_JUMP_BLOCK"] = true
-                    } catch (t: Throwable) {
-                        xlog(t)
-                    }
-                    chain.proceed()
-                }
+                // Expose the preference directly; its checked state and writes still use
+                // Samsung's original appJumpBlock setting. No final-field write is needed here.
+                ).intercept { 0 /* BasePreferenceController.AVAILABLE */ }
             } catch (t: Throwable) {
                 xlog(t)
             }
