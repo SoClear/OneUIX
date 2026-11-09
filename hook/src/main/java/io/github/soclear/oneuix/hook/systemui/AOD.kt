@@ -1,11 +1,11 @@
 package io.github.soclear.oneuix.hook.systemui
 
 import android.annotation.SuppressLint
-import android.graphics.Canvas
 import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.children
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.hook.util.afterAttachTry
@@ -17,20 +17,29 @@ import io.github.soclear.oneuix.hook.util.xlog
 object AOD {
     context(xposedModule: XposedModule)
     fun wallpaperOnly() = afterAttachTry {
-        var hiddenView: View? = null
-        xposedModule.hook(ViewGroup::class.java.getDeclaredMethod("dispatchDraw", Canvas::class.java))
-            .intercept { chain ->
-                if (chain.thisObject === hiddenView) null else chain.proceed()
-            }
+        val hiddenViews = mutableMapOf<View, Float>()
+        val scrimViewClass = classLoader.loadClass("com.android.systemui.scrim.ScrimView")
+        val lightRevealScrimClass = classLoader.loadClass("com.android.systemui.statusbar.LightRevealScrim")
         classLoader.loadClass("com.android.systemui.doze.PluginAODManager")
             .getDeclaredMethod("setIsDozing", Boolean::class.java, Boolean::class.java)
             .let { xposedModule.hook(it) }
             .intercept { chain ->
+                hiddenViews.forEach { (view, alpha) -> view.transitionAlpha = alpha }
+                hiddenViews.clear()
                 val result = chain.proceed()
-                val host = chain.thisObject.reflect["mDozeServiceHostLazy"]?.reflect?.call("get")
-                val view = host?.reflect?.call("getNotificationPanelView") as? View
-                hiddenView = if (chain.args[0] == true) view else null
-                view?.invalidate()
+                if (chain.args[0] == true) {
+                    val host = chain.thisObject.reflect["mDozeServiceHostLazy"]?.reflect?.call("get")
+                    val view = host?.reflect?.call("getNotificationPanelView") as? ViewGroup
+                    if (view != null) {
+                        for (index in 0 until view.childCount) {
+                            val child = view.getChildAt(index)
+                            if (!scrimViewClass.isInstance(child) && !lightRevealScrimClass.isInstance(child)) {
+                                hiddenViews[child] = child.transitionAlpha
+                                child.transitionAlpha = 0f
+                            }
+                        }
+                    }
+                }
                 result
             }
     }
