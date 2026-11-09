@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">Rechercher \"Force peak refresh rate\" dans les paramètres</string>
     <string name="supportOutdoorMode_title">Déverrouiller le mode Extérieur</string>
     <string name="disablePinVerifyPer72h_title">Désactiver la vérification du code PIN toutes les 72 heures</string>
+    <string name="aodWallpaperOnly_title">Afficher uniquement le fond d’écran sur l’AOD</string>
+    <string name="aodWallpaperOnly_summary">Afficher uniquement le fond d’écran sur l’AOD sans modifier l’écran de verrouillage normal. Activez le fond d’écran de verrouillage dans les paramètres AOD. Pour l’icône d’empreinte, accédez à Paramètres → Écran de verrouillage et AOD → Verrouillage de l’écran et biométrie → Empreintes → Afficher l’icône lorsque l’écran est éteint, puis sélectionnez « Appuyer pour afficher » ou « Jamais ». Redémarrez l’interface système pour appliquer les modifications.</string>
     <string name="hideAODStatusBar_title">Masquer la barre d\'état sur l\'AOD</string>
     <string name="hideAODChargingInfo_title">Masquer les informations de charge sur l\'AOD</string>
     <string name="aodLockSupportLunar_title">Afficher le calendrier lunaire chinois sur l\'AOD</string>

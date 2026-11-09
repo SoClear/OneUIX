@@ -90,6 +90,7 @@
 
 ##### 息屏提醒
 
+- 息屏提醒仅显示壁纸
 - 隐藏息屏提醒的充电信息
 - 隐藏息屏提醒的状态栏
 - 息屏提醒显示中国农历
@@ -259,6 +260,7 @@
 
 ##### Always On Display
 
+- Wallpaper-only AOD
 - Hide AOD charging information
 - Hide AOD status bar
 - Show Chinese Lunar calendar on AOD/Lock screen

@@ -143,6 +143,7 @@ data class Preference(
 
         @Serializable
         data class AOD(
+            val wallpaperOnly: Boolean = false,
             val hideAODStatusBar: Boolean = false,
             val hideAODChargingInfo: Boolean = false,
             val aodLockSupportLunar: Boolean = false,

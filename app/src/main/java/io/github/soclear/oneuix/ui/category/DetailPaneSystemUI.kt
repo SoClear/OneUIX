@@ -792,6 +792,15 @@ fun DetailPaneSystemUI(
 
             DividerText(R.string.aod)
             SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.photo_library),
+                title = stringResource(id = R.string.aodWallpaperOnly_title),
+                summary = stringResource(id = R.string.aodWallpaperOnly_summary),
+                checked = uiState.aod.wallpaperOnly,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.AOD.WallpaperOnly(it))
+                }
+            )
+            SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.battery),
                 title = stringResource(id = R.string.hideAODChargingInfo_title),
                 checked = uiState.aod.hideAODChargingInfo,
@@ -1153,6 +1162,9 @@ sealed interface SystemUIEvent {
     }
 
     sealed interface AOD : SystemUIEvent {
+        @JvmInline
+        value class WallpaperOnly(val value: Boolean) : AOD
+
         @JvmInline
         value class HideAODChargingInfo(val value: Boolean) : AOD
 
@@ -1725,6 +1737,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
 private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
     updateData { preference ->
         when (event) {
+            is SystemUIEvent.AOD.WallpaperOnly -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        aod = preference.systemUI.aod.copy(
+                            wallpaperOnly = event.value
+                        )
+                    )
+                )
+            }
+
             is SystemUIEvent.AOD.HideAODChargingInfo -> {
                 preference.copy(
                     systemUI = preference.systemUI.copy(

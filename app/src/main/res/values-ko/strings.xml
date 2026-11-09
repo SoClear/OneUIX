@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">설정에서 \'최고 주사율 강제 적용\' 검색 가능</string>
     <string name="supportOutdoorMode_title">야외 모드 잠금 해제</string>
     <string name="disablePinVerifyPer72h_title">72시간마다 PIN 번호 인증 요구 비활성화</string>
+    <string name="aodWallpaperOnly_title">AOD에 배경화면만 표시</string>
+    <string name="aodWallpaperOnly_summary">일반 잠금화면은 변경하지 않고 AOD에 배경화면만 표시합니다. 시스템 AOD 설정에서 잠금화면 배경화면 표시를 켜세요. 지문 아이콘은 설정 → 잠금화면 및 AOD → 화면 잠금 및 생체 인식 → 지문 → 화면이 꺼져 있을 때 아이콘 표시에서 “눌러서 표시” 또는 “표시 안 함”을 선택하세요. 적용하려면 시스템 UI를 다시 시작하세요.</string>
     <string name="hideAODStatusBar_title">AOD 상태바 숨기기</string>
     <string name="hideAODChargingInfo_title">AOD 충전 정보 숨기기</string>
     <string name="aodLockSupportLunar_title">AOD/잠금 화면에 음력 표시</string>

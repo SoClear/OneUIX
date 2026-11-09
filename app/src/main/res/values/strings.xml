@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">Search for \'Force peak refresh rate\' in Settings</string>
     <string name="supportOutdoorMode_title">Unlock Outdoor mode</string>
     <string name="disablePinVerifyPer72h_title">Disable PIN verification every 72 hours</string>
+    <string name="aodWallpaperOnly_title">Wallpaper-only AOD</string>
+    <string name="aodWallpaperOnly_summary">Show only the AOD wallpaper without changing the normal lock screen. Enable lock screen wallpaper in AOD settings. For the fingerprint icon, go to Settings → Lock screen and AOD → Screen lock and biometrics → Fingerprints → Show icon when screen is off, and select “Tap to show” or “Never”. Restart System UI to apply.</string>
     <string name="hideAODStatusBar_title">Hide AOD status bar</string>
     <string name="hideAODChargingInfo_title">Hide AOD charging information</string>
     <string name="aodLockSupportLunar_title">Show Chinese Lunar calendar on AOD/Lock screen</string>

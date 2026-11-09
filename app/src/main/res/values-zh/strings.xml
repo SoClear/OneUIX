@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">设置中搜索 Force peak refresh rate</string>
     <string name="supportOutdoorMode_title">解锁户外模式</string>
     <string name="disablePinVerifyPer72h_title">禁用每 72 小时验证锁屏密码</string>
+    <string name="aodWallpaperOnly_title">息屏提醒仅显示壁纸</string>
+    <string name="aodWallpaperOnly_summary">仅保留息屏壁纸，不影响亮屏锁屏。需在系统息屏提醒设置中开启锁屏壁纸。指纹图标请前往：设置 → 锁定屏幕和息屏提醒 → 屏幕锁定和生物识别 → 指纹 → 屏幕关闭时显示图标，选择“点击来显示”或“从不”。重启系统 UI 后生效。</string>
     <string name="hideAODStatusBar_title">隐藏息屏提醒的状态栏</string>
     <string name="hideAODChargingInfo_title">隐藏息屏提醒的充电信息</string>
     <string name="aodLockSupportLunar_title">息屏提醒显示中国农历</string>

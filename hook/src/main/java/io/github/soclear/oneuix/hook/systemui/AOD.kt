@@ -1,8 +1,10 @@
 package io.github.soclear.oneuix.hook.systemui
 
 import android.annotation.SuppressLint
+import android.graphics.Canvas
 import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.hook.util.afterAttachTry
@@ -11,6 +13,26 @@ import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object AOD {
+    context(xposedModule: XposedModule)
+    fun wallpaperOnly() = afterAttachTry {
+        var hiddenView: View? = null
+        xposedModule.hook(ViewGroup::class.java.getDeclaredMethod("dispatchDraw", Canvas::class.java))
+            .intercept { chain ->
+                if (chain.thisObject === hiddenView) null else chain.proceed()
+            }
+        classLoader.loadClass("com.android.systemui.doze.PluginAODManager")
+            .getDeclaredMethod("setIsDozing", Boolean::class.java, Boolean::class.java)
+            .let { xposedModule.hook(it) }
+            .intercept { chain ->
+                val result = chain.proceed()
+                val host = chain.thisObject.reflect["mDozeServiceHostLazy"]?.reflect?.call("get")
+                val view = host?.reflect?.call("getNotificationPanelView") as? View
+                hiddenView = if (chain.args[0] == true) view else null
+                view?.invalidate()
+                result
+            }
+    }
+
     context(xposedModule: XposedModule)
     fun hideAODChargingInfo() = afterAttachTry {
         val hookedClasses = mutableSetOf<Class<*>>()
