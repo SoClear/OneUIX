@@ -267,10 +267,6 @@ class Main : XposedModule() {
             }
 
             Package.SYSTEMUI if (processName == Package.SYSTEMUI) -> {
-                if (preference.systemUI.qs.enableRealtimeBlur) {
-                    SystemUIOther.enableRealtimeBlur(classLoader)
-                }
-
                 if (preference.android.setBlockableNotificationChannel) {
                     Android.setBlockableNotificationChannel()
                 }
@@ -459,6 +455,10 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.qs.showTraditionalChineseDateOnQS) {
                     QS.showTraditionalChineseDateOnQS()
+                }
+
+                if (preference.systemUI.aod.wallpaperOnly) {
+                    AOD.wallpaperOnly()
                 }
 
                 if (preference.systemUI.aod.hideAODChargingInfo) {

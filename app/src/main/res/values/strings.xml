@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">Search for \'Force peak refresh rate\' in Settings</string>
     <string name="supportOutdoorMode_title">Unlock Outdoor mode</string>
     <string name="disablePinVerifyPer72h_title">Disable PIN verification every 72 hours</string>
+    <string name="aodWallpaperOnly_title">Wallpaper-only AOD</string>
+    <string name="aodWallpaperOnly_summary">Show only the AOD wallpaper without changing the normal lock screen. Enable lock screen wallpaper in AOD settings. For the fingerprint icon, go to Settings → Lock screen and AOD → Screen lock and biometrics → Fingerprints → Show icon when screen is off, and select “Tap to show” or “Never”. Restart System UI to apply.</string>
     <string name="hideAODStatusBar_title">Hide AOD status bar</string>
     <string name="hideAODChargingInfo_title">Hide AOD charging information</string>
     <string name="aodLockSupportLunar_title">Show Chinese Lunar calendar on AOD/Lock screen</string>
@@ -249,8 +251,6 @@
     <string name="disableLowBatteryDimming_summary">Keep the current brightness at 5% battery or below</string>
     <string name="allowLowBatteryFlashlight_title">Allow flashlight at low battery</string>
     <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
-    <string name="enableRealtimeBlur_title">Real-time panel blur (experimental)</string>
-    <string name="enableRealtimeBlur_summary">Try real-time blur in the notification and Quick Settings panels. Requires ROM graphics support and may increase power use or cause rendering issues. Restart the device after changing this option.</string>
     <string name="fixMyFilesNetworkStorage_title">Fix My Files network storage redirect</string>
     <string name="fixMyFilesNetworkStorage_summary">For the international My Files on a China ROM: stop Network storage from jumping to the Galaxy Store update page. Keeps the cached latest version equal to the installed version</string>
 </resources>

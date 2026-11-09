@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">설정에서 \'최고 주사율 강제 적용\' 검색 가능</string>
     <string name="supportOutdoorMode_title">야외 모드 잠금 해제</string>
     <string name="disablePinVerifyPer72h_title">72시간마다 PIN 번호 인증 요구 비활성화</string>
+    <string name="aodWallpaperOnly_title">AOD에 배경화면만 표시</string>
+    <string name="aodWallpaperOnly_summary">일반 잠금화면은 변경하지 않고 AOD에 배경화면만 표시합니다. 시스템 AOD 설정에서 잠금화면 배경화면 표시를 켜세요. 지문 아이콘은 설정 → 잠금화면 및 AOD → 화면 잠금 및 생체 인식 → 지문 → 화면이 꺼져 있을 때 아이콘 표시에서 “눌러서 표시” 또는 “표시 안 함”을 선택하세요. 적용하려면 시스템 UI를 다시 시작하세요.</string>
     <string name="hideAODStatusBar_title">AOD 상태바 숨기기</string>
     <string name="hideAODChargingInfo_title">AOD 충전 정보 숨기기</string>
     <string name="aodLockSupportLunar_title">AOD/잠금 화면에 음력 표시</string>
@@ -249,8 +251,6 @@
     <string name="disableLowBatteryDimming_summary">배터리가 5% 이하일 때 현재 화면 밝기 유지</string>
     <string name="allowLowBatteryFlashlight_title">배터리 부족 시 손전등 허용</string>
     <string name="allowLowBatteryFlashlight_summary">배터리 부족으로 자동으로 꺼지지 않고 1%까지 사용합니다. 과열 보호는 유지됩니다</string>
-    <string name="enableRealtimeBlur_title">실시간 패널 블러 (실험적)</string>
-    <string name="enableRealtimeBlur_summary">알림 및 빠른 설정 패널에서 실시간 블러를 시도합니다. ROM의 그래픽 지원이 필요하며 전력 소모 증가나 표시 오류가 발생할 수 있습니다. 변경 후 기기를 다시 시작하세요.</string>
     <string name="fixMyFilesNetworkStorage_title">내 파일 네트워크 저장소 이동 문제 수정</string>
     <string name="fixMyFilesNetworkStorage_summary">중국 ROM에서 국제판 내 파일을 사용할 때 네트워크 저장소를 누르면 Galaxy Store 업데이트 페이지로 이동하는 문제를 막습니다. 캐시된 최신 버전을 설치된 버전과 동일하게 유지합니다</string>
 </resources>

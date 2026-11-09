@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">Rechercher \"Force peak refresh rate\" dans les paramètres</string>
     <string name="supportOutdoorMode_title">Déverrouiller le mode Extérieur</string>
     <string name="disablePinVerifyPer72h_title">Désactiver la vérification du code PIN toutes les 72 heures</string>
+    <string name="aodWallpaperOnly_title">Afficher uniquement le fond d’écran sur l’AOD</string>
+    <string name="aodWallpaperOnly_summary">Afficher uniquement le fond d’écran sur l’AOD sans modifier l’écran de verrouillage normal. Activez le fond d’écran de verrouillage dans les paramètres AOD. Pour l’icône d’empreinte, accédez à Paramètres → Écran de verrouillage et AOD → Verrouillage de l’écran et biométrie → Empreintes → Afficher l’icône lorsque l’écran est éteint, puis sélectionnez « Appuyer pour afficher » ou « Jamais ». Redémarrez l’interface système pour appliquer les modifications.</string>
     <string name="hideAODStatusBar_title">Masquer la barre d\'état sur l\'AOD</string>
     <string name="hideAODChargingInfo_title">Masquer les informations de charge sur l\'AOD</string>
     <string name="aodLockSupportLunar_title">Afficher le calendrier lunaire chinois sur l\'AOD</string>
@@ -249,8 +251,6 @@
     <string name="disableLowBatteryDimming_summary">Conserver la luminosité actuelle à 5 % de batterie ou moins</string>
     <string name="allowLowBatteryFlashlight_title">Autoriser la lampe torche à batterie faible</string>
     <string name="allowLowBatteryFlashlight_summary">Utilisable jusqu’à 1 % sans extinction automatique due à la batterie faible. La protection thermique est conservée</string>
-    <string name="enableRealtimeBlur_title">Flou des panneaux en temps réel (expérimental)</string>
-    <string name="enableRealtimeBlur_summary">Tenter d’activer le flou en temps réel dans les panneaux de notifications et de réglages rapides. Nécessite la prise en charge graphique de la ROM et peut augmenter la consommation ou causer des problèmes d’affichage. Redémarrez l’appareil après modification.</string>
     <string name="fixMyFilesNetworkStorage_title">Corriger la redirection du stockage réseau dans Mes fichiers</string>
     <string name="fixMyFilesNetworkStorage_summary">Pour la version internationale de Mes fichiers sur une ROM chinoise : empêche le stockage réseau de rediriger vers la page de mise à jour du Galaxy Store. La dernière version en cache est alignée sur la version installée</string>
 </resources>

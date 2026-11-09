@@ -152,6 +152,8 @@
     <string name="showForcePeakRefreshRatePreference_summary">设置中搜索 Force peak refresh rate</string>
     <string name="supportOutdoorMode_title">解锁户外模式</string>
     <string name="disablePinVerifyPer72h_title">禁用每 72 小时验证锁屏密码</string>
+    <string name="aodWallpaperOnly_title">息屏提醒仅显示壁纸</string>
+    <string name="aodWallpaperOnly_summary">仅保留息屏壁纸，不影响亮屏锁屏。需在系统息屏提醒设置中开启锁屏壁纸。指纹图标请前往：设置 → 锁定屏幕和息屏提醒 → 屏幕锁定和生物识别 → 指纹 → 屏幕关闭时显示图标，选择“点击来显示”或“从不”。重启系统 UI 后生效。</string>
     <string name="hideAODStatusBar_title">隐藏息屏提醒的状态栏</string>
     <string name="hideAODChargingInfo_title">隐藏息屏提醒的充电信息</string>
     <string name="aodLockSupportLunar_title">息屏提醒显示中国农历</string>
@@ -249,8 +251,6 @@
     <string name="disableLowBatteryDimming_summary">电量不高于 5% 时保持当前屏幕亮度</string>
     <string name="allowLowBatteryFlashlight_title">允许低电量使用手电筒</string>
     <string name="allowLowBatteryFlashlight_summary">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
-    <string name="enableRealtimeBlur_title">面板实时模糊（实验性）</string>
-    <string name="enableRealtimeBlur_summary">尝试为通知栏和快捷面板开启实时模糊。需要 ROM 底层图形支持，可能增加功耗或出现显示异常。修改后请重启设备。</string>
     <string name="fixMyFilesNetworkStorage_title">修复我的文件网络存储跳转</string>
     <string name="fixMyFilesNetworkStorage_summary">适用于国行系统上使用国际版“我的文件”：点击网络存储时不再跳转到应用商店更新页面。让缓存的最新版本与已安装版本保持一致</string>
 </resources>

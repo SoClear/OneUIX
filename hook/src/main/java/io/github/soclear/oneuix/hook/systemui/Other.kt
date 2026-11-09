@@ -8,26 +8,9 @@ import android.view.View
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
-import io.github.soclear.oneuix.hook.util.xlog
 
 @SuppressLint("PrivateApi")
 object Other {
-    context(xposedModule: XposedModule)
-    fun enableRealtimeBlur(classLoader: ClassLoader) {
-        try {
-            val feature = classLoader.loadClass("com.samsung.android.feature.SemFloatingFeature")
-            xposedModule.hook(feature.getDeclaredMethod("getBoolean", String::class.java)).intercept { chain ->
-                if (chain.args[0] == "SEC_FLOATING_FEATURE_GRAPHICS_SUPPORT_3D_SURFACE_TRANSITION_FLAG") {
-                    true
-                } else {
-                    chain.proceed()
-                }
-            }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
-    }
-
     context(xposedModule: XposedModule)
     fun hideLockscreenEmergencyButton() = afterAttachTry {
         val controller = classLoader.loadClass("com.android.keyguard.EmergencyButtonController")
