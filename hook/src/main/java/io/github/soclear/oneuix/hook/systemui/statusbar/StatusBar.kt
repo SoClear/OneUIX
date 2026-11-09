@@ -50,22 +50,23 @@ object StatusBar {
 
     context(xposedModule: XposedModule)
     fun setStatusBarPaddingDp(left: Float?, right: Float?) = afterAttachTry(left != null || right != null) {
-        val clazz =
-            classLoader.loadClass("com.android.systemui.statusbar.phone.IndicatorGardenAlgorithmCenterCutout")
-        if (left != null) {
-            val method = clazz.getDeclaredMethod("calculateLeftPadding")
-            xposedModule.hook(method).intercept { chain ->
-                val inputProperties = chain.thisObject.reflect["inputProperties"]
-                val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (left * density).roundToInt()
-            }
+        val classes = listOf(
+            "IndicatorGardenAlgorithmCenterCutout",
+            "IndicatorGardenAlgorithmNoCutout",
+            "IndicatorGardenAlgorithmSidelingCenterCutout"
+        ).mapNotNull { name ->
+            runCatching { classLoader.loadClass("com.android.systemui.statusbar.phone.$name") }.getOrNull()
         }
-        if (right != null) {
-            val method = clazz.getDeclaredMethod("calculateRightPadding")
-            xposedModule.hook(method).intercept { chain ->
-                val inputProperties = chain.thisObject.reflect["inputProperties"]
-                val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
-                (right * density).roundToInt()
+        for ((name, padding) in listOf("calculateLeftPadding" to left, "calculateRightPadding" to right)) {
+            if (padding == null) continue
+            classes.mapNotNull { clazz ->
+                runCatching { clazz.getMethod(name) }.getOrNull()
+            }.distinct().forEach { method ->
+                xposedModule.hook(method).intercept { chain ->
+                    val inputProperties = chain.thisObject.reflect["inputProperties"]
+                    val density = inputProperties?.reflect?.get("density") as? Float ?: 1f
+                    (padding * density).roundToInt()
+                }
             }
         }
     }
@@ -243,7 +244,7 @@ object StatusBar {
                         view.setTextSize(TypedValue.COMPLEX_UNIT_PX, view.textSize * scale)
                     }
                     pending[view] = task
-                    // One UI 9 posts its size update; scale afterwards, once per pending update.
+                    // One UI 9 posts its size update; scale afterward, once per pending update.
                     view.post(task)
                 } catch (t: Throwable) {
                     xlog(t)
