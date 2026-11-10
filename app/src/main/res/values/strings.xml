@@ -200,8 +200,8 @@
     <string name="disableWritingToolkit_title">Disable Writing Toolkit</string>
     <string name="disableWritingToolkit_summary">Add the selected apps to the module scope and restart them to remove Samsung Writing Toolkit from their text selection menus</string>
     <string name="disableFlagSecure_title">Disable FLAG_SECURE</string>
-        <string name="removeAasaInstallRestriction_title">Remove AASA install restriction</string>
-    <string name="removeAasaInstallRestriction_summary">Allow installing system apps from other-region ROMs</string>
+        <string name="removeAasaInstallRestriction_title">移除AASA安装限制</string>
+    <string name="removeAasaInstallRestriction_summary">破解AASA策略的安装限制</string>
     <string name="hideScreenshotDetection_title">Hide screenshots from apps</string>
     <string name="hideScreenshotDetection_summary">Add the selected apps to the module scope and restart them. Block screenshot callbacks and recognized screenshot change notifications. Screenshots remain visible in photo pickers; other photo notifications are preserved</string>
     <string name="disableFlagSecure_summary">Allow screenshots and screen recording in secure windows</string>
