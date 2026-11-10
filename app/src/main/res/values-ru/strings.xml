@@ -203,6 +203,8 @@
     <string name="hideScreenshotDetection_title">Скрывать снимки экрана от приложений</string>
     <string name="hideScreenshotDetection_summary">Добавьте выбранные приложения в область действия модуля и перезапустите их. Блокируются уведомления о захвате экрана и распознанных снимках. Снимки видимы при выборе фото; уведомления об обычных фото сохраняются</string>
     <string name="disableFlagSecure_summary">Разрешить снимки и запись экрана в защищенных окнах</string>
+        <string name="removeAasaInstallRestriction_title">Снять ограничение установки AASA</string>
+    <string name="removeAasaInstallRestriction_summary">Обойти ограничение установки AASA для некоторых системных приложений</string>
     <string name="backup_config">Резервное копирование</string>
     <string name="restore_config">Восстановить конфиг</string>
     <string name="restore_failed">Ошибка восстановления, файл может быть повреждён</string>

@@ -203,6 +203,8 @@
     <string name="hideScreenshotDetection_title">Masquer les captures aux applications</string>
     <string name="hideScreenshotDetection_summary">Ajoutez les applications sélectionnées à la portée du module et redémarrez-les. Bloque les rappels de capture et les changements reconnus comme captures. Les captures restent visibles et les autres notifications de photos sont conservées</string>
     <string name="disableFlagSecure_summary">Autoriser les captures et enregistrements d\'écran dans les fenêtres sécurisées</string>
+        <string name="removeAasaInstallRestriction_title">Supprimer la restriction d\'installation AASA</string>
+    <string name="removeAasaInstallRestriction_summary">Contourner la restriction d\'installation d\'AASA pour certaines applications système</string>
     <string name="backup_config">Sauvegarder la config</string>
     <string name="restore_config">Restaurer la config</string>
     <string name="restore_failed">Échec de la restauration, le fichier est peut-être corrompu</string>

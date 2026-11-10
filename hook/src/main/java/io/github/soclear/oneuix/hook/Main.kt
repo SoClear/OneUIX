@@ -590,5 +590,8 @@ class Main : XposedModule() {
         if (preference.android.disableFlagSecure) {
             DisableFlagSecure.hookSystemServer(classLoader)
         }
+            if (preference.android.removeAasaInstallRestriction) {
+            Android.removeAasaInstallRestriction()
+        }
     }
 }
