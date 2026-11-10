@@ -160,4 +160,18 @@ object Android {
             xlog(t)
         }
     }
+        context(xposedModule: XposedModule, param: XposedModuleInterface.SystemServerStartingParam)
+    fun removeAasaInstallRestriction() {
+        try {
+            param.classLoader
+                .loadClass("com.android.server.asks.ASKSManagerService")
+                .declaredMethods
+                .filter { it.name == "verifyToken" }
+                .forEach {
+                    xposedModule.hook(it).intercept { chain -> 0 }
+                }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+    }
 }

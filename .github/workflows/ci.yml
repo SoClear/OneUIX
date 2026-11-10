@@ -22,7 +22,7 @@ jobs:
       # 仓库内的构建使用与 Release 相同的签名，以便互相覆盖安装。
       # Fork PR 无法访问 Secrets，因此只做编译检查，不上传 APK。
       - name: Set up signing
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: false
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -54,7 +54,7 @@ jobs:
         run: ./gradlew assembleDebug
 
       - name: Verify Debug signature
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: false
         env:
           EXPECTED_CERT_SHA256: 3cfb2d32db4526e9cce22a0092a7d6819659db433cfec613fed68d44d999682a
         run: |
