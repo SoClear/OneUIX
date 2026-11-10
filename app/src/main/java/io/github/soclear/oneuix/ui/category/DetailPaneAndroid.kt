@@ -190,10 +190,10 @@ sealed interface AndroidEvent {
 
     @JvmInline
     value class DisableFlagSecure(val value: Boolean) : AndroidEvent
-}
+
     @JvmInline
     value class RemoveAasaInstallRestriction(val value: Boolean) : AndroidEvent
-
+}
 fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
     updateData { preference ->
         when (event) {
@@ -276,9 +276,6 @@ fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
                     )
                 )
             }
-        }
-    }
-}
             is AndroidEvent.RemoveAasaInstallRestriction -> {
                 preference.copy(
                     android = preference.android.copy(
@@ -286,3 +283,6 @@ fun SettingViewModel.onAndroidEvent(event: AndroidEvent) {
                     )
                 )
             }
+        }
+    }
+}
