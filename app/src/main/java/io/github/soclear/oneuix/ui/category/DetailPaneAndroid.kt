@@ -151,8 +151,6 @@ fun DetailPaneAndroid(
             checked = uiState.disableFlagSecure,
             onCheckedChange = { onEvent(AndroidEvent.DisableFlagSecure(it)) }
         )
-    }
-}
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.lock_open),
             title = stringResource(id = R.string.removeAasaInstallRestriction_title),
@@ -160,6 +158,8 @@ fun DetailPaneAndroid(
             checked = uiState.removeAasaInstallRestriction,
             onCheckedChange = { onEvent(AndroidEvent.RemoveAasaInstallRestriction(it)) }
         )
+    }
+}
 sealed interface AndroidEvent {
     @JvmInline
     value class DisablePinVerifyPer72h(val value: Boolean) : AndroidEvent
