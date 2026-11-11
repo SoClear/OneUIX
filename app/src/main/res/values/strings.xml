@@ -129,6 +129,7 @@
     <string name="supportAnyFont_title">Support any font</string>
     <string name="setWeatherProviderCN_title">Set weather provider to China Weather</string>
     <string name="supportVoiceCallRecording_title">Support call recording</string>
+    <string name="supportVoiceCallRecording_summary">And eliminate the forced call recording announcement heard by both parties</string>
     <string name="preferRecordingButton_title">Show \'Record\' button instead of \'Add call\' button on call screen</string>
     <string name="showMoreBatteryInfo_title">Show more battery info</string>
     <string name="showMoreBatteryInfo_summary">Settings -> About phone -> Battery information</string>

@@ -129,6 +129,7 @@
     <string name="supportAnyFont_title">Поддержка любых шрифтов</string>
     <string name="setWeatherProviderCN_title">Китайский поставщик погоды (China Weather)</string>
     <string name="supportVoiceCallRecording_title">Запись вызовов</string>
+    <string name="supportVoiceCallRecording_summary">И отключает принудительное оповещение о записи, слышимое обеим сторонам</string>
     <string name="preferRecordingButton_title">Кнопка «Запись» вместо «Добавить вызов» при звонке</string>
     <string name="showMoreBatteryInfo_title">Дополнительная информация о батарее</string>
     <string name="showMoreBatteryInfo_summary">Настройки -> Сведения о телефоне -> Сведения об аккумуляторе</string>

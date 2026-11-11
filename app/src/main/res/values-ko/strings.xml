@@ -129,6 +129,7 @@
     <string name="supportAnyFont_title">모든 글꼴(외부 폰트) 지원</string>
     <string name="setWeatherProviderCN_title">날씨 제공업체를 중국 날씨(China Weather)로 변경</string>
     <string name="supportVoiceCallRecording_title">통화 녹음 지원</string>
+    <string name="supportVoiceCallRecording_summary">통화 양측에 들리는 강제 녹음 안내 방송을 제거합니다</string>
     <string name="preferRecordingButton_title">통화 화면에서 \'통화 추가\' 대신 \'통화 녹음\' 버튼 우선 표시</string>
     <string name="showMoreBatteryInfo_title">상세 배터리 정보 표시</string>
     <string name="showMoreBatteryInfo_summary">설정 -&gt; 휴대전화 정보 -&gt; 배터리 정보</string>
