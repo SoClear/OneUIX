@@ -129,6 +129,7 @@
     <string name="supportAnyFont_title">支持任意字体</string>
     <string name="setWeatherProviderCN_title">天气源设为中国天气</string>
     <string name="supportVoiceCallRecording_title">支持录制通话</string>
+    <string name="supportVoiceCallRecording_summary">并消除通话双方听到的正在录音的强制提示音</string>
     <string name="preferRecordingButton_title">通话界面显示“录音”按钮而不是“添加通话”按钮</string>
     <string name="showMoreBatteryInfo_title">显示更多电池信息</string>
     <string name="showMoreBatteryInfo_summary">设置->关于手机->电池信息</string>

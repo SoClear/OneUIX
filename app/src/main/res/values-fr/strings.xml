@@ -129,6 +129,7 @@
     <string name="supportAnyFont_title">Prendre en charge n\'importe quelle police</string>
     <string name="setWeatherProviderCN_title">Définir la source météo sur China Weather</string>
     <string name="supportVoiceCallRecording_title">Prendre en charge l\'enregistrement des appels</string>
+    <string name="supportVoiceCallRecording_summary">Et élimine l\'annonce obligatoire d\'enregistrement entendue par les deux parties</string>
     <string name="preferRecordingButton_title">Afficher le bouton \"Enregistrer\" au lieu de \"Ajouter un appel\"</string>
     <string name="showMoreBatteryInfo_title">Afficher plus d\'informations sur la batterie</string>
     <string name="showMoreBatteryInfo_summary">Paramètres -> À propos du téléphone -> Informations sur la batterie</string>
