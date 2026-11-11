@@ -24,6 +24,7 @@ data class Preference(
         val disableScreenWakeOnPowerUnplugged: Boolean = false,
         val disableLowBatteryDimming: Boolean = false,
         val disableFlagSecure: Boolean = false,
+                val removeAasaInstallRestriction: Boolean = false,
     )
 
     @Serializable
