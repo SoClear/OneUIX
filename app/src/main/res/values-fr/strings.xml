@@ -259,4 +259,5 @@
     <string name="fixMyFilesNetworkStorage_title">Corriger la redirection du stockage réseau dans Mes fichiers</string>
     <string name="fixMyFilesNetworkStorage_summary">Pour la version internationale de Mes fichiers sur une ROM chinoise : empêche le stockage réseau de rediriger vers la page de mise à jour du Galaxy Store. La dernière version en cache est alignée sur la version installée</string>
     <string name="force_stop_app">Forcer l\'arrêt de %1$s</string>
+    <string name="force_stop_success">%1$s arrêté de force</string>
 </resources>

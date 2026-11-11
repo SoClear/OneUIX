@@ -259,4 +259,5 @@
     <string name="fixMyFilesNetworkStorage_title">Fix My Files network storage redirect</string>
     <string name="fixMyFilesNetworkStorage_summary">For the international My Files on a China ROM: stop Network storage from jumping to the Galaxy Store update page. Keeps the cached latest version equal to the installed version</string>
     <string name="force_stop_app">Force stop %1$s</string>
+    <string name="force_stop_success">Force stopped %1$s</string>
 </resources>

@@ -259,4 +259,5 @@
     <string name="fixMyFilesNetworkStorage_title">Исправить переход «Сетевого хранилища» в «Моих файлах»</string>
     <string name="fixMyFilesNetworkStorage_summary">Для международной версии «Моих файлов» на китайской прошивке: не даёт «Сетевому хранилищу» перенаправлять на страницу обновления в Galaxy Store. Кэшированная последняя версия приравнивается к установленной</string>
     <string name="force_stop_app">Остановить %1$s</string>
+    <string name="force_stop_success">%1$s остановлено</string>
 </resources>
