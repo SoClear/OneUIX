@@ -7,7 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.ForceStopApp
 
 @Composable
 fun DetailPaneNFC(
@@ -15,6 +17,7 @@ fun DetailPaneNFC(
     modifier: Modifier = Modifier
 ) {
     PackagePane(modifier) {
+        ForceStopApp(Package.NFC)
         ListItem(
             headlineContent = { Text(stringResource(R.string.nfc_filter_title)) },
             supportingContent = { Text(stringResource(R.string.nfc_filter_summary)) },
