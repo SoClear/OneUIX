@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.ui.component
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,14 @@ fun ColumnScope.ForceStopApp(packageName: String, modifier: Modifier = Modifier)
     Button(
         modifier = modifier.align(Alignment.CenterHorizontally),
         onClick = {
-            runCatching { ProcessBuilder("su", "-c", "killall", packageName).start() }
+            runCatching {
+                ProcessBuilder("su", "-c", "killall", packageName).start()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.force_stop_success, appName),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     ) {
         Text(text = stringResource(R.string.force_stop_app, appName))
