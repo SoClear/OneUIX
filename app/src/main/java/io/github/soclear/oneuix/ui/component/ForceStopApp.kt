@@ -27,6 +27,7 @@ fun ColumnScope.ForceStopApp(packageName: String, modifier: Modifier = Modifier)
             pm.getApplicationLabel(appInfo).toString()
         }.getOrDefault(packageName)
     }
+    val successMessage = stringResource(R.string.force_stop_success, appName)
 
     Spacer(modifier = Modifier.height(30.dp))
     Button(
@@ -34,11 +35,7 @@ fun ColumnScope.ForceStopApp(packageName: String, modifier: Modifier = Modifier)
         onClick = {
             runCatching {
                 ProcessBuilder("su", "-c", "killall", packageName).start()
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.force_stop_success, appName),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
             }
         }
     ) {
