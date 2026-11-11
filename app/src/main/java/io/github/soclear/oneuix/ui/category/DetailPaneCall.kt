@@ -28,6 +28,7 @@ fun DetailPaneCall(
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.call_recording),
             title = stringResource(id = R.string.supportVoiceCallRecording_title),
+            summary = stringResource(id = R.string.supportVoiceCallRecording_summary),
             checked = uiState.supportVoiceCallRecording,
             onCheckedChange = { onEvent(CallEvent.SupportVoiceCallRecording(it)) }
         )
