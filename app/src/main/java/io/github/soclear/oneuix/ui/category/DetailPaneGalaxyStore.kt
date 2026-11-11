@@ -26,8 +26,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.ForceStopApp
 import io.github.soclear.oneuix.ui.component.SwitchItem
 
 @Composable
@@ -37,6 +39,7 @@ fun DetailPaneGalaxyStore(
     modifier: Modifier = Modifier
 ) {
     PackagePane(modifier) {
+        ForceStopApp(Package.STORE)
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.ad_off),
             title = stringResource(id = R.string.blockGalaxyStoreAds_title),

@@ -37,10 +37,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.ONE_UI_VERSION
+import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.common.PowerMenuAction
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.common.Preference.SystemUI.StatusBar.NetWorkSpeed
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.ForceStopApp
 import io.github.soclear.oneuix.ui.component.SelectItem
 import io.github.soclear.oneuix.ui.component.SwitchItem
 import java.time.LocalDateTime
@@ -63,15 +65,7 @@ fun DetailPaneSystemUI(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
-        Button(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = {
-                runCatching { Runtime.getRuntime().exec("su -c killall com.android.systemui") }
-            }
-        ) {
-            Text(text = stringResource(CommonR.string.restartSystemUI))
-        }
+        ForceStopApp(Package.SYSTEMUI)
         DividerText(R.string.status_bar)
         Column {
             var padding by remember {

@@ -6,8 +6,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
+import io.github.soclear.oneuix.ui.component.ForceStopApp
 import io.github.soclear.oneuix.ui.component.SwitchItem
 
 @Composable
@@ -17,6 +19,7 @@ fun DetailPaneBixby(
     modifier: Modifier = Modifier,
 ) {
     PackagePane(modifier) {
+        ForceStopApp(Package.BIXBY_AGENT)
         SwitchItem(
             icon = ImageVector.vectorResource(R.drawable.wifi_link_speed),
             title = stringResource(R.string.unlockBixbyOfflineProcessing_title),
