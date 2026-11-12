@@ -255,6 +255,6 @@
     <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
     <string name="fixMyFilesNetworkStorage_title">Исправить переход «Сетевого хранилища» в «Моих файлах»</string>
     <string name="fixMyFilesNetworkStorage_summary">Для международной версии «Моих файлов» на китайской прошивке: не даёт «Сетевому хранилищу» перенаправлять на страницу обновления в Galaxy Store. Кэшированная последняя версия приравнивается к установленной</string>
-    <string name="restoreLiveWallpaperEntry_title">Восстановите запись о живых обоях в меню «⋮» приложения обоев.</string>
-    <string name="restoreLiveWallpaperEntry_summary">Восстановите опцию записи «Живые обои» в меню «⋮» меню «Обои и стили» Samsung.</string>
+    <string name="restoreLiveWallpaperEntry_title">Восстановите запись о живых обоях в меню «\u22EE» приложения обоев.</string>
+    <string name="restoreLiveWallpaperEntry_summary">Восстановите опцию записи «Живые обои» в меню «\u22EE» меню «Обои и стили» Samsung.</string>
 </resources>
