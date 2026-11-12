@@ -29,6 +29,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneCamera
 import io.github.soclear.oneuix.ui.category.DetailPaneDualApp
 import io.github.soclear.oneuix.ui.category.DetailPaneGalaxyStore
 import io.github.soclear.oneuix.ui.category.DetailPaneMyFiles
+import io.github.soclear.oneuix.ui.category.DetailPaneWallpaper
 import io.github.soclear.oneuix.ui.category.DetailPaneGallery
 import io.github.soclear.oneuix.ui.category.DetailPaneSamsungHealth
 import io.github.soclear.oneuix.ui.category.DetailPaneHealthMonitor
@@ -60,6 +61,7 @@ import io.github.soclear.oneuix.ui.category.onCameraEvent
 import io.github.soclear.oneuix.ui.category.onDualAppEvent
 import io.github.soclear.oneuix.ui.category.onGalaxyStoreEvent
 import io.github.soclear.oneuix.ui.category.onMyFilesEvent
+import io.github.soclear.oneuix.ui.category.onWallpaperEvent
 import io.github.soclear.oneuix.ui.category.onGalleryEvent
 import io.github.soclear.oneuix.ui.category.onSamsungHealthEvent
 import io.github.soclear.oneuix.ui.category.onHealthMonitorEvent
@@ -240,6 +242,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.MyFiles -> DetailPaneMyFiles(
                             uiState = preference.other,
                             onEvent = viewModel::onMyFilesEvent
+                        )
+
+                        Category.Wallpaper -> DetailPaneWallpaper(
+                            uiState = preference.other,
+                            onEvent = viewModel::onWallpaperEvent
                         )
 
                         Category.NFC -> DetailPaneNFC(

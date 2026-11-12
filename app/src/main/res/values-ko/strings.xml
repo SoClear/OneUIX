@@ -255,4 +255,6 @@
     <string name="allowLowBatteryFlashlight_summary">배터리 부족으로 자동으로 꺼지지 않고 1%까지 사용합니다. 과열 보호는 유지됩니다</string>
     <string name="fixMyFilesNetworkStorage_title">내 파일 네트워크 저장소 이동 문제 수정</string>
     <string name="fixMyFilesNetworkStorage_summary">중국 ROM에서 국제판 내 파일을 사용할 때 네트워크 저장소를 누르면 Galaxy Store 업데이트 페이지로 이동하는 문제를 막습니다. 캐시된 최신 버전을 설치된 버전과 동일하게 유지합니다</string>
+    <string name="restoreLiveWallpaperEntry_title">배경화면 메뉴의 라이브 배경화면 항목 복원</string>
+    <string name="restoreLiveWallpaperEntry_summary">삼성 “배경화면 및 스타일”의 점 세 개 메뉴에 “라이브 배경화면” 항목을 다시 추가하고, 누르면 시스템 라이브 배경화면 선택기를 엽니다. APK를 수정하지 않으므로 앱이 업데이트되어도 계속 동작합니다</string>
 </resources>

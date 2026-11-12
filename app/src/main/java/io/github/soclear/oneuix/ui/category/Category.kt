@@ -26,6 +26,7 @@ enum class Category(val packageName: String) {
     SPen(Package.TRANSLATION),
     ThemeCenter(Package.THEME_CENTER),
     Video(Package.VIDEO),
+    Wallpaper(Package.WALLPAPER),
     WatchManager(Package.WATCH_MANAGER),
     Weather(Package.WEATHER),
     Other("");

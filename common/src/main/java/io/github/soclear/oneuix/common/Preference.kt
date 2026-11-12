@@ -211,6 +211,7 @@ data class Preference(
         val setGalaxyStoreSimOperator: Boolean = false,
         val galaxyStoreSimOperator: String = "",
         val fixMyFilesNetworkStorage: Boolean = false,
+        val restoreLiveWallpaperEntry: Boolean = false,
         val makeAllUserAppsAvailable: Boolean = true,
         val setWeatherProviderCN: Boolean = false,
         val showMemoryUsageInRecents: Boolean = false,

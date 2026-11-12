@@ -536,6 +536,12 @@ class Main : XposedModule() {
                 }
             }
 
+            Package.WALLPAPER -> {
+                if (preference.other.restoreLiveWallpaperEntry) {
+                    Wallpaper.restoreLiveWallpaperEntry()
+                }
+            }
+
             Package.WATCH_MANAGER -> {
                 if (preference.other.bypassWatchPairingRegionCheck ||
                     preference.other.watchPairingConnectionMode != WatchPairing.MODE_NONE

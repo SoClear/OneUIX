@@ -17,6 +17,7 @@ object Package {
     const val MDEC_SERVICE = "com.samsung.android.mdecservice"
     const val MESSAGING = "com.samsung.android.messaging"
     const val MY_FILES = "com.sec.android.app.myfiles"
+    const val WALLPAPER = "com.samsung.android.app.dressroom"
     const val NFC = "com.android.nfc"
     const val NOTES = "com.samsung.android.app.notes"
     const val PHOTO_RETOUCHING = "com.sec.android.mimage.photoretouching"
