@@ -206,6 +206,8 @@
     <string name="disableFlagSecure_title">Désactiver FLAG_SECURE</string>
     <string name="hideScreenshotDetection_title">Masquer les captures aux applications</string>
     <string name="hideScreenshotDetection_summary">Ajoutez les applications sélectionnées à la portée du module et redémarrez-les. Bloque les rappels de capture et les changements reconnus comme captures. Les captures restent visibles et les autres notifications de photos sont conservées</string>
+    <string name="openLiveWallpaperChooser_title">Ouvrir le sélecteur de fonds d’écran animés</string>
+    <string name="openLiveWallpaperChooser_summary">Ouvre directement le sélecteur système de fonds d’écran animés. Utile lorsque Fond d’écran et styles n’a pas d’entrée « Fonds d’écran animés », comme sur les ROM chinoises</string>
     <string name="disableFlagSecure_summary">Autoriser les captures et enregistrements d\'écran dans les fenêtres sécurisées</string>
         <string name="removeAasaInstallRestriction_title">Supprimer la restriction d\'installation AASA</string>
     <string name="removeAasaInstallRestriction_summary">Contourner la restriction d\'installation d\'AASA pour certaines applications système</string>
