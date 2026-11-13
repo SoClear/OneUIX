@@ -155,6 +155,8 @@
     <string name="aodWallpaperOnly_title">Только обои на AOD</string>
     <string name="aodWallpaperOnly_summary">Показывать на AOD только обои, не изменяя обычный экран блокировки. Включите отображение обоев экрана блокировки в настройках AOD. Для значка отпечатка пальца откройте: Настройки → Экран блокировки и AOD → Блокировка экрана и биометрия → Отпечатки пальцев → Показывать значок при выключенном экране, затем выберите «Касание для отображения» или «Никогда». Для применения перезапустите интерфейс системы.</string>
     <string name="hideAODStatusBar_title">Скрыть строку состояния на AOD</string>
+    <string name="removeAODBrightnessLimit_title">Снять ограничение яркости AOD</string>
+    <string name="removeAODBrightnessLimit_summary">Яркость AOD будет следовать системной яркости. Перезапустите System UI для применения.</string>
     <string name="hideAODChargingInfo_title">Скрыть информацию о зарядке на AOD</string>
     <string name="aodLockSupportLunar_title">Лунный календарь на AOD и экране блокировки</string>
     <string name="enableChineseHolidayDisplay_title">Китайские праздники в календаре</string>

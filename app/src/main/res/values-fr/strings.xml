@@ -155,6 +155,8 @@
     <string name="aodWallpaperOnly_title">Afficher uniquement le fond d’écran sur l’AOD</string>
     <string name="aodWallpaperOnly_summary">Afficher uniquement le fond d’écran sur l’AOD sans modifier l’écran de verrouillage normal. Activez le fond d’écran de verrouillage dans les paramètres AOD. Pour l’icône d’empreinte, accédez à Paramètres → Écran de verrouillage et AOD → Verrouillage de l’écran et biométrie → Empreintes → Afficher l’icône lorsque l’écran est éteint, puis sélectionnez « Appuyer pour afficher » ou « Jamais ». Redémarrez l’interface système pour appliquer les modifications.</string>
     <string name="hideAODStatusBar_title">Masquer la barre d\'état sur l\'AOD</string>
+    <string name="removeAODBrightnessLimit_title">Supprimer la limite de luminosité de l\'AOD</string>
+    <string name="removeAODBrightnessLimit_summary">La luminosité de l\'AOD suit celle du système. Redémarrez System UI pour appliquer.</string>
     <string name="hideAODChargingInfo_title">Masquer les informations de charge sur l\'AOD</string>
     <string name="aodLockSupportLunar_title">Afficher le calendrier lunaire chinois sur l\'AOD</string>
     <string name="enableChineseHolidayDisplay_title">Afficher les jours fériés chinois dans le calendrier</string>
