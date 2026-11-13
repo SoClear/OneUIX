@@ -206,6 +206,8 @@
     <string name="disableFlagSecure_title">禁用安全标记 (FLAG_SECURE)</string>
     <string name="hideScreenshotDetection_title">对应用隐藏截图行为</string>
     <string name="hideScreenshotDetection_summary">将所选应用加入模块作用域并重启应用后生效。屏蔽截图回调与识别到的截图变更通知；仍可查看截图，普通照片通知保留</string>
+    <string name="openLiveWallpaperChooser_title">打开动态壁纸选择器</string>
+    <string name="openLiveWallpaperChooser_summary">直接打开系统的动态壁纸选择器。国行系统的壁纸应用里没有动态壁纸入口时，可以用它代替</string>
     <string name="disableFlagSecure_summary">允许在受保护的应用窗口中截屏和录屏</string>
         <string name="removeAasaInstallRestriction_title">移除AASA安装限制</string>
     <string name="removeAasaInstallRestriction_summary">破解AASA策略对部分系统应用的安装限制</string>

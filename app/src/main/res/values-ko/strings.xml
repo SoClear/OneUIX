@@ -206,6 +206,8 @@
     <string name="disableFlagSecure_title">FLAG_SECURE 비활성화</string>
     <string name="hideScreenshotDetection_title">앱에서 스크린샷 감지 숨기기</string>
     <string name="hideScreenshotDetection_summary">선택한 앱을 모듈 적용 범위에 추가한 후 다시 시작하세요. 스크린샷 콜백과 스크린샷으로 식별된 변경 알림만 차단합니다. 사진 선택기에서 스크린샷을 볼 수 있으며 일반 사진 알림은 유지됩니다</string>
+    <string name="openLiveWallpaperChooser_title">라이브 배경화면 선택기 열기</string>
+    <string name="openLiveWallpaperChooser_summary">시스템 라이브 배경화면 선택기를 바로 엽니다. 중국 ROM처럼 배경화면 및 스타일에 라이브 배경화면 항목이 없을 때 사용하세요</string>
     <string name="disableFlagSecure_summary">보안 창에서 스크린샷 및 화면 녹화 허용</string>
         <string name="removeAasaInstallRestriction_title">AASA 설치 제한 해제</string>
     <string name="removeAasaInstallRestriction_summary">일부 시스템 앱에 대한 AASA 정책의 설치 제한 우회</string>

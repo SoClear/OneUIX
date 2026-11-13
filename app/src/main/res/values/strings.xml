@@ -208,6 +208,8 @@
     <string name="removeAasaInstallRestriction_summary">Bypass AASA policy\'s install restriction for some system apps</string>
     <string name="hideScreenshotDetection_title">Hide screenshots from apps</string>
     <string name="hideScreenshotDetection_summary">Add the selected apps to the module scope and restart them. Block screenshot callbacks and recognized screenshot change notifications. Screenshots remain visible in photo pickers; other photo notifications are preserved</string>
+    <string name="openLiveWallpaperChooser_title">Open live wallpaper picker</string>
+    <string name="openLiveWallpaperChooser_summary">Opens the system live wallpaper picker directly. Useful when Wallpaper and style has no Live wallpapers entry, as on China ROMs</string>
     <string name="disableFlagSecure_summary">Allow screenshots and screen recording in secure windows</string>
     <string name="backup_config">Back up config</string>
     <string name="restore_config">Restore config</string>

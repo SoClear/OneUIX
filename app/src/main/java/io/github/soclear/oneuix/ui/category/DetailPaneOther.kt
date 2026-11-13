@@ -9,6 +9,14 @@ import io.github.soclear.oneuix.R
 import io.github.soclear.oneuix.common.Preference
 import io.github.soclear.oneuix.ui.SettingViewModel
 import io.github.soclear.oneuix.ui.component.SwitchItem
+import android.app.WallpaperManager
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 
 @Composable
 fun DetailPaneOther(
@@ -18,6 +26,7 @@ fun DetailPaneOther(
     onNavigateToScreenshotDetectionApps: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     PackagePane(modifier) {
         SwitchItem(
             icon = ImageVector.vectorResource(R.drawable.format_letter_spacing),
@@ -43,6 +52,21 @@ fun DetailPaneOther(
             onCheckedChange = {
                 onEvent(OtherEvent.HideScreenshotDetection(it))
                 if (it && uiState.hideScreenshotDetectionPackages.isEmpty()) onNavigateToScreenshotDetectionApps()
+            }
+        )
+        ListItem(
+            headlineContent = { Text(stringResource(R.string.openLiveWallpaperChooser_title)) },
+            modifier = Modifier.clickable(role = Role.Button) {
+                runCatching {
+                    context.startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER))
+                }
+            },
+            supportingContent = { Text(stringResource(R.string.openLiveWallpaperChooser_summary)) },
+            leadingContent = {
+                Icon(
+                    ImageVector.vectorResource(R.drawable.wallpaper_live),
+                    stringResource(R.string.openLiveWallpaperChooser_title)
+                )
             }
         )
     }
