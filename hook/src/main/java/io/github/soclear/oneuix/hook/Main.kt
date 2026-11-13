@@ -469,6 +469,10 @@ class Main : XposedModule() {
                     AOD.hideAODStatusBar()
                 }
 
+                if (preference.systemUI.aod.removeAODBrightnessLimit) {
+                    AOD.removeAODBrightnessLimit()
+                }
+
                 if (preference.systemUI.aod.aodLockSupportLunar) {
                     AOD.aodLockSupportLunar()
                 }

@@ -810,6 +810,15 @@ fun DetailPaneSystemUI(
                 }
             )
             SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.light_mode),
+                title = stringResource(id = R.string.removeAODBrightnessLimit_title),
+                summary = stringResource(id = R.string.removeAODBrightnessLimit_summary),
+                checked = uiState.aod.removeAODBrightnessLimit,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.AOD.RemoveAODBrightnessLimit(it))
+                }
+            )
+            SwitchItem(
                 icon = ImageVector.vectorResource(id = R.drawable.today),
                 title = stringResource(id = R.string.aodLockSupportLunar_title),
                 checked = uiState.aod.aodLockSupportLunar,
@@ -1160,6 +1169,8 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class HideAODStatusBar(val value: Boolean) : AOD
+        @JvmInline
+        value class RemoveAODBrightnessLimit(val value: Boolean) : AOD
 
         @JvmInline
         value class AODLockSupportLunar(val value: Boolean) : AOD
@@ -1744,6 +1755,16 @@ private fun SettingViewModel.onAODEvent(event: SystemUIEvent.AOD) {
                     systemUI = preference.systemUI.copy(
                         aod = preference.systemUI.aod.copy(
                             hideAODStatusBar = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.AOD.RemoveAODBrightnessLimit -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        aod = preference.systemUI.aod.copy(
+                            removeAODBrightnessLimit = event.value
                         )
                     )
                 )

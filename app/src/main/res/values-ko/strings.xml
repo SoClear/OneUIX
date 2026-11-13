@@ -155,6 +155,8 @@
     <string name="aodWallpaperOnly_title">AOD에 배경화면만 표시</string>
     <string name="aodWallpaperOnly_summary">일반 잠금화면은 변경하지 않고 AOD에 배경화면만 표시합니다. 시스템 AOD 설정에서 잠금화면 배경화면 표시를 켜세요. 지문 아이콘은 설정 → 잠금화면 및 AOD → 화면 잠금 및 생체 인식 → 지문 → 화면이 꺼져 있을 때 아이콘 표시에서 “눌러서 표시” 또는 “표시 안 함”을 선택하세요. 적용하려면 시스템 UI를 다시 시작하세요.</string>
     <string name="hideAODStatusBar_title">AOD 상태바 숨기기</string>
+    <string name="removeAODBrightnessLimit_title">AOD 밝기 제한 해제</string>
+    <string name="removeAODBrightnessLimit_summary">AOD 밝기가 시스템 밝기를 따릅니다. 적용하려면 System UI를 다시 시작하세요.</string>
     <string name="hideAODChargingInfo_title">AOD 충전 정보 숨기기</string>
     <string name="aodLockSupportLunar_title">AOD/잠금 화면에 음력 표시</string>
     <string name="enableChineseHolidayDisplay_title">캘린더에 중국 공휴일 표시</string>
