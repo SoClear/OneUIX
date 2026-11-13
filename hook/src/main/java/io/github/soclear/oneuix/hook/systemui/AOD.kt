@@ -109,11 +109,11 @@ object AOD {
             .let { xposedModule.hook(it) }
             .intercept { chain ->
                 try {
-                    val min = chain.thisObject.reflect["brightnessMin"] as? Int
-                    val max = chain.thisObject.reflect["brightnessMax"] as? Int
+                    val min = runCatching { chain.thisObject.reflect["brightnessMin"] as? Int }.getOrNull() ?: 1
+                    val max = runCatching { chain.thisObject.reflect["brightnessMax"] as? Int }.getOrNull() ?: 255
                     val resolver = currentApplication()?.contentResolver
                     val current = resolver?.let { Settings.System.getInt(it, "screen_brightness", -1) } ?: -1
-                    if (min != null && max != null && current > 0) {
+                    if (current > 0) {
                         val newArgs = chain.args.toTypedArray()
                         newArgs[2] = current.coerceIn(min, max)
                         return@intercept chain.proceed(newArgs)
