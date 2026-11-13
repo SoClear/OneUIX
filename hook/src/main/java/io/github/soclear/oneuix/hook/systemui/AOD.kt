@@ -5,11 +5,9 @@ import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.children
 import io.github.libxposed.api.XposedInterface
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.hook.util.afterAttachTry
-import io.github.soclear.oneuix.hook.util.currentApplication
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
@@ -113,24 +111,25 @@ object AOD {
 
     context(xposedModule: XposedModule)
     fun removeAODBrightnessLimit() = afterAttachTry {
-        classLoader.loadClass("com.android.systemui.doze.AODScreenBrightness")
-            .getDeclaredMethod("updateDozeBrightness", Int::class.java, Int::class.java, Int::class.java)
+        val resolver = contentResolver
+        val brightnessClass = classLoader.loadClass("com.android.systemui.doze.AODScreenBrightness")
+        val minField = runCatching { brightnessClass.reflect.findField("brightnessMin") }.getOrNull()
+        val maxField = runCatching { brightnessClass.reflect.findField("brightnessMax") }.getOrNull()
+        brightnessClass.getDeclaredMethod("updateDozeBrightness", Int::class.java, Int::class.java, Int::class.java)
             .let { xposedModule.hook(it) }
             .intercept { chain ->
+                val args = chain.args.toTypedArray()
                 try {
-                    val min = runCatching { chain.thisObject.reflect["brightnessMin"] as? Int }.getOrNull() ?: 1
-                    val max = runCatching { chain.thisObject.reflect["brightnessMax"] as? Int }.getOrNull() ?: 255
-                    val resolver = currentApplication()?.contentResolver
-                    val current = resolver?.let { Settings.System.getInt(it, "screen_brightness", -1) } ?: -1
-                    if (current > 0) {
-                        val newArgs = chain.args.toTypedArray()
-                        newArgs[2] = current.coerceIn(min, max)
-                        return@intercept chain.proceed(newArgs)
+                    val current = Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS, -1)
+                    if (current >= 0) {
+                        val min = minField?.getInt(chain.thisObject) ?: 1
+                        val max = maxField?.getInt(chain.thisObject) ?: 255
+                        args[2] = current.coerceIn(min, max)
                     }
                 } catch (t: Throwable) {
                     xlog(t)
                 }
-                chain.proceed()
+                chain.proceed(args)
             }
     }
 }
