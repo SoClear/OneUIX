@@ -16,7 +16,7 @@ fun DetailPaneHealthMonitor(
     onEvent: (HealthMonitorEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.HealthMonitor) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.health_metrics),
             title = stringResource(id = R.string.bypassHealthMonitorCountryCheck_title),

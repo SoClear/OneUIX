@@ -16,7 +16,7 @@ fun DetailPaneBixby(
     onEvent: (BixbyEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Bixby) {
         SwitchItem(
             icon = ImageVector.vectorResource(R.drawable.wifi_link_speed),
             title = stringResource(R.string.unlockBixbyOfflineProcessing_title),

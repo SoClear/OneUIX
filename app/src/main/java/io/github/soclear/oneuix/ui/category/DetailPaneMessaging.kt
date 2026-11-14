@@ -16,7 +16,7 @@ fun DetailPaneMessaging(
     onEvent: (MessagingEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Messaging) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.sms),
             title = stringResource(id = R.string.supportBlockMessage_title),

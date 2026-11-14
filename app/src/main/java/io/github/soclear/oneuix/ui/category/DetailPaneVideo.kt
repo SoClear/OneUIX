@@ -16,7 +16,7 @@ fun DetailPaneVideo(
     onEvent: (VideoEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Video) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.fast_forward),
             title = stringResource(id = R.string.showMorePlaybackSpeeds_title),

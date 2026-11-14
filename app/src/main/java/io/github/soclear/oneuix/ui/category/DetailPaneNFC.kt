@@ -14,7 +14,7 @@ fun DetailPaneNFC(
     onNavigateToNfcCards: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.NFC) {
         ListItem(
             headlineContent = { Text(stringResource(R.string.nfc_filter_title)) },
             supportingContent = { Text(stringResource(R.string.nfc_filter_summary)) },

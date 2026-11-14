@@ -36,7 +36,7 @@ fun DetailPaneGalaxyStore(
     onEvent: (GalaxyStoreEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.GalaxyStore) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.ad_off),
             title = stringResource(id = R.string.blockGalaxyStoreAds_title),

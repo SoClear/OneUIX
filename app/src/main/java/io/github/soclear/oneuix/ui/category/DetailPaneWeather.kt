@@ -16,7 +16,7 @@ fun DetailPaneWeather(
     onEvent: (WeatherEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Weather) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.partly_cloudy_day),
             title = stringResource(id = R.string.setWeatherProviderCN_title),

@@ -16,7 +16,7 @@ fun DetailPaneCalendar(
     onEvent: (CalendarEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Calendar) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.today),
             title = stringResource(id = R.string.enableChineseHolidayDisplay_title),

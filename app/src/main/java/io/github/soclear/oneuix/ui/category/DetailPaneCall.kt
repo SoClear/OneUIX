@@ -25,6 +25,7 @@ fun DetailPaneCall(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        ForceStopButton(Category.Call)
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.call_recording),
             title = stringResource(id = R.string.supportVoiceCallRecording_title),

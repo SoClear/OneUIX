@@ -16,7 +16,7 @@ fun DetailPaneDualApp(
     onEvent: (DualAppEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.DualApp) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.apk_document),
             title = stringResource(id = R.string.makeAllUserAppsAvailable_title),

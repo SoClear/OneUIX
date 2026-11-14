@@ -26,7 +26,7 @@ fun DetailPaneLauncher(
     onEvent: (LauncherEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Launcher) {
         MediaPageSettings(uiState, onEvent)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             SwitchItem(

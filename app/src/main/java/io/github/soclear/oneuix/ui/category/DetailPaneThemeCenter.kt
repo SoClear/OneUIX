@@ -16,7 +16,7 @@ fun DetailPaneThemeCenter(
     onEvent: (ThemeCenterEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.ThemeCenter) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.format_paint),
             title = stringResource(id = R.string.setThemeTrialNeverExpired_title),

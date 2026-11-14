@@ -16,7 +16,7 @@ fun DetailPaneSamsungHealth(
     onEvent: (SamsungHealthEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Health) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.health_metrics),
             title = stringResource(id = R.string.hideSamsungHealthDiscover_title),

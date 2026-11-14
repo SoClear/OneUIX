@@ -16,7 +16,7 @@ fun DetailPaneSPen(
     onEvent: (SPenEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.SPen) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.spen),
             title = stringResource(id = R.string.useSPenGoogleTranslate_title),

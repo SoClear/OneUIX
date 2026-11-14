@@ -25,6 +25,7 @@ fun DetailPaneCamera(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        ForceStopButton(Category.Camera)
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.camera),
             title = stringResource(id = R.string.supportAllCameraMenu_title),

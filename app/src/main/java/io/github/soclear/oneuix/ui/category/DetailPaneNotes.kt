@@ -16,7 +16,7 @@ fun DetailPaneNotes(
     onEvent: (NotesEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Notes) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.notes),
             title = stringResource(id = R.string.supportAllNotesFeatures_title),

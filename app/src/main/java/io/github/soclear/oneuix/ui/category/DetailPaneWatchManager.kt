@@ -19,7 +19,7 @@ fun DetailPaneWatchManager(
     onEvent: (WatchManagerEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.WatchManager) {
         SelectItem(
             icon = ImageVector.vectorResource(id = R.drawable.watch_pairing),
             title = stringResource(id = R.string.watchPairing_connectionMode_title),

@@ -16,7 +16,7 @@ fun DetailPanePhotoRetouching(
     onEvent: (PhotoRetouchingEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.PhotoRetouching) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.branding_watermark),
             title = stringResource(id = R.string.noAIWatermark_title),

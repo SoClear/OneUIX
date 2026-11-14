@@ -16,7 +16,7 @@ fun DetailPaneGallery(
     onEvent: (GalleryEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.Gallery) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.photo_library),
             title = stringResource(id = R.string.supportAllGallerySettings_title),

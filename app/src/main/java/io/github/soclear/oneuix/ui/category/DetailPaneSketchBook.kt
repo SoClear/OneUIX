@@ -16,7 +16,7 @@ fun DetailPaneSketchBook(
     onEvent: (SketchBookEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.SketchBook) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.branding_watermark),
             title = stringResource(id = R.string.noAIWatermark_title),

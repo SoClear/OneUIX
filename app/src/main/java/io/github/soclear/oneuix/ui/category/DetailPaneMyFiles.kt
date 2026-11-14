@@ -16,7 +16,7 @@ fun DetailPaneMyFiles(
     onEvent: (MyFilesEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    PackagePane(modifier) {
+    PackagePane(modifier, Category.MyFiles) {
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.folder_managed),
             title = stringResource(id = R.string.fixMyFilesNetworkStorage_title),
