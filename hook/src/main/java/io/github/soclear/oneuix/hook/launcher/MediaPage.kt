@@ -132,11 +132,11 @@ object MediaPage {
                 }
             }
         }
-        val home = packageManager.resolveActivity(Intent(Intent.ACTION_MAIN)
-            .addCategory(Intent.CATEGORY_HOME).setPackage(packageName), 0)!!.activityInfo
-        val homeClass = classLoader.loadClass(home.targetActivity ?: home.name)
-        module.hook(homeClass.getDeclaredMethod("onCreate", Bundle::class.java)).intercept { chain ->
-            chain.proceed().also { activity = chain.thisObject as Activity }
+        module.hook(Activity::class.java.getDeclaredMethod("onCreate", Bundle::class.java)).intercept { chain ->
+            chain.proceed().also {
+                val created = chain.thisObject as Activity
+                if (created.intent.hasCategory(Intent.CATEGORY_HOME)) activity = created
+            }
         }
         module.hook(DexMethod(config.callback).getMethodInstance(classLoader)).intercept { chain ->
             val code = chain.args[0] as Int
