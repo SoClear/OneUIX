@@ -27,7 +27,7 @@ fun DetailPaneSettings(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        ForceStopApp(Package.SETTINGS)
+        ForceStopApp(Package.SETTINGS, Package.SM_CN)
         SwitchItem(
             title = stringResource(id = R.string.showForcePeakRefreshRatePreference_title),
             summary = stringResource(id = R.string.showForcePeakRefreshRatePreference_summary),

@@ -27,7 +27,7 @@ fun DetailPaneCall(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        ForceStopApp(Package.DIALER)
+        ForceStopApp(Package.DIALER, Package.INCALLUI, Package.TELEPHONYUI, Package.MDEC_SERVICE)
         SwitchItem(
             icon = ImageVector.vectorResource(id = R.drawable.call_recording),
             title = stringResource(id = R.string.supportVoiceCallRecording_title),

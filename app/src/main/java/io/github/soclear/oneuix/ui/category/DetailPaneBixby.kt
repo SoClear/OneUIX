@@ -19,7 +19,7 @@ fun DetailPaneBixby(
     modifier: Modifier = Modifier,
 ) {
     PackagePane(modifier) {
-        ForceStopApp(Package.BIXBY_AGENT)
+        ForceStopApp(Package.BIXBY_AGENT, Package.BIXBY_WAKEUP)
         SwitchItem(
             icon = ImageVector.vectorResource(R.drawable.wifi_link_speed),
             title = stringResource(R.string.unlockBixbyOfflineProcessing_title),
