@@ -11,6 +11,7 @@ import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
+import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
 
@@ -224,61 +225,49 @@ object Settings {
     }
 
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun spoofPhoneStatusAsOfficial() {
-        if (param.packageName != Package.SETTINGS) return
-        try {
-            val clazz = param.classLoader.loadClass("com.samsung.android.settings.deviceinfo.SecDeviceInfoUtils")
-            val isPhoneStatusUnlockedMethod = clazz.getDeclaredMethod("isPhoneStatusUnlocked")
-            xposedModule.hook(isPhoneStatusUnlockedMethod).intercept { false }
+    fun spoofPhoneStatusAsOfficial() = afterAttachTry(param.packageName == Package.SETTINGS) {
+        val clazz = classLoader.loadClass("com.samsung.android.settings.deviceinfo.SecDeviceInfoUtils")
+        val isPhoneStatusUnlockedMethod = clazz.getDeclaredMethod("isPhoneStatusUnlocked")
+        xposedModule.hook(isPhoneStatusUnlockedMethod).intercept { false }
 
-            val checkRootingConditionMethod = clazz.getDeclaredMethod("checkRootingCondition")
-            xposedModule.hook(checkRootingConditionMethod).intercept { false }
-        } catch (t: Throwable) {
-            xlog(t)
-        }
+        val checkRootingConditionMethod = clazz.getDeclaredMethod("checkRootingCondition")
+        xposedModule.hook(checkRootingConditionMethod).intercept { false }
     }
 
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)
-    fun showWiFiLinkSpeed() {
-        if (param.packageName != Package.SETTINGS) {
-            return
+    fun showWiFiLinkSpeed() = afterAttachTry(param.packageName == Package.SETTINGS) {
+        val connectedListAdapterClass = classLoader.loadClass(
+            "com.samsung.android.settings.wifi.ConnectedListAdapter"
+        )
+        val viewHolderClass = classLoader.loadClass(
+            $$"androidx.recyclerview.widget.RecyclerView$ViewHolder"
+        )
+
+        fun getLinkSpeed(thisObject: Any, position: Int): String? {
+            val wifiEntries = thisObject.reflect["mWifiEntries"] as? List<*> ?: return null
+            val wifiEntry = wifiEntries.getOrNull(position) ?: return null
+            val wifiInfo = wifiEntry.reflect["mWifiInfo"] as? WifiInfo ?: return null
+            return "${wifiInfo.txLinkSpeedMbps},${wifiInfo.rxLinkSpeedMbps}"
         }
-        try {
-            val connectedListAdapterClass = param.classLoader.loadClass(
-                "com.samsung.android.settings.wifi.ConnectedListAdapter"
-            )
-            val viewHolderClass = param.classLoader.loadClass(
-                $$"androidx.recyclerview.widget.RecyclerView$ViewHolder"
-            )
 
-            fun getLinkSpeed(thisObject: Any, position: Int): String? {
-                val wifiEntries = thisObject.reflect["mWifiEntries"] as? List<*> ?: return null
-                val wifiEntry = wifiEntries.getOrNull(position) ?: return null
-                val wifiInfo = wifiEntry.reflect["mWifiInfo"] as? WifiInfo ?: return null
-                return "${wifiInfo.txLinkSpeedMbps},${wifiInfo.rxLinkSpeedMbps}"
-            }
-
-            val onBindViewHolderMethod = connectedListAdapterClass.getDeclaredMethod(
-                "onBindViewHolder",
-                viewHolderClass,
-                Int::class.javaPrimitiveType
-            )
-            xposedModule.hook(onBindViewHolderMethod).intercept { chain ->
-                val result = chain.proceed()
-                try {
-                    val position = chain.args[1] as Int
-                    val linkSpeed = getLinkSpeed(chain.thisObject, position)
-                    if (linkSpeed != null) {
-                        val mSummary = chain.args[0].reflect["mSummary"] as? TextView
-                        mSummary?.append(" $linkSpeed")
-                    }
-                } catch (t: Throwable) {
-                    xlog(t)
+        val onBindViewHolderMethod = connectedListAdapterClass.getDeclaredMethod(
+            "onBindViewHolder",
+            viewHolderClass,
+            Int::class.javaPrimitiveType
+        )
+        xposedModule.hook(onBindViewHolderMethod).intercept { chain ->
+            val result = chain.proceed()
+            try {
+                val position = chain.args[1] as Int
+                val linkSpeed = getLinkSpeed(chain.thisObject, position)
+                if (linkSpeed != null) {
+                    val mSummary = chain.args[0].reflect["mSummary"] as? TextView
+                    mSummary?.append(" $linkSpeed")
                 }
-                result
+            } catch (t: Throwable) {
+                xlog(t)
             }
-        } catch (t: Throwable) {
-            xlog(t)
+            result
         }
     }
 }

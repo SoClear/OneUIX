@@ -229,7 +229,20 @@ value class Reflect(val target: Any) {
         val field = findField(name)
         checkInstanceAccess(field)
         val isStatic = Modifier.isStatic(field.modifiers)
-        field.set(if (isStatic) null else target, value)
+        if (isStatic && Modifier.isFinal(field.modifiers)) {
+            Class.forName(field.declaringClass.name, true, field.declaringClass.classLoader)
+            val unsafe = Class.forName("jdk.internal.misc.Unsafe").reflect.getNonNull<Any>("theUnsafe")
+            val base = unsafe.reflect.call("staticFieldBase", field)
+            val offset = unsafe.reflect.call("staticFieldOffset", field)
+            val type = if (field.type.isPrimitive) {
+                field.type.simpleName.replaceFirstChar { it.uppercaseChar() }
+            } else {
+                "Object"
+            }
+            unsafe.reflect.call("put${type}Volatile", base, offset, value)
+        } else {
+            field.set(if (isStatic) null else target, value)
+        }
     }
 
     // ==========================================

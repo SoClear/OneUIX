@@ -10,7 +10,6 @@ import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttach
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
-import java.lang.reflect.Modifier
 
 @SuppressLint("PrivateApi")
 object CoreRune {
@@ -21,15 +20,7 @@ object CoreRune {
             val coreRuneClass = Class.forName(
                 "com.samsung.android.rune.CoreRune", true, param.classLoader
             )
-            val field = coreRuneClass.reflect.findField("SUPPORT_APP_JUMP_BLOCK")
-            if (Modifier.isFinal(field.modifiers)) {
-                val unsafe = Class.forName("jdk.internal.misc.Unsafe").reflect.getNonNull<Any>("theUnsafe")
-                val base = unsafe.reflect.call("staticFieldBase", field)
-                val offset = unsafe.reflect.call("staticFieldOffset", field)
-                unsafe.reflect.call("putBooleanVolatile", base, offset, true)
-            } else {
-                field.setBoolean(null, true)
-            }
+            coreRuneClass.reflect["SUPPORT_APP_JUMP_BLOCK"] = true
         } catch (t: Throwable) {
             xlog(t)
         }
