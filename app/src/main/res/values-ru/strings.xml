@@ -206,6 +206,8 @@
     <string name="disableFlagSecure_title">Отключить FLAG_SECURE</string>
     <string name="hideScreenshotDetection_title">Скрывать снимки экрана от приложений</string>
     <string name="hideScreenshotDetection_summary">Добавьте выбранные приложения в область действия модуля и перезапустите их. Блокируются уведомления о захвате экрана и распознанных снимках. Снимки видимы при выборе фото; уведомления об обычных фото сохраняются</string>
+    <string name="openLiveWallpaperChooser_title">Открыть выбор живых обоев</string>
+    <string name="openLiveWallpaperChooser_summary">Сразу открывает системный выбор живых обоев. Полезно, когда в «Обоях и стиле» нет пункта «Живые обои», как на китайских прошивках</string>
     <string name="disableFlagSecure_summary">Разрешить снимки и запись экрана в защищенных окнах</string>
         <string name="removeAasaInstallRestriction_title">Снять ограничение установки AASA</string>
     <string name="removeAasaInstallRestriction_summary">Обойти ограничение установки AASA для некоторых системных приложений</string>
