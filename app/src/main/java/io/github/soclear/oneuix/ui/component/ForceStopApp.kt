@@ -14,31 +14,43 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.soclear.oneuix.R
+import io.github.soclear.oneuix.common.Package
 
 @Composable
-fun ColumnScope.ForceStopApp(packageName: String, modifier: Modifier = Modifier) {
+fun ColumnScope.ForceStopApp(
+    vararg packageNames: String,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
 
-    // 缓存解析的应用名，解析失败或未安装时回退为 packageName
-    val appName = remember(packageName) {
-        runCatching {
-            val pm = context.packageManager
-            val appInfo = pm.getApplicationInfo(packageName, 0)
-            pm.getApplicationLabel(appInfo).toString()
-        }.getOrDefault(packageName)
+    val appNames = remember(*packageNames) {
+        val pm = context.packageManager
+        packageNames.joinToString(", ") { packageName ->
+            runCatching {
+                val appInfo = pm.getApplicationInfo(packageName, 0)
+                pm.getApplicationLabel(appInfo).toString()
+            }.getOrDefault(packageName)
+        }
     }
-    val successMessage = stringResource(R.string.force_stop_success, appName)
+    val successMessage = stringResource(R.string.force_stop_success, appNames)
 
     Spacer(modifier = Modifier.height(30.dp))
     Button(
         modifier = modifier.align(Alignment.CenterHorizontally),
         onClick = {
             runCatching {
-                ProcessBuilder("su", "-c", "killall", packageName).start()
+                val command = packageNames.joinToString("; ") { packageName ->
+                    if (packageName == Package.SYSTEMUI) {
+                        "killall $packageName"
+                    } else {
+                        "am force-stop --user current $packageName"
+                    }
+                }
+                ProcessBuilder("su", "-c", command).start()
                 Toast.makeText(context, successMessage, Toast.LENGTH_SHORT).show()
             }
         }
     ) {
-        Text(text = stringResource(R.string.force_stop_app, appName))
+        Text(text = stringResource(R.string.force_stop_app, appNames))
     }
 }
