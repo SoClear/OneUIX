@@ -786,6 +786,14 @@ object QS {
         }
     }
 
+    // Panel animation ported from ColorMotion (https://github.com/juccul/ColorMotion).
+    context(xposedModule: XposedModule)
+    fun colorMotionAnimation() = afterAttachTry(
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && ONE_UI_VERSION >= 80500
+    ) {
+        dev.colormotion.Entry.install(classLoader)
+    }
+
     @SuppressLint("DiscouragedPrivateApi")
     context(xposedModule: XposedModule)
     fun disableHighBrightnessDialog() = afterAttachTry {

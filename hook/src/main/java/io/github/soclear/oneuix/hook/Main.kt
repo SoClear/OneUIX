@@ -22,6 +22,8 @@ class Main : XposedModule() {
 
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         processName = param.processName
+        // ColorMotion's legacy-API layer logs and hooks through this module instance.
+        de.robv.android.xposed.XposedBridge.init(this)
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) = with(param) {
@@ -443,6 +445,10 @@ class Main : XposedModule() {
 
                 if (preference.systemUI.qs.disableHighBrightnessDialog) {
                     QS.disableHighBrightnessDialog()
+                }
+
+                if (preference.systemUI.qs.colorMotionAnimation) {
+                    QS.colorMotionAnimation()
                 }
 
                 if (preference.systemUI.qs.addBrightnessProgressToQsBar) {

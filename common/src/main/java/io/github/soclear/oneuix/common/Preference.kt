@@ -139,6 +139,7 @@ data class Preference(
             val showTraditionalChineseDateOnQS: Boolean = false,
             val modifyQSClockTextSize: Boolean = false,
             val qsClockTextSize: Float = 32f,
+            val colorMotionAnimation: Boolean = false,
         )
 
         @Serializable

@@ -717,6 +717,17 @@ fun DetailPaneSystemUI(
                     onEvent(SystemUIEvent.QS.DisableHighBrightnessDialog(it))
                 }
             )
+            if (ONE_UI_VERSION >= 80500) {
+                SwitchItem(
+                    icon = ImageVector.vectorResource(id = R.drawable.fast_forward),
+                    title = stringResource(id = R.string.colorMotionAnimation_title),
+                    summary = stringResource(id = R.string.colorMotionAnimation_summary),
+                    checked = uiState.qs.colorMotionAnimation,
+                    onCheckedChange = {
+                        onEvent(SystemUIEvent.QS.ColorMotionAnimation(it))
+                    }
+                )
+            }
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.light_mode),
@@ -1143,6 +1154,9 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class DisableHighBrightnessDialog(val value: Boolean) : QS
+
+        @JvmInline
+        value class ColorMotionAnimation(val value: Boolean) : QS
 
         @JvmInline
         value class AddBrightnessProgressToQsBar(val value: Boolean) : QS
@@ -1669,6 +1683,16 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             disableHighBrightnessDialog = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.ColorMotionAnimation -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            colorMotionAnimation = event.value
                         )
                     )
                 )

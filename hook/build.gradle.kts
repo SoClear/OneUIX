@@ -18,6 +18,11 @@ android {
         }
     }
 
+    // ColorMotion's typed bridge dex is built by :cm-native-bridge and shipped as an asset.
+    sourceSets.getByName("main").assets.directories.add(
+        project(":cm-native-bridge").layout.buildDirectory.dir("assets").get().asFile.absolutePath
+    )
+
     externalNativeBuild {
         cmake {
             path = file("src/main/c/CMakeLists.txt")
@@ -40,3 +45,5 @@ dependencies {
     compileOnly(libs.libxposed.api)
     compileOnly(project(":stub"))
 }
+
+tasks.named("preBuild") { dependsOn(":cm-native-bridge:bridgeAssets") }
