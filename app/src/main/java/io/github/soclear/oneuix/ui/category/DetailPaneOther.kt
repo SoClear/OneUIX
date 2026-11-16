@@ -61,7 +61,6 @@ fun DetailPaneOther(
                     context.startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER))
                 }
             },
-            supportingContent = { Text(stringResource(R.string.openLiveWallpaperChooser_summary)) },
             leadingContent = {
                 Icon(
                     ImageVector.vectorResource(R.drawable.wallpaper_live),
