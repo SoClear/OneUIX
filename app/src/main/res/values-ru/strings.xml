@@ -259,6 +259,6 @@
     <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
     <string name="fixMyFilesNetworkStorage_title">Исправить переход «Сетевого хранилища» в «Моих файлах»</string>
     <string name="fixMyFilesNetworkStorage_summary">Для международной версии «Моих файлов» на китайской прошивке: не даёт «Сетевому хранилищу» перенаправлять на страницу обновления в Galaxy Store. Кэшированная последняя версия приравнивается к установленной</string>
-    <string name="colorMotionAnimation_title">Анимация панелей ColorMotion</string>
-    <string name="colorMotionAnimation_summary">Более плавная пружинная анимация шторки уведомлений и быстрых настроек (One UI 8.5+). Нужны раздельные панели: уведомления слева, быстрые настройки справа. Основано на ColorMotion от juccul</string>
+    <string name="colorMotionAnimation_title">Анимация шторки и быстрых настроек</string>
+    <string name="colorMotionAnimation_summary">Более плавная пружинная анимация шторки уведомлений и быстрых настроек (One UI 8.5+). Нужны раздельные панели: уведомления слева, быстрые настройки справа</string>
 </resources>

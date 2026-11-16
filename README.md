@@ -365,3 +365,4 @@ Since One UI updates may cause hooks to fail, if you find any invalid hook point
 
 - [Firefds Kit](https://github.com/Firefds/FirefdsKit)
 - [OneDesign](https://github.com/qlenlen/android_kernel_samsung_sm8550)
+- [ColorMotion](https://github.com/juccul/ColorMotion)

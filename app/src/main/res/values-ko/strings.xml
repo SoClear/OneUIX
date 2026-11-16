@@ -259,6 +259,6 @@
     <string name="allowLowBatteryFlashlight_summary">배터리 부족으로 자동으로 꺼지지 않고 1%까지 사용합니다. 과열 보호는 유지됩니다</string>
     <string name="fixMyFilesNetworkStorage_title">내 파일 네트워크 저장소 이동 문제 수정</string>
     <string name="fixMyFilesNetworkStorage_summary">중국 ROM에서 국제판 내 파일을 사용할 때 네트워크 저장소를 누르면 Galaxy Store 업데이트 페이지로 이동하는 문제를 막습니다. 캐시된 최신 버전을 설치된 버전과 동일하게 유지합니다</string>
-    <string name="colorMotionAnimation_title">ColorMotion 패널 애니메이션</string>
-    <string name="colorMotionAnimation_summary">알림창과 빠른 설정에 더 부드러운 스프링 애니메이션을 추가합니다(One UI 8.5 이상). 알림은 왼쪽, 빠른 설정은 오른쪽에서 내리는 분리형 패널이 필요합니다. juccul의 ColorMotion 기반</string>
+    <string name="colorMotionAnimation_title">알림창 및 빠른 설정 애니메이션</string>
+    <string name="colorMotionAnimation_summary">알림창과 빠른 설정에 더 부드러운 스프링 애니메이션을 추가합니다(One UI 8.5 이상). 알림은 왼쪽, 빠른 설정은 오른쪽에서 내리는 분리형 패널이 필요합니다</string>
 </resources>

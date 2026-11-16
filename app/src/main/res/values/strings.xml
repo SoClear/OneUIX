@@ -259,6 +259,6 @@
     <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
     <string name="fixMyFilesNetworkStorage_title">Fix My Files network storage redirect</string>
     <string name="fixMyFilesNetworkStorage_summary">For the international My Files on a China ROM: stop Network storage from jumping to the Galaxy Store update page. Keeps the cached latest version equal to the installed version</string>
-    <string name="colorMotionAnimation_title">ColorMotion panel animation</string>
-    <string name="colorMotionAnimation_summary">Smoother spring-based animation for the notification shade and Quick Settings (One UI 8.5+). Needs split panels: notifications from the left, Quick Settings from the right. Based on ColorMotion by juccul</string>
+    <string name="colorMotionAnimation_title">Notification and Quick Settings animation</string>
+    <string name="colorMotionAnimation_summary">Smoother spring-based animation for the notification shade and Quick Settings (One UI 8.5+). Requires split panels: notifications from the left, Quick Settings from the right</string>
 </resources>

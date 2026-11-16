@@ -259,6 +259,6 @@
     <string name="allowLowBatteryFlashlight_summary">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
     <string name="fixMyFilesNetworkStorage_title">修复我的文件网络存储跳转</string>
     <string name="fixMyFilesNetworkStorage_summary">适用于国行系统上使用国际版“我的文件”：点击网络存储时不再跳转到应用商店更新页面。让缓存的最新版本与已安装版本保持一致</string>
-    <string name="colorMotionAnimation_title">ColorMotion 面板动画</string>
-    <string name="colorMotionAnimation_summary">为通知面板和快捷设置添加更流畅的弹簧动画（One UI 8.5 及以上）。需要使用分开式面板：左侧下拉通知，右侧下拉快捷设置。基于 juccul 的 ColorMotion</string>
+    <string name="colorMotionAnimation_title">快捷通知面板动画</string>
+    <string name="colorMotionAnimation_summary">为通知面板和快捷设置添加更流畅的弹簧动画（One UI 8.5 及以上）。需要使用分开式面板：左侧下拉通知，右侧下拉快捷设置</string>
 </resources>
