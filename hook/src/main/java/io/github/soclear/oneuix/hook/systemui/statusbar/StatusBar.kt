@@ -3,6 +3,8 @@ package io.github.soclear.oneuix.hook.systemui.statusbar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -101,6 +103,23 @@ object StatusBar {
             }
             return@afterAttachTry
         }
+        if (ONE_UI_VERSION >= 70000) {
+            val drawableClass = classLoader.loadClass("com.android.systemui.battery.SamsungBatteryMeterDrawable")
+            xposedModule.hook(drawableClass.getDeclaredMethod("draw", Canvas::class.java)).intercept { chain ->
+                val drawable = chain.thisObject as Drawable
+                val canvas = chain.args[0] as Canvas
+                val saveCount = canvas.save()
+                try {
+                    canvas.scale(
+                        drawable.bounds.width().toFloat() / drawable.intrinsicWidth,
+                        drawable.bounds.height().toFloat() / drawable.intrinsicHeight
+                    )
+                    chain.proceed()
+                } finally {
+                    canvas.restoreToCount(saveCount)
+                }
+            }
+        }
         val clazz = classLoader.loadClass("com.android.systemui.battery.BatteryMeterView")
         val method = clazz.getDeclaredMethod("scaleBatteryMeterViewsLegacy")
         xposedModule.hook(method).intercept { chain ->
@@ -108,6 +127,7 @@ object StatusBar {
             try {
                 val mBatteryIconView = chain.thisObject.reflect["mBatteryIconView"] as? ImageView
                 if (mBatteryIconView != null) {
+                    mBatteryIconView.scaleType = ImageView.ScaleType.FIT_XY
                     mBatteryIconView.layoutParams = mBatteryIconView.layoutParams.apply {
                         if (widthScale != null) {
                             width = (width * widthScale).roundToInt()
