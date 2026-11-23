@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.content.res.loader.ResourcesLoader
 import android.content.res.loader.ResourcesProvider
 import android.os.ParcelFileDescriptor
+import android.telephony.TelephonyManager
 import android.util.Log
 import io.github.libxposed.api.XposedModule
 import java.io.File
@@ -68,6 +69,13 @@ fun afterAttachTry(canRunAction: Boolean = true, action: Context.() -> Unit) {
             }
         }
     }
+}
+
+context(xposedModule: XposedModule)
+fun setSimOperator(simOperator: String) {
+    if (!simOperator.matches(Regex("[0-9]{5,6}"))) return
+    xposedModule.hook(TelephonyManager::class.java.getDeclaredMethod("getSimOperator"))
+        .intercept { simOperator }
 }
 
 // 向宿主添加资源，路径为apk文件路径。例如添加模块的资源

@@ -15,6 +15,7 @@ import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
 import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
 import io.github.soclear.oneuix.hook.util.addAssetPath
+import io.github.soclear.oneuix.hook.util.setSimOperator
 import io.github.soclear.oneuix.hook.systemui.Other as SystemUIOther
 
 class Main : XposedModule() {
@@ -259,7 +260,7 @@ class Main : XposedModule() {
                     preference.other.hideGalaxyStoreBenefits,
                 )
                 if (preference.other.setGalaxyStoreSimOperator) {
-                    GalaxyStore.setRegion(preference.other.galaxyStoreSimOperator)
+                    setSimOperator(preference.other.galaxyStoreSimOperator)
                 }
                 if (preference.other.blockGalaxyStoreAds) {
                     GalaxyStore.blockGalaxyStoreAds()
@@ -536,6 +537,12 @@ class Main : XposedModule() {
             Package.THEME_CENTER -> {
                 if (preference.other.setThemeTrialNeverExpired) {
                     ThemeCenter.setTrialNeverExpired()
+                }
+            }
+
+            Package.THEME_STORE -> {
+                if (preference.other.setThemeStoreSimOperator) {
+                    setSimOperator(preference.other.themeStoreSimOperator)
                 }
             }
 

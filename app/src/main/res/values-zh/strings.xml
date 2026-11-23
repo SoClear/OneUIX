@@ -89,8 +89,9 @@
     <string name="hideGalaxyStoreBenefits_title">隐藏“优惠”标签</string>
     <string name="blockGalaxyStoreAds_title">去除应用商店的广告</string>
     <string name="galaxyStoreRegion_title">应用商店 SIM 运营商代码（MCC+MNC）</string>
-    <string name="galaxyStoreRegion_summary">填写 5 或 6 位数字，保留前导零，点击确认保存；留空不修改。重启应用商店后生效。</string>
-    <string name="galaxyStoreRegion_reference">查询国家和运营商代码（ITU）</string>
+    <string name="themeStoreRegion_title">主题商店 SIM 运营商代码（MCC+MNC）</string>
+    <string name="simOperator_summary">填写 5 或 6 位数字，保留前导零，点击确认保存；留空不修改。重启商店后生效。</string>
+    <string name="simOperator_reference">查询国家和运营商代码（ITU）</string>
     <string name="blockGalaxyStoreAds_summary">去除开屏广告、推荐广告和推荐弹窗，去除安装年龄限制弹窗</string>
     <string name="supportAllCameraMenu_title">显示相机的所有菜单</string>
     <string name="supportAllCameraMenu_summary">快门音、自动 HDR、Log、边框叠加水印</string>

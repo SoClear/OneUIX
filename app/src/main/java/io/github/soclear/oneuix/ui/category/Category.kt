@@ -25,6 +25,7 @@ enum class Category(val packageName: String) {
     SketchBook(Package.SKETCH_BOOK),
     SPen(Package.TRANSLATION),
     ThemeCenter(Package.THEME_CENTER),
+    ThemeStore(Package.THEME_STORE),
     Video(Package.VIDEO),
     WatchManager(Package.WATCH_MANAGER),
     Weather(Package.WEATHER),

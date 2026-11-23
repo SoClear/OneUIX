@@ -230,6 +230,8 @@ data class Preference(
         val supportBlockMessage: Boolean = true,
         val unlockRcs: Boolean = false,
         val setThemeTrialNeverExpired: Boolean = true,
+        val setThemeStoreSimOperator: Boolean = false,
+        val themeStoreSimOperator: String = "",
         val spoofBrowserCountryCodeToUS: Boolean = false,
         val noAIWatermark: Boolean = true,
         val hideSamsungHealthDiscover: Boolean = false,

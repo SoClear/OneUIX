@@ -89,8 +89,9 @@
     <string name="hideGalaxyStoreBenefits_title">Скрыть вкладку «Преимущества»</string>
     <string name="blockGalaxyStoreAds_title">Удалить рекламу в Galaxy Store</string>
     <string name="galaxyStoreRegion_title">SIM-оператор Galaxy Store (MCC+MNC)</string>
-    <string name="galaxyStoreRegion_summary">Введите 5 или 6 цифр, сохраняя начальные нули, затем нажмите «Подтвердить» для сохранения. Оставьте пустым для работы без изменений. Перезапустите Galaxy Store для применения.</string>
-    <string name="galaxyStoreRegion_reference">Справочник кодов стран и операторов (МСЭ)</string>
+    <string name="themeStoreRegion_title">SIM-оператор Galaxy Themes (MCC+MNC)</string>
+    <string name="simOperator_summary">Введите 5 или 6 цифр, сохраняя начальные нули, затем нажмите «Подтвердить» для сохранения. Оставьте пустым для работы без изменений. Перезапустите магазин для применения.</string>
+    <string name="simOperator_reference">Справочник кодов стран и операторов (МСЭ)</string>
     <string name="blockGalaxyStoreAds_summary">Удаление рекламы на заставке, рекомендаций, всплывающих окон и ограничений по возрасту при установке</string>
     <string name="supportAllCameraMenu_title">Показать все меню камеры</string>
     <string name="supportAllCameraMenu_summary">Звук затвора, Auto HDR, Log, Рамка-водяной знак</string>

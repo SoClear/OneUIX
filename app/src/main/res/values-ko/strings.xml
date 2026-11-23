@@ -89,8 +89,9 @@
     <string name="hideGalaxyStoreBenefits_title">혜택 탭 숨기기</string>
     <string name="blockGalaxyStoreAds_title">Galaxy Store 광고 제거</string>
     <string name="galaxyStoreRegion_title">Galaxy Store SIM 통신사 코드 (MCC+MNC)</string>
-    <string name="galaxyStoreRegion_summary">앞자리 0을 유지하여 5~6자리 숫자를 입력하고 확인을 눌러 저장하세요. 비워 두면 변경하지 않습니다. 적용하려면 Galaxy Store를 다시 시작하세요.</string>
-    <string name="galaxyStoreRegion_reference">국가 및 통신사 코드 조회 (ITU)</string>
+    <string name="themeStoreRegion_title">Galaxy Themes SIM 통신사 코드 (MCC+MNC)</string>
+    <string name="simOperator_summary">앞자리 0을 유지하여 5~6자리 숫자를 입력하고 확인을 눌러 저장하세요. 비워 두면 변경하지 않습니다. 적용하려면 스토어를 다시 시작하세요.</string>
+    <string name="simOperator_reference">국가 및 통신사 코드 조회 (ITU)</string>
     <string name="blockGalaxyStoreAds_summary">시작 화면(스플래시) 광고, 추천 광고/팝업, 설치 시 연령 제한 팝업을 제거합니다</string>
     <string name="supportAllCameraMenu_title">카메라 모든 메뉴 표시</string>
     <string name="supportAllCameraMenu_summary">셔터음, 자동 HDR, Log 촬영, 프레임 워터마크</string>

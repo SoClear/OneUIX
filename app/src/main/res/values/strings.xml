@@ -89,8 +89,9 @@
     <string name="hideGalaxyStoreBenefits_title">Hide Benefits tab</string>
     <string name="blockGalaxyStoreAds_title">Remove ads in Galaxy Store</string>
     <string name="galaxyStoreRegion_title">Galaxy Store SIM operator (MCC+MNC)</string>
-    <string name="galaxyStoreRegion_summary">Enter 5 or 6 digits, keeping leading zeros, then tap Confirm to save. Leave blank for no modification. Restart Galaxy Store to apply.</string>
-    <string name="galaxyStoreRegion_reference">Look up country and operator codes (ITU)</string>
+    <string name="themeStoreRegion_title">Galaxy Themes SIM operator (MCC+MNC)</string>
+    <string name="simOperator_summary">Enter 5 or 6 digits, keeping leading zeros, then tap Confirm to save. Leave blank for no modification. Restart the store to apply.</string>
+    <string name="simOperator_reference">Look up country and operator codes (ITU)</string>
     <string name="blockGalaxyStoreAds_summary">Remove splash screen ads, recommended ads/pop-ups, and installation age restriction pop-ups</string>
     <string name="supportAllCameraMenu_title">Show all camera menus</string>
     <string name="supportAllCameraMenu_summary">Shutter sound, Auto HDR, Log, Frame watermark</string>

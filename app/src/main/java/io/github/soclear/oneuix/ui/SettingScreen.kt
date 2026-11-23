@@ -45,6 +45,7 @@ import io.github.soclear.oneuix.ui.category.DetailPaneSettings
 import io.github.soclear.oneuix.ui.category.DetailPaneSketchBook
 import io.github.soclear.oneuix.ui.category.DetailPaneSystemUI
 import io.github.soclear.oneuix.ui.category.DetailPaneThemeCenter
+import io.github.soclear.oneuix.ui.category.DetailPaneThemeStore
 import io.github.soclear.oneuix.ui.category.DetailPaneVideo
 import io.github.soclear.oneuix.ui.category.DetailPaneWatchManager
 import io.github.soclear.oneuix.ui.category.DetailPaneWeather
@@ -74,6 +75,7 @@ import io.github.soclear.oneuix.ui.category.onSettingsEvent
 import io.github.soclear.oneuix.ui.category.onSketchBookEvent
 import io.github.soclear.oneuix.ui.category.onSystemUIEvent
 import io.github.soclear.oneuix.ui.category.onThemeCenterEvent
+import io.github.soclear.oneuix.ui.category.onThemeStoreEvent
 import io.github.soclear.oneuix.ui.category.onVideoEvent
 import io.github.soclear.oneuix.ui.category.onWatchManagerEvent
 import io.github.soclear.oneuix.ui.category.onWeatherEvent
@@ -271,6 +273,11 @@ fun SettingScreen(viewModel: SettingViewModel, modifier: Modifier = Modifier) {
                         Category.ThemeCenter -> DetailPaneThemeCenter(
                             uiState = preference.other,
                             onEvent = viewModel::onThemeCenterEvent
+                        )
+
+                        Category.ThemeStore -> DetailPaneThemeStore(
+                            uiState = preference.other,
+                            onEvent = viewModel::onThemeStoreEvent
                         )
 
                         Category.Video -> DetailPaneVideo(
