@@ -3,9 +3,12 @@ package io.github.soclear.oneuix.hook.systemui
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Color
 import android.os.Build
+import android.provider.AlarmClock
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.Gravity
@@ -728,6 +731,115 @@ object QS {
                 dateTextView?.text = result
             }
             null
+        }
+    }
+
+    context(xposedModule: XposedModule)
+    fun openCalendarAndClockWhenTappingDateAndTime(
+        openCalendar: Boolean,
+        openClock: Boolean,
+    ) = afterAttachTry(openCalendar || openClock) {
+        val dependencyClass = classLoader.loadClass("com.android.systemui.Dependency")
+        val activityStarterClass = classLoader.loadClass("com.android.systemui.plugins.ActivityStarter")
+
+        fun startActivityDismissingKeyguard(intent: Intent, fallbackPackage: String) {
+            try {
+                val launchIntent = if (packageManager.resolveActivity(
+                        intent,
+                        PackageManager.MATCH_DEFAULT_ONLY
+                    ) != null
+                ) {
+                    intent
+                } else {
+                    packageManager.getLaunchIntentForPackage(fallbackPackage)
+                } ?: return
+
+                val dependency = dependencyClass.reflect["sDependency"]
+                    ?: error("Dependency is not initialized")
+                val activityStarter = dependency.reflect.call(
+                    "getDependencyInner",
+                    activityStarterClass
+                ) ?: error("ActivityStarter is unavailable")
+                activityStarter.reflect.call("postStartActivityDismissingKeyguard", launchIntent, 0)
+            } catch (t: Throwable) {
+                xlog(t)
+            }
+        }
+
+        val calendarClickListener = View.OnClickListener {
+            startActivityDismissingKeyguard(
+                Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_CALENDAR),
+                Package.CALENDAR,
+            )
+        }
+        val clockClickListener = View.OnClickListener {
+            // ACTION_SHOW_ALARMS resolves to AlarmWidgetListActivity on Samsung
+            // Clock, which has no bottom tab bar.
+            val alarmIntent = Intent(AlarmClock.ACTION_SHOW_ALARMS)
+            val alarmPackage = runCatching {
+                packageManager.resolveActivity(alarmIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                    ?.activityInfo?.packageName
+            }.getOrNull()
+            val launchIntent = alarmPackage?.let(packageManager::getLaunchIntentForPackage)
+            startActivityDismissingKeyguard(launchIntent ?: alarmIntent, Package.CLOCK)
+        }
+
+        fun View.findHeaderView(idName: String): View? {
+            @SuppressLint("DiscouragedApi")
+            val id = resources.getIdentifier(idName, "id", Package.SYSTEMUI)
+            return if (id != 0) findViewById(id) else null
+        }
+
+        // Old QS header
+        try {
+            val headerClass = classLoader.loadClass("com.android.systemui.qs.SecQuickStatusBarHeader")
+            xposedModule.hook(headerClass.getDeclaredMethod("onFinishInflate")).intercept { chain ->
+                val result = chain.proceed()
+                try {
+                    val header = chain.thisObject as View
+                    if (openCalendar) {
+                        val dateView = runCatching {
+                            header.reflect["mDateView"] as? View
+                        }.getOrNull() ?: header.findHeaderView("header_date")
+                        dateView?.setOnClickListener(calendarClickListener)
+                    }
+                    if (openClock) {
+                        val clockView = runCatching {
+                            header.reflect["mClockView"] as? View
+                        }.getOrNull() ?: header.findHeaderView("header_clock")
+                        clockView?.setOnClickListener(clockClickListener)
+                    }
+                } catch (t: Throwable) {
+                    xlog(t)
+                }
+                result
+            }
+        } catch (t: Throwable) {
+            xlog(t)
+        }
+
+        // Compose QS header
+        if (openCalendar) {
+            runCatching {
+                classLoader.loadClass("com.android.systemui.statusbar.policy.QSShortenDate")
+            }.getOrNull()?.declaredConstructors?.forEach { constructor ->
+                xposedModule.hook(constructor).intercept { chain ->
+                    val result = chain.proceed()
+                    (chain.thisObject as? View)?.setOnClickListener(calendarClickListener)
+                    result
+                }
+            }
+        }
+        if (openClock) {
+            runCatching {
+                classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockPanelView")
+            }.getOrNull()?.declaredConstructors?.forEach { constructor ->
+                xposedModule.hook(constructor).intercept { chain ->
+                    val result = chain.proceed()
+                    (chain.thisObject as? View)?.setOnClickListener(clockClickListener)
+                    result
+                }
+            }
         }
     }
 

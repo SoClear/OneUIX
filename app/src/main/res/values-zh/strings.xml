@@ -75,6 +75,8 @@
     <string name="quickQsTileCount_default">系统默认</string>
     <string name="alwaysExpandQsTileChunk_title">总是展开快捷设置磁贴块</string>
     <string name="alwaysShowTimeDateOnQs_title">快捷设置面板总是显示时间日期</string>
+    <string name="openCalendarWhenTappingDate_title">点击快捷设置面板的日期打开日历</string>
+    <string name="openClockWhenTappingTime_title">点击快捷设置面板的时间打开时钟</string>
     <string name="setStatusBarMaxNotificationIcons_title">修改状态栏最大通知图标数量</string>
     <string name="setQsClockMonospaced_title">快捷设置时间设为等宽字体</string>
     <string name="showWiFiLinkSpeed_title">Wi-Fi 列表页显示当前连接速度</string>
