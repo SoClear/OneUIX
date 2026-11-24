@@ -819,28 +819,25 @@ object QS {
             xlog(t)
         }
 
-        // Compose QS header
-        if (openCalendar) {
-            runCatching {
-                classLoader.loadClass("com.android.systemui.statusbar.policy.QSShortenDate")
-            }.getOrNull()?.declaredConstructors?.forEach { constructor ->
+        fun hookHeaderViewClick(className: String, listener: View.OnClickListener) {
+            val viewClass = runCatching {
+                classLoader.loadClass("com.android.systemui.statusbar.policy.$className")
+            }.getOrNull() ?: return
+            viewClass.declaredConstructors.forEach { constructor ->
                 xposedModule.hook(constructor).intercept { chain ->
                     val result = chain.proceed()
-                    (chain.thisObject as? View)?.setOnClickListener(calendarClickListener)
+                    (chain.thisObject as View).setOnClickListener(listener)
                     result
                 }
             }
         }
+
+        if (openCalendar) {
+            hookHeaderViewClick("QSShortenDate", calendarClickListener)
+            hookHeaderViewClick("QSShortenDatePanelView", calendarClickListener)
+        }
         if (openClock) {
-            runCatching {
-                classLoader.loadClass("com.android.systemui.statusbar.policy.QSClockPanelView")
-            }.getOrNull()?.declaredConstructors?.forEach { constructor ->
-                xposedModule.hook(constructor).intercept { chain ->
-                    val result = chain.proceed()
-                    (chain.thisObject as? View)?.setOnClickListener(clockClickListener)
-                    result
-                }
-            }
+            hookHeaderViewClick("QSClockPanelView", clockClickListener)
         }
     }
 
