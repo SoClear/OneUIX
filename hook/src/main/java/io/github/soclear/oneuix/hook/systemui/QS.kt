@@ -28,6 +28,7 @@ import io.github.soclear.oneuix.hook.util.TraditionalChineseCalendar
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog
+import java.util.Locale
 import java.util.function.DoubleSupplier
 import kotlin.math.roundToInt
 
@@ -861,7 +862,7 @@ object QS {
                     val progress = volumeSeekBar?.reflect?.get("progress") as? Int ?: 0
                     textView = TextView(sliderParent.context).apply {
                         setTextColor(Color.WHITE)
-                        text = progress.toString()
+                        text = "%d".format(Locale.getDefault(), progress)
                     }
                     val layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,
@@ -893,7 +894,7 @@ object QS {
         )
         xposedModule.hook(onProgressChangedMethod).intercept { chain ->
             val result = chain.proceed()
-            textView?.text = chain.args[1].toString()
+            textView?.text = "%d".format(Locale.getDefault(), chain.args[1])
             result
         }
     }

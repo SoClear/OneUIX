@@ -55,7 +55,6 @@ fun DetailPaneOther(
             }
         )
         ListItem(
-            headlineContent = { Text(stringResource(R.string.openLiveWallpaperChooser_title)) },
             modifier = Modifier.clickable(role = Role.Button) {
                 runCatching {
                     context.startActivity(Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER))
@@ -67,7 +66,9 @@ fun DetailPaneOther(
                     stringResource(R.string.openLiveWallpaperChooser_title)
                 )
             }
-        )
+        ) {
+            Text(stringResource(R.string.openLiveWallpaperChooser_title))
+        }
     }
 }
 

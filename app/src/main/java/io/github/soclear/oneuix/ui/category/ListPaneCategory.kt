@@ -56,9 +56,6 @@ fun ListPaneCategory(
         }
         categoryAppInfoList.forEach {
             ListItem(
-                headlineContent = {
-                    Text(text = it.label, fontSize = 20.sp)
-                },
                 modifier = Modifier.clickable {
                     onItemClick(it.category)
                 },
@@ -70,10 +67,11 @@ fun ListPaneCategory(
                         contentScale = ContentScale.Fit
                     )
                 }
-            )
+            ) {
+                Text(text = it.label, fontSize = 20.sp)
+            }
         }
         ListItem(
-            headlineContent = { Text(stringResource(R.string.other), fontSize = 20.sp) },
             modifier = Modifier.clickable { onItemClick(Category.Other) },
             leadingContent = {
                 Icon(
@@ -82,6 +80,8 @@ fun ListPaneCategory(
                     modifier = Modifier.size(60.dp)
                 )
             }
-        )
+        ) {
+            Text(stringResource(R.string.other), fontSize = 20.sp)
+        }
     }
 }

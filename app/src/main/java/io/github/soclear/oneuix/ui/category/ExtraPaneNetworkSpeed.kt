@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -136,7 +137,6 @@ fun ExtraPaneNetworkSpeed(
                         mutableStateOf(config.threshold.toString())
                     }
                     ListItem(
-                        headlineContent = { Text(stringResource(R.string.networkSpeedThreshold_title)) },
                         trailingContent = {
                             Text(
                                 text = "${config.threshold} $speedUnitPrefix/s",
@@ -144,7 +144,9 @@ fun ExtraPaneNetworkSpeed(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
-                    )
+                    ) {
+                        Text(stringResource(R.string.networkSpeedThreshold_title))
+                    }
                     OutlinedTextField(
                         value = thresholdInput,
                         onValueChange = { input ->
@@ -259,7 +261,6 @@ private fun SliderItem(
     var current by remember(value) { mutableFloatStateOf(value) }
     Column(modifier = modifier) {
         ListItem(
-            headlineContent = { Text(text = title) },
             trailingContent = {
                 Text(
                     text = display(current),
@@ -267,14 +268,16 @@ private fun SliderItem(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-        )
+        ) {
+            Text(text = title)
+        }
         Slider(
-            value = current,
+            state = rememberSliderState(steps = steps, trackRange = valueRange).also {
+                it.value = current
+            },
             onValueChange = { current = it },
             onValueChangeFinished = { onCommit(current) },
-            modifier = Modifier.padding(horizontal = 16.dp),
-            valueRange = valueRange,
-            steps = steps
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
 }

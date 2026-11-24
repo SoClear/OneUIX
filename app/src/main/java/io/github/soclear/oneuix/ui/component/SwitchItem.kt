@@ -53,7 +53,6 @@ fun SwitchItem(
     }
 
     ListItem(
-        headlineContent = { Text(title) },
         modifier = listItemModifier,
         supportingContent = summary?.let { { Text(it) } },
         leadingContent = icon?.let { { Icon(it, title) } },
@@ -79,5 +78,7 @@ fun SwitchItem(
                 )
             }
         }
-    )
+    ) {
+        Text(title)
+    }
 }

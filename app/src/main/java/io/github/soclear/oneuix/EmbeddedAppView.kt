@@ -45,7 +45,7 @@ class EmbeddedAppView(context: Context, private val onExit: (Boolean) -> Unit, p
         addView(surfaceView, LayoutParams(-1, -1)); addView(status, LayoutParams(-1, -1))
         surfaceView.holder.addCallback(this)
         surfaceView.setOnTouchListener { _, event ->
-            if (status.visibility == VISIBLE) return@setOnTouchListener true
+            if (status.isVisible) return@setOnTouchListener true
             val history = event.historySize
             for (i in 0 until event.pointerCount) {
                 event.getPointerProperties(i, pointers[i])

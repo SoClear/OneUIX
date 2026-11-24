@@ -95,10 +95,11 @@ fun ExtraPaneNfcCards(
             listOf(R.string.nfc_mode_off, R.string.nfc_mode_blacklist, R.string.nfc_mode_whitelist)
                 .forEachIndexed { mode, label ->
                     ListItem(
-                        headlineContent = { Text(stringResource(label)) },
                         leadingContent = { RadioButton(selected = uiState.nfcFilterMode == mode, onClick = null) },
                         modifier = Modifier.clickable { onEvent(NFCEvent.FilterMode(mode)) }
-                    )
+                    ) {
+                        Text(stringResource(label))
+                    }
                 }
             Column(Modifier.padding(16.dp)) {
                 Text(stringResource(when {
@@ -141,7 +142,6 @@ fun ExtraPaneNfcCards(
             }
             uiState.nfcCards.forEach { (cardUid, cardNote) ->
                 ListItem(
-                    headlineContent = { Text(cardUid) },
                     supportingContent = { Text(cardNote) },
                     trailingContent = {
                         TextButton(onClick = { onEvent(NFCEvent.Cards(cards - cardUid)) }) {
@@ -152,7 +152,9 @@ fun ExtraPaneNfcCards(
                         uid = cardUid
                         note = cardNote
                     }
-                )
+                ) {
+                    Text(cardUid)
+                }
             }
         }
     }

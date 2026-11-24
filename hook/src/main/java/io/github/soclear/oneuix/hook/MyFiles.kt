@@ -1,5 +1,6 @@
 package io.github.soclear.oneuix.hook
 
+import android.annotation.SuppressLint
 import io.github.libxposed.api.XposedModule
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.longVersionCode
@@ -12,6 +13,7 @@ object MyFiles {
      * 国际版"我的文件"在国行系统上点击"网络存储"时，会因为缓存的最新版本与已安装版本不一致
      * 而跳转到 Galaxy Store 更新页。这里让这两个偏好读出来始终表示"没有可用更新"。
      */
+    @SuppressLint("PrivateApi")
     context(xposedModule: XposedModule)
     fun fixNetworkStorageUpdateCheck() = afterAttachTry {
         val installedVersion = longVersionCode.toInt()

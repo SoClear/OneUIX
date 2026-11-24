@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">三星 One UI 扩展</string>
-    <string name="module_disabled_tip">请在 LSPosed 中启用本模块</string>
     <string name="confirm">确认</string>
     <string name="other">其他</string>
     <string name="notification">通知</string>
@@ -261,9 +260,9 @@
     <string name="networkSpeedRefreshInterval_title">刷新间隔</string>
     <string name="networkSpeedPaddingEnd_title">与下一个图标的间距</string>
     <string name="disableLowBatteryDimming_title">禁用低电量自动调暗</string>
-    <string name="disableLowBatteryDimming_summary">电量不高于 5% 时保持当前屏幕亮度</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">电量不高于 5% 时保持当前屏幕亮度</string>
     <string name="allowLowBatteryFlashlight_title">允许低电量使用手电筒</string>
-    <string name="allowLowBatteryFlashlight_summary">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">电量低至 1% 时仍可使用，不因低电量自动关闭；保留过热保护</string>
     <string name="fixMyFilesNetworkStorage_title">修复我的文件网络存储跳转</string>
     <string name="fixMyFilesNetworkStorage_summary">适用于国行系统上使用国际版“我的文件”：点击网络存储时不再跳转到应用商店更新页面。让缓存的最新版本与已安装版本保持一致</string>
     <string name="force_stop_app">强行停止 %1$s</string>

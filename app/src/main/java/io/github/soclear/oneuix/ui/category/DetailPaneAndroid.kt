@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -86,11 +87,11 @@ fun DetailPaneAndroid(
 
             AnimatedVisibility(expanded && uiState.modifyMaxNeverKilledAppNum) {
                 Slider(
-                    value = max.toFloat(),
+                    state = rememberSliderState(steps = 24, trackRange = 5f..30f).apply {
+                        value = max.toFloat()
+                    },
                     onValueChange = { max = it.roundToInt() },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 5f..30f,
-                    steps = 24,
                     onValueChangeFinished = { onEvent(AndroidEvent.MaxNeverKilledAppNum(max)) }
                 )
             }

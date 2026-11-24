@@ -124,7 +124,6 @@ fun AppPicker(
                             val packageName = app.info.packageName
                             val checked = packageName in selectedPackages
                             ListItem(
-                                headlineContent = { Text(app.label) },
                                 supportingContent = { Text(packageName) },
                                 leadingContent = {
                                     AppPickerIcon(app.info, packageManager)
@@ -143,7 +142,9 @@ fun AppPicker(
                                         )
                                     }
                                 )
-                            )
+                            ) {
+                                Text(app.label)
+                            }
                         }
                     }
                 }

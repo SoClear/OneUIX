@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Расширение One UI для Samsung</string>
-    <string name="module_disabled_tip">Пожалуйста, включите этот модуль в LSPosed</string>
     <string name="confirm">Подтвердить</string>
     <string name="other">Другое</string>
     <string name="notification">Уведомления</string>
@@ -261,9 +260,9 @@
     <string name="networkSpeedRefreshInterval_title">Интервал обновления</string>
     <string name="networkSpeedPaddingEnd_title">Отступ до следующего значка</string>
     <string name="disableLowBatteryDimming_title">Не снижать яркость при низком заряде</string>
-    <string name="disableLowBatteryDimming_summary">Сохранять текущую яркость при заряде 5 % и ниже</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">Сохранять текущую яркость при заряде 5 % и ниже</string>
     <string name="allowLowBatteryFlashlight_title">Фонарик при низком заряде</string>
-    <string name="allowLowBatteryFlashlight_summary">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">Работа до 1 % без автоматического отключения из-за низкого заряда. Защита от перегрева сохраняется</string>
     <string name="fixMyFilesNetworkStorage_title">Исправить переход «Сетевого хранилища» в «Моих файлах»</string>
     <string name="fixMyFilesNetworkStorage_summary">Для международной версии «Моих файлов» на китайской прошивке: не даёт «Сетевому хранилищу» перенаправлять на страницу обновления в Galaxy Store. Кэшированная последняя версия приравнивается к установленной</string>
     <string name="force_stop_app">Остановить %1$s</string>

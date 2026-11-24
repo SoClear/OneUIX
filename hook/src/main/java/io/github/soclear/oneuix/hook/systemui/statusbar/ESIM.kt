@@ -8,8 +8,6 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.view.View
 import io.github.libxposed.api.XposedModule
-import io.github.libxposed.api.XposedModuleInterface
-import io.github.soclear.oneuix.common.Package
 import io.github.soclear.oneuix.hook.util.afterAttachTry
 import io.github.soclear.oneuix.hook.util.reflect
 import io.github.soclear.oneuix.hook.util.xlog

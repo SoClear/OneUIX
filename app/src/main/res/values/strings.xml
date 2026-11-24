@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">One UI X</string>
     <string name="xposed_description">Samsung One UI Extension</string>
-    <string name="module_disabled_tip">Please enable this module in LSPosed</string>
     <string name="confirm">Confirm</string>
     <string name="other">Other</string>
     <string name="notification">Notification</string>
@@ -261,9 +260,9 @@
     <string name="networkSpeedRefreshInterval_title">Refresh interval</string>
     <string name="networkSpeedPaddingEnd_title">Spacing to the next icon</string>
     <string name="disableLowBatteryDimming_title">Disable low-battery screen dimming</string>
-    <string name="disableLowBatteryDimming_summary">Keep the current brightness at 5% battery or below</string>
+    <string name="disableLowBatteryDimming_summary" formatted="false">Keep the current brightness at 5% battery or below</string>
     <string name="allowLowBatteryFlashlight_title">Allow flashlight at low battery</string>
-    <string name="allowLowBatteryFlashlight_summary">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
+    <string name="allowLowBatteryFlashlight_summary" formatted="false">Allow use down to 1% without automatic shutoff due to low battery. Thermal protection is retained</string>
     <string name="fixMyFilesNetworkStorage_title">Fix My Files network storage redirect</string>
     <string name="fixMyFilesNetworkStorage_summary">For the international My Files on a China ROM: stop Network storage from jumping to the Galaxy Store update page. Keeps the cached latest version equal to the installed version</string>
     <string name="force_stop_app">Force stop %1$s</string>

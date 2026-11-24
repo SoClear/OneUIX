@@ -19,10 +19,11 @@ fun DetailPaneNFC(
     PackagePane(modifier) {
         ForceStopApp(Package.NFC)
         ListItem(
-            headlineContent = { Text(stringResource(R.string.nfc_filter_title)) },
             supportingContent = { Text(stringResource(R.string.nfc_filter_summary)) },
             modifier = Modifier.clickable(onClick = onNavigateToNfcCards)
-        )
+        ) {
+            Text(stringResource(R.string.nfc_filter_title))
+        }
     }
 }
 

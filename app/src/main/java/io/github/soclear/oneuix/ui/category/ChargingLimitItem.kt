@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,18 +47,19 @@ fun ChargingLimitItem() {
         limit = readChargingLimit(context)
     }
     ListItem(
-        headlineContent = { Text(stringResource(R.string.chargingLimit_title)) },
         supportingContent = { Text(stringResource(R.string.chargingLimit_summary)) },
         leadingContent = {
             Icon(ImageVector.vectorResource(R.drawable.battery), contentDescription = null)
         },
         trailingContent = { Text("$limit%") },
-    )
+    ) {
+        Text(stringResource(R.string.chargingLimit_title))
+    }
     Slider(
-        value = limit.toFloat(),
+        state = rememberSliderState(steps = 79, trackRange = 20f..100f).apply {
+            value = limit.toFloat()
+        },
         onValueChange = { limit = it.roundToInt() },
-        valueRange = 20f..100f,
-        steps = 79,
         enabled = !busy,
         modifier = Modifier.padding(horizontal = 16.dp),
         onValueChangeFinished = {

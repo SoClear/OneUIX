@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Slider
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -80,10 +81,9 @@ fun DetailPaneLauncher(
             )
             AnimatedVisibility(uiState.modifyDockBottomPadding) {
                 Slider(
-                    value = padding,
+                    state = rememberSliderState(trackRange = 0f..100f).apply { value = padding },
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0f..100f,
                     onValueChangeFinished = { onEvent(LauncherEvent.DockBottomPaddingDp(padding)) }
                 )
             }

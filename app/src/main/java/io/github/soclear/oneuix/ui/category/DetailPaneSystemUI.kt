@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -21,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -94,10 +94,9 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarLeftPadding) {
                 Slider(
-                    value = padding,
+                    state = rememberSliderState(trackRange = 0f..100f).apply { value = padding },
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0f..100f,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.StatusBarLeftPaddingDp(padding))
                     }
@@ -131,10 +130,9 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarRightPadding) {
                 Slider(
-                    value = padding,
+                    state = rememberSliderState(trackRange = 0f..100f).apply { value = padding },
                     onValueChange = { padding = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0f..100f,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.StatusBarRightPaddingDp(padding))
                     }
@@ -168,10 +166,9 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.setBatteryIconWidthScale) {
                 Slider(
-                    value = widthScale,
+                    state = rememberSliderState(trackRange = 0.5f..2f).apply { value = widthScale },
                     onValueChange = { widthScale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0.5f..2f,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.BatteryIconWidthScale(widthScale))
                     }
@@ -205,10 +202,9 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.setBatteryIconHeightScale) {
                 Slider(
-                    value = heightScale,
+                    state = rememberSliderState(trackRange = 0.5f..2f).apply { value = heightScale },
                     onValueChange = { heightScale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0.5f..2f,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.BatteryIconHeightScale(heightScale))
                     }
@@ -368,10 +364,9 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.setStatusBarClockTextScale) {
                 Slider(
-                    value = scale,
+                    state = rememberSliderState(trackRange = 0.5f..2.5f).apply { value = scale },
                     onValueChange = { scale = it },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 0.5f..2.5f,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.StatusBarClockTextScale(scale))
                     }
@@ -463,11 +458,11 @@ fun DetailPaneSystemUI(
             )
             AnimatedVisibility(expanded && uiState.statusBar.modifyStatusBarMaxNotificationIcons) {
                 Slider(
-                    value = max.toFloat(),
+                    state = rememberSliderState(steps = 15, trackRange = 4f..20f).apply {
+                        value = max.toFloat()
+                    },
                     onValueChange = { max = it.roundToInt() },
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    valueRange = 4f..20f,
-                    steps = 15,
                     onValueChangeFinished = {
                         onEvent(SystemUIEvent.StatusBar.StatusBarMaxNotificationIcons(max))
                     }
@@ -614,7 +609,6 @@ fun DetailPaneSystemUI(
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             ListItem(
-                headlineContent = { Text(stringResource(id = R.string.turnOn5gQsTile_title)) },
                 leadingContent = {
                     Icon(
                         ImageVector.vectorResource(id = R.drawable.five_g),
@@ -622,9 +616,10 @@ fun DetailPaneSystemUI(
                     )
                 },
                 supportingContent = { Text(stringResource(id = R.string.root5gQsTile_summary)) }
-            )
+            ) {
+                Text(stringResource(id = R.string.turnOn5gQsTile_title))
+            }
             ListItem(
-                headlineContent = { Text(stringResource(id = R.string.immersiveModeQsTile_title)) },
                 leadingContent = {
                     Icon(
                         ImageVector.vectorResource(id = R.drawable.immersive_mode),
@@ -632,7 +627,9 @@ fun DetailPaneSystemUI(
                     )
                 },
                 supportingContent = { Text(stringResource(id = R.string.rootImmersiveModeQsTile_summary)) }
-            )
+            ) {
+                Text(stringResource(id = R.string.immersiveModeQsTile_title))
+            }
             if (ONE_UI_VERSION < 80500) {
                 SwitchItem(
                     icon = ImageVector.vectorResource(id = R.drawable.tile_medium),
@@ -790,10 +787,9 @@ fun DetailPaneSystemUI(
 
                 AnimatedVisibility(expanded && uiState.qs.modifyQSClockTextSize) {
                     Slider(
-                        value = textSize,
+                        state = rememberSliderState(trackRange = 15f..70f).apply { value = textSize },
                         onValueChange = { textSize = it },
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        valueRange = 15f..70f,
                         onValueChangeFinished = {
                             onEvent(SystemUIEvent.QS.QSClockTextSize(textSize))
                         }
@@ -960,9 +956,6 @@ private fun PowerMenuActionEditor(
         normalizedActions.forEachIndexed { index, action ->
             val visiblePosition = normalizedActions.take(index + 1).count { it.visible }
             ListItem(
-                headlineContent = {
-                    Text(text = stringResource(id = powerMenuActionTitle(action.name)))
-                },
                 supportingContent = {
                     Text(
                         text = if (action.visible) {
@@ -1007,7 +1000,9 @@ private fun PowerMenuActionEditor(
                         )
                     }
                 }
-            )
+            ) {
+                Text(text = stringResource(id = powerMenuActionTitle(action.name)))
+            }
         }
     }
 }

@@ -32,7 +32,6 @@ fun SelectItem(
 
     Box(modifier = modifier) {
         ListItem(
-            headlineContent = { Text(title) },
             supportingContent = {
                 Text(entries.getOrElse(selectedIndex) { summary ?: "" })
             },
@@ -40,7 +39,9 @@ fun SelectItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { expanded = true }
-        )
+        ) {
+            Text(title)
+        }
 
         DropdownMenu(
             expanded = expanded,
