@@ -78,6 +78,8 @@
     <string name="openCalendarWhenTappingDate_title">点击快捷设置面板的日期打开日历</string>
     <string name="openClockWhenTappingTime_title">点击快捷设置面板的时间打开时钟</string>
     <string name="setStatusBarMaxNotificationIcons_title">修改状态栏最大通知图标数量</string>
+    <string name="showColoredNotificationIcons_title">显示彩色通知图标</string>
+    <string name="showColoredNotificationIcons_summary">在状态栏显示应用原本的彩色图标。</string>
     <string name="setQsClockMonospaced_title">快捷设置时间设为等宽字体</string>
     <string name="showWiFiLinkSpeed_title">Wi-Fi 列表页显示当前连接速度</string>
     <string name="showWiFiLinkSpeed_summary">格式为 Tx,Rx ，单位为 Mbps</string>

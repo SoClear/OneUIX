@@ -2,14 +2,19 @@ package io.github.soclear.oneuix.hook.systemui.statusbar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.BlendMode
 import android.graphics.Canvas
+import android.graphics.ColorFilter
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.DrawableWrapper
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
 import android.os.SystemClock
+import android.service.notification.StatusBarNotification
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.MotionEvent
@@ -508,6 +513,52 @@ object StatusBar {
                     result
                 }
             }
+    }
+
+    @SuppressLint("DiscouragedApi")
+    context(xposedModule: XposedModule)
+    fun showColoredNotificationIcons() = afterAttachTry {
+        class ColoredNotificationIcon(icon: Drawable, private val size: Int) : DrawableWrapper(icon) {
+            override fun getIntrinsicWidth() = size
+            override fun getIntrinsicHeight() = size
+            override fun setColorFilter(colorFilter: ColorFilter?) = Unit
+            override fun setTintList(tint: ColorStateList?) = Unit
+            override fun setTintBlendMode(blendMode: BlendMode?) = Unit
+        }
+
+        val containerId = resources.getIdentifier("notificationIcons", "id", Package.SYSTEMUI)
+        val iconSizeId = resources.getIdentifier("status_bar_icon_size", "dimen", Package.SYSTEMUI)
+        if (containerId == 0 || iconSizeId == 0) return@afterAttachTry
+
+        val iconView = classLoader.loadClass("com.android.systemui.statusbar.StatusBarIconView")
+        val getIcon = iconView.reflect.findMethodExact("getIcon", "com.android.internal.statusbar.StatusBarIcon")
+        xposedModule.hook(getIcon).intercept { chain ->
+            val view = chain.thisObject as ImageView
+            if ((view.parent as? View)?.id != containerId) return@intercept chain.proceed()
+            val notification = view.reflect.getAs<StatusBarNotification>("mNotification")
+                ?: return@intercept chain.proceed()
+            val app = notification.reflect.call("getPackageContext", view.context) as? Context
+                ?: return@intercept chain.proceed()
+            val info = app.applicationInfo
+            if (info.packageName != notification.packageName || info.icon == 0) return@intercept chain.proceed()
+            val icon = app.packageManager.getDrawable(info.packageName, info.icon, info)
+                ?: return@intercept chain.proceed()
+            ColoredNotificationIcon(icon, view.resources.getDimensionPixelSize(iconSizeId))
+        }
+
+        // One UI 9 already reloads the drawable after adding the view.
+        if (ONE_UI_VERSION >= 90000) return@afterAttachTry
+        val container = classLoader.loadClass("com.android.systemui.statusbar.phone.NotificationIconContainer")
+        xposedModule.hook(container.getDeclaredMethod("onViewAdded", View::class.java)).intercept { chain ->
+            val result = chain.proceed()
+            val view = chain.args[0]
+            if ((chain.thisObject as View).id == containerId && iconView.isInstance(view) &&
+                (view as ImageView).drawable !is ColoredNotificationIcon
+            ) {
+                view.reflect.call("updateDrawable", true)
+            }
+            result
+        }
     }
 
     context(xposedModule: XposedModule, param: XposedModuleInterface.PackageReadyParam)

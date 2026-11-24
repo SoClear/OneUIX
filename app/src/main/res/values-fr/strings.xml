@@ -78,6 +78,8 @@
     <string name="openCalendarWhenTappingDate_title">Ouvrir le calendrier en appuyant sur la date (Paramètres rapides)</string>
     <string name="openClockWhenTappingTime_title">Ouvrir l\'horloge en appuyant sur l\'heure (Paramètres rapides)</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modifier le nombre maximum d\'icônes de notification (Barre d\'état)</string>
+    <string name="showColoredNotificationIcons_title">Afficher les icônes de notification en couleur</string>
+    <string name="showColoredNotificationIcons_summary">Utilise les icônes des applications dans la barre d\'état.</string>
     <string name="setQsClockMonospaced_title">Police à espacement fixe pour l\'heure des paramètres rapides</string>
     <string name="showWiFiLinkSpeed_title">Afficher la vitesse de connexion actuelle dans la liste Wi-Fi</string>
     <string name="showWiFiLinkSpeed_summary">Format : Tx,Rx, en Mbps</string>

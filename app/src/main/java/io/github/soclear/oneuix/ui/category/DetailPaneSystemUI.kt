@@ -474,6 +474,15 @@ fun DetailPaneSystemUI(
                 )
             }
         }
+        SwitchItem(
+            icon = ImageVector.vectorResource(id = R.drawable.notifications),
+            title = stringResource(id = R.string.showColoredNotificationIcons_title),
+            summary = stringResource(id = R.string.showColoredNotificationIcons_summary),
+            checked = uiState.statusBar.showColoredNotificationIcons,
+            onCheckedChange = {
+                onEvent(SystemUIEvent.StatusBar.ShowColoredNotificationIcons(it))
+            }
+        )
         Column {
             var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -1110,6 +1119,9 @@ sealed interface SystemUIEvent {
         value class StatusBarMaxNotificationIcons(val value: Int) : StatusBar
 
         @JvmInline
+        value class ShowColoredNotificationIcons(val value: Boolean) : StatusBar
+
+        @JvmInline
         value class SetCustomCarrierName(val value: Boolean) : StatusBar
 
         @JvmInline
@@ -1523,6 +1535,16 @@ private fun SettingViewModel.onStatusBarEvent(event: SystemUIEvent.StatusBar) {
                     systemUI = preference.systemUI.copy(
                         statusBar = preference.systemUI.statusBar.copy(
                             statusBarMaxNotificationIcons = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.StatusBar.ShowColoredNotificationIcons -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        statusBar = preference.systemUI.statusBar.copy(
+                            showColoredNotificationIcons = event.value
                         )
                     )
                 )

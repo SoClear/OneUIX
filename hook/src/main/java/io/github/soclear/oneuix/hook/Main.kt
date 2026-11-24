@@ -373,6 +373,10 @@ class Main : XposedModule() {
                     StatusBar.setStatusBarMaxNotificationIcons(max)
                 }
 
+                if (preference.systemUI.statusBar.showColoredNotificationIcons) {
+                    StatusBar.showColoredNotificationIcons()
+                }
+
                 if (preference.systemUI.statusBar.setCustomCarrierName) {
                     StatusBar.setCustomCarrierName(preference.systemUI.statusBar.customCarrierName)
                 }

@@ -78,6 +78,8 @@
     <string name="openCalendarWhenTappingDate_title">Open Calendar when tapping the date in QS panel</string>
     <string name="openClockWhenTappingTime_title">Open Clock when tapping the time in QS panel</string>
     <string name="setStatusBarMaxNotificationIcons_title">Modify maximum number of notification icons in status bar</string>
+    <string name="showColoredNotificationIcons_title">Show colored notification icons</string>
+    <string name="showColoredNotificationIcons_summary">Use app icons in the status bar.</string>
     <string name="setQsClockMonospaced_title">Set Quick Settings clock to monospaced font</string>
     <string name="showWiFiLinkSpeed_title">Show current link speed in Wi-Fi list</string>
     <string name="showWiFiLinkSpeed_summary">Format is Tx, Rx in Mbps</string>

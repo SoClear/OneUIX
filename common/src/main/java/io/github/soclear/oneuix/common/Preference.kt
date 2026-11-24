@@ -63,6 +63,7 @@ data class Preference(
             val doubleTapStatusBarToSleep: Boolean = false,
             val modifyStatusBarMaxNotificationIcons: Boolean = false,
             val statusBarMaxNotificationIcons: Int = 4,
+            val showColoredNotificationIcons: Boolean = false,
             val setCustomCarrierName: Boolean = false,
             val customCarrierName: String = "",
             val hideLockscreenStatusBar: Boolean = false,
