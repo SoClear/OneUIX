@@ -242,6 +242,8 @@
     <string name="alignStatusBarContentToTop_summary">Только в портретном режиме. Высота строки состояния и отступы приложений сохраняются.</string>
     <string name="hideLockscreenEmergencyButton_title">Скрыть кнопку экстренного вызова на экране блокировки</string>
     <string name="hideLockscreenEmergencyButton_summary">Удаляет ярлык экстренного вызова с экрана разблокировки, затрудняя доступ к экстренному набору.</string>
+    <string name="deferFaceUnlockUntilSwipe_title">Разблокировка лицом после свайпа</string>
+    <string name="deferFaceUnlockUntilSwipe_summary">Не запускать распознавание лица до свайпа по экрану блокировки</string>
     <string name="modifyDockBottomPadding_title">Изменить нижний отступ док-панели главного экрана</string>
     <string name="modifyDockBottomPadding_summary">Телефоны в портретном режиме: %1$.1f dp. Установите 0, чтобы убрать нижний отступ. Возможно перекрытие области жестов.</string>
     <string name="mediaPage_title">Приложение на медиастранице (экспериментально)</string>

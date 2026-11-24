@@ -242,6 +242,8 @@
     <string name="alignStatusBarContentToTop_summary">세로 모드에서만 적용됩니다. 상태바 높이와 앱의 상단 여백은 유지됩니다.</string>
     <string name="hideLockscreenEmergencyButton_title">잠금 화면 긴급 전화 버튼 숨기기</string>
     <string name="hideLockscreenEmergencyButton_summary">잠금 해제 화면의 긴급 전화 바로가기를 제거하여 긴급 전화 접근이 어려워집니다.</string>
+    <string name="deferFaceUnlockUntilSwipe_title">스와이프 후 얼굴 잠금 해제</string>
+    <string name="deferFaceUnlockUntilSwipe_summary">잠금 화면을 스와이프할 때까지 얼굴 인식을 시작하지 않음</string>
     <string name="modifyDockBottomPadding_title">홈 화면 하단 독 여백 변경</string>
     <string name="modifyDockBottomPadding_summary">휴대전화 세로 모드: %1$.1f dp. 0으로 설정하면 하단 여백이 제거됩니다. 제스처 영역과 겹칠 수 있습니다.</string>
     <string name="mediaPage_title">앱 미디어 페이지 (실험 기능)</string>

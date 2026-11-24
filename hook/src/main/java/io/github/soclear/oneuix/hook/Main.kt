@@ -309,6 +309,10 @@ class Main : XposedModule() {
                     SystemUIOther.hideLockscreenEmergencyButton()
                 }
 
+                if (preference.systemUI.other.deferFaceUnlockUntilSwipe) {
+                    SystemUIOther.deferFaceUnlockUntilSwipe()
+                }
+
                 if (preference.systemUI.statusBar.hideBatteryPercentageSign) {
                     StatusBar.hideBatteryPercentageSign()
                 }

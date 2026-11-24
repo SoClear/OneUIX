@@ -99,6 +99,7 @@
 
 - 自定义关机菜单按钮（包括软重启）
 - 隐藏锁屏紧急呼叫按钮
+- 滑动后再进行人脸解锁
 - 禁用截图声音
 - 隐藏所选音乐应用的实时活动和媒体通知
 - 允许所有旋转角度
@@ -269,6 +270,7 @@
 
 - Customize power menu actions (including soft reboot)
 - Hide the lock screen emergency call button
+- Defer face unlock until swipe
 - Disable screenshot sound
 - Hide ongoing media activity and media notifications for selected apps
 - Allow all rotation angles

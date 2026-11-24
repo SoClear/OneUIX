@@ -242,6 +242,8 @@
     <string name="alignStatusBarContentToTop_summary">Mode portrait uniquement. Conserve la hauteur de la barre d’état et les marges des applications.</string>
     <string name="hideLockscreenEmergencyButton_title">Masquer le bouton d’appel d’urgence sur l’écran de verrouillage</string>
     <string name="hideLockscreenEmergencyButton_summary">Supprime le raccourci d’appel d’urgence de l’écran de déverrouillage et rend les appels d’urgence moins accessibles.</string>
+    <string name="deferFaceUnlockUntilSwipe_title">Déverrouillage facial après balayage</string>
+    <string name="deferFaceUnlockUntilSwipe_summary">Ne pas lancer la reconnaissance faciale avant le balayage de l\'écran de verrouillage</string>
     <string name="modifyDockBottomPadding_title">Modifier la marge inférieure du dock de l’écran d’accueil</string>
     <string name="modifyDockBottomPadding_summary">Téléphones en mode portrait : %1$.1f dp. Réglez sur 0 pour supprimer la marge inférieure. Peut chevaucher la zone des gestes.</string>
     <string name="mediaPage_title">Page média avec application (expérimental)</string>

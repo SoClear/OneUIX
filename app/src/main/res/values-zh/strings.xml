@@ -242,6 +242,8 @@
     <string name="alignStatusBarContentToTop_summary">仅竖屏生效，保留状态栏原高度和应用顶部避让区域</string>
     <string name="hideLockscreenEmergencyButton_title">隐藏锁屏紧急呼叫按钮</string>
     <string name="hideLockscreenEmergencyButton_summary">移除解锁界面的紧急呼叫快捷入口，会降低紧急拨号的便捷性。</string>
+    <string name="deferFaceUnlockUntilSwipe_title">滑动后再进行人脸解锁</string>
+    <string name="deferFaceUnlockUntilSwipe_summary">在滑动锁屏之前不启动人脸识别</string>
     <string name="modifyDockBottomPadding_title">修改桌面底部栏下边距</string>
     <string name="modifyDockBottomPadding_summary">手机竖屏：%1$.1f dp，设为 0 移除底部留白，可能与手势区域重叠。</string>
     <string name="mediaPage_title">应用负一屏（实验性）</string>

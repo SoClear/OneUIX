@@ -242,6 +242,8 @@
     <string name="alignStatusBarContentToTop_summary">Portrait mode only. Keeps the original status bar height and app insets.</string>
     <string name="hideLockscreenEmergencyButton_title">Hide lock screen emergency call button</string>
     <string name="hideLockscreenEmergencyButton_summary">Removes the emergency call shortcut from the unlock screen. This makes emergency dialing less accessible.</string>
+    <string name="deferFaceUnlockUntilSwipe_title">Defer face unlock until swipe</string>
+    <string name="deferFaceUnlockUntilSwipe_summary">Do not start face recognition until the lock screen is swiped</string>
     <string name="modifyDockBottomPadding_title">Modify home screen dock bottom padding</string>
     <string name="modifyDockBottomPadding_summary">Phones in portrait mode: %1$.1f dp. Set to 0 to remove bottom padding. May overlap the gesture area.</string>
     <string name="mediaPage_title">App media page (experimental)</string>
