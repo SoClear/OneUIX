@@ -144,9 +144,7 @@ object Other {
             val isOrWillBeShowing = (chain.args.getOrNull(0) as? Int) == 1
             val fullyShown = (chain.args.getOrNull(1) as? Int) == 1
             val visible = isOrWillBeShowing || fullyShown
-            if (bouncerVisible.getAndSet(visible) != visible) {
-                xlog("bouncer visible=$visible", priority = Log.INFO)
-            }
+            bouncerVisible.set(visible)
             chain.proceed()
         }
     }
