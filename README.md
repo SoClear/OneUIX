@@ -82,6 +82,8 @@
 - 隐藏快捷设置面板的 Smart View 和模式 Bar
 - 总是展开快捷设置磁贴块
 - 快捷设置面板总是显示时间日期
+- 点击快捷设置面板的日期打开日历
+- 点击快捷设置面板的时间打开时钟
 - 快捷设置面板显示亮度级别
 - 快捷设置面板显示音量级别
 - 快捷设置面板显示农历
@@ -253,6 +255,8 @@
 - Hide Smart View and Modes bar in QS panel
 - Always expand Quick Settings tile chunk
 - Always show time and date in QS panel
+- Open Calendar when tapping the date in QS panel
+- Open Clock when tapping the time in QS panel
 - Show brightness level in QS panel
 - Show volume level in QS panel
 - Show Lunar calendar in QS panel

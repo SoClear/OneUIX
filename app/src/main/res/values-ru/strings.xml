@@ -75,6 +75,8 @@
     <string name="quickQsTileCount_default">По умолчанию</string>
     <string name="alwaysExpandQsTileChunk_title">Всегда разворачивать блок плиток быстрых настроек</string>
     <string name="alwaysShowTimeDateOnQs_title">Всегда показывать время и дату в панели быстрых настроек</string>
+    <string name="openCalendarWhenTappingDate_title">Открывать календарь при нажатии на дату в панели быстрых настроек</string>
+    <string name="openClockWhenTappingTime_title">Открывать часы при нажатии на время в панели быстрых настроек</string>
     <string name="setStatusBarMaxNotificationIcons_title">Макс. число значков уведомлений в строке состояния</string>
     <string name="setQsClockMonospaced_title">Моноширинный шрифт для часов в быстрых настройках</string>
     <string name="showWiFiLinkSpeed_title">Скорость соединения в списке Wi-Fi</string>

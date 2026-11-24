@@ -7,6 +7,7 @@ object Package {
     const val BROWSER = "com.sec.android.app.sbrowser"
     const val CALENDAR = "com.samsung.android.calendar"
     const val CAMERA = "com.sec.android.app.camera"
+    const val CLOCK = "com.sec.android.app.clockpackage"
     const val DIALER = "com.samsung.android.dialer"
     const val DUAL_APP = "com.samsung.android.da.daagent"
     const val GALLERY = "com.sec.android.gallery3d"

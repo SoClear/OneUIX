@@ -461,6 +461,13 @@ class Main : XposedModule() {
                     QS.showTraditionalChineseDateOnQS()
                 }
 
+                run {
+                    QS.openCalendarAndClockWhenTappingDateAndTime(
+                        openCalendar = preference.systemUI.qs.openCalendarWhenTappingDate,
+                        openClock = preference.systemUI.qs.openClockWhenTappingTime,
+                    )
+                }
+
                 if (preference.systemUI.aod.wallpaperOnly) {
                     AOD.wallpaperOnly()
                 }

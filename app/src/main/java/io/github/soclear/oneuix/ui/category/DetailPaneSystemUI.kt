@@ -745,6 +745,22 @@ fun DetailPaneSystemUI(
                     onEvent(SystemUIEvent.QS.ShowTraditionalChineseDateOnQS(it))
                 }
             )
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.today),
+                title = stringResource(id = R.string.openCalendarWhenTappingDate_title),
+                checked = uiState.qs.openCalendarWhenTappingDate,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.QS.OpenCalendarWhenTappingDate(it))
+                }
+            )
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.nest_clock_farsight_digital),
+                title = stringResource(id = R.string.openClockWhenTappingTime_title),
+                checked = uiState.qs.openClockWhenTappingTime,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.QS.OpenClockWhenTappingTime(it))
+                }
+            )
             Column {
                 var textSize by remember { mutableFloatStateOf(uiState.qs.qsClockTextSize) }
                 var expanded by rememberSaveable { mutableStateOf(false) }
@@ -1163,6 +1179,12 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class ShowTraditionalChineseDateOnQS(val value: Boolean) : QS
+
+        @JvmInline
+        value class OpenCalendarWhenTappingDate(val value: Boolean) : QS
+
+        @JvmInline
+        value class OpenClockWhenTappingTime(val value: Boolean) : QS
 
         @JvmInline
         value class ModifyQSClockTextSize(val value: Boolean) : QS
@@ -1713,6 +1735,26 @@ private fun SettingViewModel.onQSEvent(event: SystemUIEvent.QS) {
                     systemUI = preference.systemUI.copy(
                         qs = preference.systemUI.qs.copy(
                             showTraditionalChineseDateOnQS = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.OpenCalendarWhenTappingDate -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            openCalendarWhenTappingDate = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.QS.OpenClockWhenTappingTime -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        qs = preference.systemUI.qs.copy(
+                            openClockWhenTappingTime = event.value
                         )
                     )
                 )

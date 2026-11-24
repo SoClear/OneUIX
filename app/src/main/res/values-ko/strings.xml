@@ -75,6 +75,8 @@
     <string name="quickQsTileCount_default">시스템 기본값</string>
     <string name="alwaysExpandQsTileChunk_title">빠른 설정 버튼 영역 항상 확장</string>
     <string name="alwaysShowTimeDateOnQs_title">빠른 설정창에 항상 시간과 날짜 표시</string>
+    <string name="openCalendarWhenTappingDate_title">빠른 설정창의 날짜를 탭하면 캘린더 열기</string>
+    <string name="openClockWhenTappingTime_title">빠른 설정창의 시간을 탭하면 시계 열기</string>
     <string name="setStatusBarMaxNotificationIcons_title">상태바 알림 아이콘 최대 개수 수정</string>
     <string name="setQsClockMonospaced_title">빠른 설정 시계를 고정폭 폰트로 설정</string>
     <string name="showWiFiLinkSpeed_title">Wi-Fi 목록에 현재 연결 속도 표시</string>
