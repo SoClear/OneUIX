@@ -910,6 +910,17 @@ fun DetailPaneSystemUI(
             checked = uiState.other.hideLockscreenEmergencyButton,
             onCheckedChange = { onEvent(SystemUIEvent.Other.HideLockscreenEmergencyButton(it)) }
         )
+        if (ONE_UI_VERSION >= 80500) {
+            SwitchItem(
+                icon = ImageVector.vectorResource(id = R.drawable.lock_open),
+                title = stringResource(R.string.deferFaceUnlockUntilSwipe_title),
+                summary = stringResource(R.string.deferFaceUnlockUntilSwipe_summary),
+                checked = uiState.other.deferFaceUnlockUntilSwipe,
+                onCheckedChange = {
+                    onEvent(SystemUIEvent.Other.DeferFaceUnlockUntilSwipe(it))
+                }
+            )
+        }
     }
 }
 
@@ -1205,6 +1216,9 @@ sealed interface SystemUIEvent {
 
         @JvmInline
         value class DisableScreenshotCaptureSound(val value: Boolean) : Other
+
+        @JvmInline
+        value class DeferFaceUnlockUntilSwipe(val value: Boolean) : Other
     }
 }
 
@@ -1873,6 +1887,16 @@ private fun SettingViewModel.onOtherEvent(event: SystemUIEvent.Other) {
                     systemUI = preference.systemUI.copy(
                         other = preference.systemUI.other.copy(
                             disableScreenshotCaptureSound = event.value
+                        )
+                    )
+                )
+            }
+
+            is SystemUIEvent.Other.DeferFaceUnlockUntilSwipe -> {
+                preference.copy(
+                    systemUI = preference.systemUI.copy(
+                        other = preference.systemUI.other.copy(
+                            deferFaceUnlockUntilSwipe = event.value
                         )
                     )
                 )

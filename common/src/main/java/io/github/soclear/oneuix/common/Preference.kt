@@ -163,6 +163,7 @@ data class Preference(
             val hideLockscreenEmergencyButton: Boolean = false,
             val disableScreenshotCaptureSound: Boolean = false,
             val allowLowBatteryFlashlight: Boolean = false,
+            val deferFaceUnlockUntilSwipe: Boolean = false,
             val customPowerMenu: Boolean = false,
             val powerMenuActions: List<PowerMenuAction> = PowerMenuAction.defaultPreferences()
         )
