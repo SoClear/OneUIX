@@ -3,15 +3,10 @@ package io.github.soclear.oneuix.hook.util
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.pm.PackageManager
-import android.content.res.loader.ResourcesLoader
-import android.content.res.loader.ResourcesProvider
-import android.os.ParcelFileDescriptor
 import android.telephony.TelephonyManager
 import android.util.Log
 import io.github.libxposed.api.XposedModule
-import java.io.File
 import java.lang.reflect.Method
 
 @SuppressLint("PrivateApi", "DiscouragedPrivateApi")
@@ -76,29 +71,6 @@ fun setSimOperator(simOperator: String) {
     if (!simOperator.matches(Regex("[0-9]{5,6}"))) return
     xposedModule.hook(TelephonyManager::class.java.getDeclaredMethod("getSimOperator"))
         .intercept { simOperator }
-}
-
-// 向宿主添加资源，路径为apk文件路径。例如添加模块的资源
-context(xposedModule: XposedModule)
-fun addAssetPath(modulePath: String) {
-    val method = ContextWrapper::class.java.getDeclaredMethod("attachBaseContext", Context::class.java)
-    xposedModule.hook(method).intercept { chain ->
-        val result = chain.proceed()
-        val context = chain.thisObject as Context
-        if (context is Application) {
-            try {
-                val moduleApk = File(modulePath)
-                val parcelFileDescriptor = ParcelFileDescriptor.open(moduleApk, ParcelFileDescriptor.MODE_READ_ONLY)
-                val resourcesProvider = ResourcesProvider.loadFromApk(parcelFileDescriptor)
-                val resourcesLoader = ResourcesLoader()
-                resourcesLoader.addProvider(resourcesProvider)
-                context.resources.addLoaders(resourcesLoader)
-            } catch (t: Throwable) {
-                xposedModule.log(Log.ERROR, "Util", "addAssetPath", t)
-            }
-        }
-        result
-    }
 }
 
 /*

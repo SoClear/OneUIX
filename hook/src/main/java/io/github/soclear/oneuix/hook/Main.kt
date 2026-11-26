@@ -12,9 +12,8 @@ import io.github.soclear.oneuix.hook.systemui.Notification
 import io.github.soclear.oneuix.hook.systemui.QS
 import io.github.soclear.oneuix.hook.systemui.statusbar.StatusBar
 import io.github.soclear.oneuix.hook.systemui.statusbar.NetWorkSpeed
-import io.github.soclear.oneuix.hook.systemui.powermenu.PowerMenu
+import io.github.soclear.oneuix.hook.systemui.PowerMenu
 import io.github.soclear.oneuix.hook.util.PreferenceProvider
-import io.github.soclear.oneuix.hook.util.addAssetPath
 import io.github.soclear.oneuix.hook.util.setSimOperator
 import io.github.soclear.oneuix.hook.systemui.Other as SystemUIOther
 
@@ -506,7 +505,6 @@ class Main : XposedModule() {
                     )
                 }
                 if (preference.systemUI.other.customPowerMenu) {
-                    addAssetPath(moduleApplicationInfo.sourceDir)
                     PowerMenu.hookPowerMenuActions(
                         preference.systemUI.other.powerMenuActions,
                     )
